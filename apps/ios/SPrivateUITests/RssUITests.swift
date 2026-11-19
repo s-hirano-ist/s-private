@@ -4,12 +4,13 @@ final class RssUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false) -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false, large: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
             "(\(language))",
         ]
+        if large { app.launchArguments.append("-ui-testing-rss-large") }
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
         if controlledPages { app.launchArguments.append("-ui-testing-rss-controlled-pages") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
@@ -75,6 +76,36 @@ final class RssUITests: XCTestCase {
         app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].exists)
         attach(app, name: "rss-offline")
+    }
+
+    @MainActor
+    func testUnreadInfiniteScrollWorksOfflineThroughTheLastBatch() {
+        let app = launch(offline: true, large: true)
+        assertScrollsThroughAllBatches(app, lastID: "fixture-large-unread-119")
+        attach(app, name: "rss-unread-infinite-offline")
+    }
+
+    @MainActor
+    func testSavedInfiniteScrollWorksOfflineThroughTheLastBatch() {
+        let app = launch(offline: true, large: true)
+        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        assertScrollsThroughAllBatches(app, lastID: "fixture-large-saved-119")
+        attach(app, name: "rss-saved-infinite-offline")
+    }
+
+    @MainActor
+    private func assertScrollsThroughAllBatches(_ app: XCUIApplication, lastID: String) {
+        XCTAssertFalse(app.buttons["前へ"].exists)
+        XCTAssertFalse(app.buttons["次へ"].exists)
+        let reader = app.descendants(matching: .any)["rss-reader"].firstMatch
+        let last = app.buttons["rss-entry-\(lastID)"]
+        for _ in 0..<45 {
+            if last.exists && last.isHittable { break }
+            reader.swipeUp(velocity: .fast)
+        }
+        XCTAssertTrue(last.exists && last.isHittable)
+        reader.swipeUp()
+        XCTAssertTrue(last.exists)
     }
 
     @MainActor

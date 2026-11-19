@@ -10,6 +10,7 @@ import { ViewerCountSync } from "@/components/common/layouts/nav/viewer-count-co
 import { RssLoading } from "@/components/rss/rss-loading";
 import { useRssPage } from "@/components/rss/use-rss-page";
 import { Button } from "@s-hirano-ist/s-ui/button";
+import { useInfiniteScroll } from "@s-hirano-ist/s-ui/hooks/use-infinite-scroll";
 import { Input } from "@s-hirano-ist/s-ui/input";
 import { RefreshCw, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -257,42 +258,49 @@ function RssNewArrivals({
 	);
 }
 
-function RssPagination({
-	offset,
-	displayedOffset,
+function RssLoadMore({
+	count,
 	total,
+	loading,
+	error,
+	hasMore,
 	disabled,
-	onChange,
+	onLoadMore,
+	onRetry,
+	tailRef,
 }: {
+	count: number;
 	disabled: boolean;
-	displayedOffset: number;
-	offset: number;
-	onChange: (offset: number) => void;
+	error: boolean;
+	hasMore: boolean;
+	loading: boolean;
+	onLoadMore: () => void;
+	onRetry: () => void;
+	tailRef: (node: HTMLElement | null) => void;
 	total: number;
 }) {
 	const t = useTranslations("rss");
 	return (
-		<div className="flex items-center justify-between gap-3">
-			<Button
-				disabled={disabled || offset === 0}
-				onClick={() => onChange(Math.max(0, offset - 50))}
-				type="button"
-				variant="outline"
-			>
-				{t("previous")}
-			</Button>
-			<span className="text-sm text-muted-foreground">
-				{total ? Math.min(displayedOffset + 1, total) : 0}–
-				{Math.min(displayedOffset + 50, total)} / {total}
-			</span>
-			<Button
-				disabled={disabled || offset + 50 >= total}
-				onClick={() => onChange(offset + 50)}
-				type="button"
-				variant="outline"
-			>
-				{t("next")}
-			</Button>
+		<div className="flex flex-col items-center gap-2" ref={tailRef}>
+			<p className="text-sm text-muted-foreground">
+				{t("loadedCount", { count, total })}
+			</p>
+			<RssLoading display="inline" label={loading ? t("loading") : ""} />
+			{error ? (
+				<p role="alert" className="text-sm text-destructive">
+					{t("error")}
+				</p>
+			) : null}
+			{hasMore || error ? (
+				<Button
+					type="button"
+					variant="outline"
+					disabled={disabled}
+					onClick={error ? onRetry : onLoadMore}
+				>
+					{t(error ? "retry" : "loadMore")}
+				</Button>
+			) : null}
 		</div>
 	);
 }
@@ -329,7 +337,15 @@ export function RssReader({
 		},
 		[view],
 	);
-	const { data, loading, reloading, invalidate } = useRssPage(
+	const {
+		data,
+		loading,
+		reloading,
+		loadingMore,
+		loadMoreError,
+		hasMore,
+		invalidate,
+	} = useRssPage(
 		initialData,
 		readPage,
 		offset,
@@ -395,7 +411,7 @@ export function RssReader({
 		);
 	}
 
-	const { entries, total } = entriesForView(data, view);
+	const { entries } = entriesForView(data, view);
 	const sources = new Map(data.feeds.map((feed) => [feed.id, feed.title]));
 
 	function retry() {
@@ -405,8 +421,19 @@ export function RssReader({
 	}
 	const controlsBusy = busy || !interactive;
 	const controlsLoading = loading || !interactive;
-	const paginationPending = !interactive || (loading && reloading);
-	const status = reloading || busy ? t("loading") : "";
+	const canLoadMore =
+		hasMore &&
+		![controlsBusy, loading, reloading, loadMoreError, pageError].some(Boolean);
+	const fetchNextPage = async () => {
+		if (canLoadMore) setOffset(data.offset + 50);
+	};
+	const { lastElementRef } = useInfiniteScroll({
+		hasNextPage: canLoadMore,
+		isFetchingNextPage: reloading || busy,
+		fetchNextPage,
+	});
+	const refreshing = reloading && !loadingMore;
+	const status = [refreshing, busy].some(Boolean) ? t("loading") : "";
 	return (
 		<main
 			className="space-y-4 bg-background px-3 pt-6 text-foreground sm:px-0"
@@ -421,7 +448,7 @@ export function RssReader({
 				}
 			>
 				<RssRefreshButton
-					refreshing={reloading}
+					refreshing={refreshing}
 					busy={controlsBusy}
 					onRefresh={retry}
 				/>
@@ -434,8 +461,9 @@ export function RssReader({
 						onSelect={(value) => {
 							setFeedId(value);
 							setOffset(0);
+							setPageError(false);
+							window.scrollTo({ top: 0 });
 						}}
-
 						onReadAll={() => {
 							const boundary = data.snapshotRevision;
 							perform(() =>
@@ -456,6 +484,7 @@ export function RssReader({
 						onShow={() => {
 							setOffset(0);
 							setSnapshotRevision(undefined);
+							window.scrollTo({ top: 0 });
 						}}
 					/>
 				) : null}
@@ -610,12 +639,18 @@ export function RssReader({
 							{t(view === "unread" ? "emptyUnread" : "emptySaved")}
 						</p>
 					)}
-					<RssPagination
-						offset={offset}
-						displayedOffset={data.offset}
-						total={total}
-						disabled={paginationPending}
-						onChange={setOffset}
+					<RssLoadMore
+						count={entries.length}
+						total={entriesForView(data, view).total}
+						loading={loadingMore}
+						error={loadMoreError}
+						hasMore={hasMore}
+						disabled={loadMoreError ? controlsBusy || reloading : !canLoadMore}
+						onLoadMore={() => {
+							void fetchNextPage();
+						}}
+						onRetry={retry}
+						tailRef={lastElementRef}
 					/>
 				</section>
 			)}

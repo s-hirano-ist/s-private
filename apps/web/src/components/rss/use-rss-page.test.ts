@@ -77,9 +77,10 @@ test("a stale response cannot clear the indicator for a newer page request", asy
 		await background.promise;
 	});
 	expect(result.current.reloading).toBe(true);
-	expect(result.current.loading).toBe(true);
+	expect(result.current.loading).toBe(false);
+	expect(result.current.loadingMore).toBe(true);
 	await act(async () => {
-		next.resolve({ ...initial, offset: 50 });
+		next.resolve({ ...initial, offset: 0 });
 		await next.promise;
 	});
 	expect(result.current.reloading).toBe(false);
@@ -154,4 +155,129 @@ test("a superseded page failure cannot set the current filter error", async () =
 	await waitFor(() => expect(result.current.data.unreadCount).toBe(7));
 	await act(async () => stale.reject(new Error("Stale failure")));
 	expect(setError).not.toHaveBeenCalledWith(true);
+});
+
+const article = (index: number) => ({
+	id: `article-${index}`,
+	feedId: "feed",
+	url: `https://example.com/${index}`,
+	title: `Article ${index}`,
+	publishedAt: null,
+	receivedAt: "2026-11-17T00:00:00Z",
+});
+const batch = (
+	entries: ReturnType<typeof article>[],
+	offset: number,
+	view: "unread" | "saved",
+): RssPage => ({
+	...initial,
+	offset,
+	unread: view === "unread" ? entries.slice(offset, offset + 50) : [],
+	saved:
+		view === "saved"
+			? entries
+					.slice(offset, offset + 50)
+					.map((entry) =>
+						Object.assign({}, entry, { savedAt: entry.receivedAt }),
+					)
+			: [],
+	unreadCount: view === "unread" ? entries.length : 0,
+	savedCount: view === "saved" ? entries.length : 0,
+});
+
+test.each(["unread", "saved"] as const)(
+	"%s appends three batches and rebases the loaded range after a deletion",
+	async (view) => {
+		let entries = Array.from({ length: 120 }, (_, i) => article(i));
+		const readPage = vi.fn(async (offset = 0) => batch(entries, offset, view));
+		const first = batch(entries, 0, view);
+		const setError = vi.fn();
+		const { result, rerender } = renderHook(
+			({ offset, revision }) =>
+				useRssPage(first, readPage, offset, "", revision, setError, view),
+			{ initialProps: { offset: 0, revision: 0 } },
+		);
+		expect(readPage).not.toHaveBeenCalled();
+		rerender({ offset: 50, revision: 0 });
+		await waitFor(() => expect(result.current.reloading).toBe(false));
+		expect(result.current.data[view]).toHaveLength(100);
+		entries = entries.slice(1);
+		rerender({ offset: 50, revision: 1 });
+		await waitFor(() =>
+			expect(result.current.data[view][0].id).toBe("article-1"),
+		);
+		expect(result.current.data[view][99].id).toBe("article-100");
+		rerender({ offset: 100, revision: 1 });
+		await waitFor(() => expect(result.current.data[view]).toHaveLength(119));
+		expect(result.current.data[view].map((entry) => entry.id)).toEqual(
+			entries.map((entry) => entry.id),
+		);
+		expect(readPage.mock.calls.map((call) => call[0])).toEqual([
+			50, 0, 50, 100,
+		]);
+		expect(result.current.hasMore).toBe(false);
+		expect(setError).not.toHaveBeenCalled();
+	},
+);
+
+test.each([0, 1, 50, 51, 120])(
+	"the initial %i-entry list stops exactly at the batch boundary",
+	(count) => {
+		const first = batch(
+			Array.from({ length: count }, (_, i) => article(i)),
+			0,
+			"unread",
+		);
+		const readPage = vi.fn();
+		const { result } = renderHook(() =>
+			useRssPage(first, readPage, 0, "", 0, vi.fn()),
+		);
+		expect(result.current.hasMore).toBe(count > 50);
+		expect(readPage).not.toHaveBeenCalled();
+	},
+);
+
+test("an additional read deduplicates IDs and an in-flight batch is not requested twice", async () => {
+	const entries = Array.from({ length: 101 }, (_, i) => article(i));
+	const pending = Promise.withResolvers<RssPage>();
+	const readPage = vi.fn(() => pending.promise);
+	const first = batch(entries, 0, "unread");
+	const setError = vi.fn();
+	const { result, rerender } = renderHook(
+		({ offset }) => useRssPage(first, readPage, offset, "", 0, setError),
+		{ initialProps: { offset: 0 } },
+	);
+	rerender({ offset: 50 });
+	rerender({ offset: 50 });
+	expect(readPage).toHaveBeenCalledTimes(1);
+	expect(result.current.loadingMore).toBe(true);
+	await act(async () =>
+		pending.resolve({
+			...batch(entries, 50, "unread"),
+			unread: [article(49), article(50)],
+		}),
+	);
+	expect(result.current.data.unread).toHaveLength(51);
+	expect(
+		new Set(result.current.data.unread.map((entry) => entry.id)).size,
+	).toBe(51);
+});
+
+test("a shrinking list detected during append is rebased before publishing", async () => {
+	const entries = Array.from({ length: 120 }, (_, i) => article(i));
+	const remaining = entries.slice(1);
+	const readPage = vi.fn(async (offset = 0) =>
+		batch(remaining, offset, "unread"),
+	);
+	const first = batch(entries, 0, "unread");
+	const { result, rerender } = renderHook(
+		({ offset }) => useRssPage(first, readPage, offset, "", 0, vi.fn()),
+		{ initialProps: { offset: 0 } },
+	);
+	rerender({ offset: 50 });
+	await waitFor(() => expect(result.current.reloading).toBe(false));
+	expect(result.current.data.unread.map((entry) => entry.id)).toEqual(
+		remaining.slice(0, 100).map((entry) => entry.id),
+	);
+	expect(readPage.mock.calls.map((call) => call[0])).toEqual([50, 0, 50]);
 });

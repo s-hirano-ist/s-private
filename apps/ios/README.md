@@ -266,7 +266,7 @@ Run `mise run ios:generate` before testing the Swift Package on a fresh checkout
 The first tab lists unread and saved RSS links. Opening an unread link in the
 system's default browser marks that captured article ID as read when online.
 Stars save or remove links independently of the unread list. Filter unread
-articles by subscription, use 50-item pages, or confirm **すべて既読** to mark
+articles by subscription, reveal 50 more entries by scrolling, or confirm **すべて既読** to mark
 all articles in the selected filter as read. Articles arriving afterward are
 excluded from that operation; a new-articles button makes them visible.
 
@@ -387,3 +387,13 @@ and newly committed articles arriving while the reader keeps its displayed revis
 test compiles, but Simulator execution, physical-device frame responsiveness,
 and post-deployment Schedule operation remain unverified. Configure and verify the
 production RSS Schedule before deploying readers that depend on its feed updates.
+
+### RSS infinite scrolling
+
+Unread and saved lists initially render up to 50 entries, then reveal the next
+50 as the list tail appears. The full metadata download and offline cache remain
+unchanged: scrolling reveals cached entries without extra API calls. Normal sync,
+reads and star actions keep the expanded range. Switching lists or subscriptions,
+changing accounts, or accepting new arrivals resets to the first 50 entries and
+the top of the list. Mark-all-read still includes all accepted entries in the
+selected subscription, including entries that have not been revealed yet.

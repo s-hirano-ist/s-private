@@ -69,13 +69,19 @@ function setup(
 const click = (name: string | RegExp) =>
 	fireEvent.click(screen.getByRole("button", { name }));
 
-test("refreshing on page two keeps its snapshot and cards until the user shows new arrivals", async () => {
+test("refreshing the loaded prefix keeps its snapshot and cards until the user shows new arrivals", async () => {
 	const loadRss = vi
 		.fn()
 		.mockResolvedValueOnce({
 			...initial,
 			offset: 50,
 			unread: [entry("page-two")],
+		})
+		.mockResolvedValueOnce({
+			...initial,
+			offset: 0,
+			newerCount: 2,
+			unread: initial.unread,
 		})
 		.mockResolvedValueOnce({
 			...initial,
@@ -92,12 +98,12 @@ test("refreshing on page two keeps its snapshot and cards until the user shows n
 	const { services } = setup({
 		loadRss,
 	});
-	click("次へ");
+	click("さらに読み込む");
 	await screen.findByRole("link", { name: "page-two" });
 	click("更新");
 	await screen.findByRole("button", { name: "新着2件を表示" });
 	expect(screen.getByRole("link", { name: "page-two" })).toBeVisible();
-	expect(screen.getByText("51–61 / 61")).toBeVisible();
+	expect(screen.getByText("3 / 61件を表示")).toBeVisible();
 	expect(services.loadRss).toHaveBeenLastCalledWith(
 		50,
 		undefined,
@@ -226,24 +232,29 @@ test("a failed mutation is not retried and does not prevent the next queued read
 	expect(screen.getByRole("link", { name: "one" })).toBeVisible();
 });
 
-test("old cards cannot be mutated during a page change and failed navigation can return", async () => {
+test("additional loading preserves usable cards and retries a failed read", async () => {
 	const next = Promise.withResolvers<RssPage>();
-	const { services } = setup({ loadRss: vi.fn(() => next.promise) });
-	click("次へ");
-	fireEvent.click(screen.getByRole("link", { name: "one" }));
-	expect(services.markRssRead).not.toHaveBeenCalled();
+	const loadRss = vi
+		.fn()
+		.mockReturnValueOnce(next.promise)
+		.mockImplementation(async (offset = 0) => ({ ...initial, offset }));
+	const { services } = setup({ loadRss });
+	click("さらに読み込む");
+	expect(screen.getByRole("link", { name: "one" })).toHaveAttribute(
+		"aria-disabled",
+		"false",
+	);
 	expect(
 		screen.getAllByRole("button", { name: "あとで読むに保存" })[0],
-	).toBeDisabled();
+	).toBeEnabled();
 	await act(async () => next.reject(new Error("Unavailable")));
 	await screen.findByRole("alert");
-	click("前へ");
+	expect(loadRss).toHaveBeenCalledTimes(1);
+	click("再読み込み");
 	await waitFor(() =>
-		expect(screen.getByRole("link", { name: "one" })).toHaveAttribute(
-			"aria-disabled",
-			"false",
-		),
+		expect(screen.queryByRole("alert")).not.toBeInTheDocument(),
 	);
+	expect(services.markRssRead).not.toHaveBeenCalled();
 });
 
 test("removing the last saved entry adopts the server's corrected page without a second fetch", async () => {
@@ -264,12 +275,14 @@ test("removing the last saved entry adopts the server's corrected page without a
 		})
 		.mockResolvedValue({ ...initial, offset: 0, saved: [], savedCount: 0 });
 	setup({ loadRss }, "saved", { ...initial, saved: [saved], savedCount: 51 });
-	click("次へ");
-	await waitFor(() => expect(screen.getByText("51–51 / 51")).toBeVisible());
+	click("さらに読み込む");
+	await waitFor(() => expect(loadRss).toHaveBeenCalledTimes(1));
 	click("保存を解除");
 	await screen.findByText("あとで読む記事はありません。");
-	expect(screen.getByText("0–0 / 0")).toBeVisible();
-	expect(screen.getByRole("button", { name: "前へ" })).toBeDisabled();
+	expect(screen.getByText("0 / 0件を表示")).toBeVisible();
+	expect(
+		screen.queryByRole("button", { name: "さらに読み込む" }),
+	).not.toBeInTheDocument();
 	expect(loadRss).toHaveBeenCalledTimes(2);
 });
 
@@ -383,4 +396,44 @@ test("periodic DB reads pause while hidden and resume without changing the displ
 		visibility.mockRestore();
 		vi.useRealTimers();
 	}
+});
+
+test("mark-all during an additional read cancels the batch and ignores its late result", async () => {
+	const pending = Promise.withResolvers<RssPage>();
+	const loadRss = vi
+		.fn()
+		.mockReturnValueOnce(pending.promise)
+		.mockResolvedValue({ ...initial, unread: [], unreadCount: 0 });
+	const { services } = setup({ loadRss });
+	click("さらに読み込む");
+	await waitFor(() => expect(loadRss).toHaveBeenCalledTimes(1));
+	click("すべて既読にする");
+	await screen.findByText("未読記事はありません。");
+	expect(services.markRssRead).toHaveBeenCalledWith({ snapshotRevision: 3 });
+	expect(loadRss.mock.calls[0][3].aborted).toBe(true);
+	await act(async () =>
+		pending.resolve({ ...initial, offset: 50, unread: [entry("late")] }),
+	);
+	expect(screen.queryByRole("link", { name: "late" })).not.toBeInTheDocument();
+});
+
+test("changing the filter aborts an append and discards its late failure", async () => {
+	const pending = Promise.withResolvers<RssPage>();
+	const loadRss = vi
+		.fn()
+		.mockReturnValueOnce(pending.promise)
+		.mockResolvedValue({
+			...initial,
+			unread: [entry("filtered")],
+			unreadCount: 1,
+		});
+	setup({ loadRss });
+	click("さらに読み込む");
+	await waitFor(() => expect(loadRss).toHaveBeenCalledTimes(1));
+	fireEvent.change(screen.getByRole("combobox"), { target: { value: "feed" } });
+	await screen.findByRole("link", { name: "filtered" });
+	expect(loadRss.mock.calls[0][3].aborted).toBe(true);
+	await act(async () => pending.reject(new Error("Stale batch")));
+	expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+	expect(screen.getByText("1 / 1件を表示")).toBeVisible();
 });
