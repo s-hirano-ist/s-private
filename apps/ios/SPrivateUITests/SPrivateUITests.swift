@@ -178,7 +178,7 @@ final class SPrivateUITests: XCTestCase {
             let filter = app.buttons["status-filter"]
             XCTAssertTrue(filter.waitForExistence(timeout: 5))
             XCTAssertTrue(filter.label.contains("公開済み"))
-            XCTAssertTrue(filter.staticTexts["公開済み"].exists)
+            XCTAssertFalse(filter.staticTexts["公開済み"].exists)
             let prefix = index < 2 ? "domain-record" : "media-cell"
             let exported = app.descendants(matching: .any)["\(prefix)-exported-\(domain)"]
             let unexported = app.descendants(matching: .any)["\(prefix)-unexported-\(domain)"]
@@ -186,7 +186,7 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertFalse(unexported.exists)
             filter.tap()
             XCTAssertTrue(filter.label.contains("未公開"))
-            XCTAssertTrue(filter.staticTexts["未公開"].exists)
+            XCTAssertFalse(filter.staticTexts["未公開"].exists)
             XCTAssertTrue(unexported.waitForExistence(timeout: 5))
             XCTAssertFalse(exported.exists)
             tabs.element(boundBy: 0).tap()
@@ -205,6 +205,44 @@ final class SPrivateUITests: XCTestCase {
         screenshot.name = "default-exported-status"
         screenshot.lifetime = .keepAlways
         add(screenshot)
+    }
+
+    @MainActor
+    func testStatusToggleWithReducedMotionAndEmptyList() {
+        assertStatusToggleWithEmptyList(reduceMotion: true)
+    }
+
+    @MainActor
+    func testStatusFlipWithEmptyList() {
+        assertStatusToggleWithEmptyList(reduceMotion: false)
+    }
+
+    @MainActor
+    private func assertStatusToggleWithEmptyList(reduceMotion: Bool) {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-AppleLanguages", "(ja)"]
+        if reduceMotion { app.launchArguments.append("-ui-testing-reduce-motion") }
+        app.launch()
+        let tabs = app.tabBars.firstMatch.buttons
+        XCTAssertTrue(tabs.element(boundBy: 1).waitForExistence(timeout: 5))
+        tabs.element(boundBy: 1).tap()
+        let filter = app.buttons["status-filter"]
+        let empty = app.descendants(matching: .any)["domain-empty-articles"]
+        let record = app.descendants(matching: .any)["domain-record-article-short"]
+        XCTAssertTrue(empty.waitForExistence(timeout: 5))
+        XCTAssertTrue(filter.label.contains("公開済み"))
+        for _ in 0..<3 {
+            filter.tap()
+            XCTAssertTrue(record.waitForExistence(timeout: 5))
+            XCTAssertTrue(filter.label.contains("未公開"))
+            XCTAssertTrue(filter.isEnabled)
+            XCTAssertFalse(empty.exists)
+            filter.tap()
+            XCTAssertTrue(empty.waitForExistence(timeout: 5))
+            XCTAssertTrue(filter.label.contains("公開済み"))
+            XCTAssertTrue(filter.isEnabled)
+            XCTAssertFalse(record.exists)
+        }
     }
 
     @MainActor

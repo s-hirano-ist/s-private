@@ -2,8 +2,10 @@ import SwiftUI
 
 struct DomainListView: View {
     let domain: MobileDomain
+    var reduceMotionOverride: Bool?
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var records: [MobileRecord] = []
     @State private var hasMore = false
     @State private var status: MobileContentStatus = .exported
@@ -11,6 +13,8 @@ struct DomainListView: View {
     @State private var showingCreate = false
     @State private var showingSearch = false
     @State private var isPullRefreshing = false
+    @State private var flipAngle = 0.0
+    @State private var flipID: UUID?
 
     private var isGrid: Bool { domain == .images || domain == .books }
     private var isInitialLoading: Bool {
@@ -19,7 +23,7 @@ struct DomainListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
                 if isGrid {
                     ScrollView {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
@@ -56,6 +60,12 @@ struct DomainListView: View {
                         .overlay { emptyOrLoadingOverlay }
                 }
             }
+            .id(status)
+            .compositingGroup()
+            .rotation3DEffect(.degrees(flipAngle), axis: (x: 0, y: 1, z: 0), perspective: 0.2)
+            .clipped()
+            .background(AppColors.background)
+            .allowsHitTesting(flipID == nil)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: String.self) { id in
@@ -63,17 +73,13 @@ struct DomainListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        status = status == .exported ? .unexported : .exported
-                    } label: {
-                        HStack(spacing: 6) {
-                            Text(status.localizedTitle)
-                            Image(systemName: "arrow.left.arrow.right")
-                                .accessibilityHidden(true)
-                        }
+                    Button(action: toggleStatus) {
+                        Image(systemName: status == .exported ? "eye" : "eye.slash")
                     }
+                    .accessibilityLabel(status.localizedTitle)
                     .accessibilityHint(status == .exported ? String(localized: "未公開に切り替え") : String(localized: "公開済みに切り替え"))
                     .accessibilityIdentifier("status-filter")
+                    .disabled(flipID != nil)
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
@@ -101,10 +107,59 @@ struct DomainListView: View {
                 await sync.synchronize(force: true)
                 loadLocal()
             }
-            .task(id: status) { loadLocal(reset: true) }
             .onChange(of: sync.dataRevision) { _, _ in loadLocal() }
             .onChange(of: sync.syncError) { _, _ in loadLocal() }
         }
+        .onAppear { loadLocal() }
+        .onDisappear { cancelFlip() }
+    }
+
+    private func toggleStatus() {
+        guard flipID == nil else { return }
+        let nextStatus: MobileContentStatus = status == .exported ? .unexported : .exported
+        let revision = sync.dataRevision
+        let preparedPage = sync.cachedPage(domain: domain, status: nextStatus, offset: 0)
+        let applyStatus = {
+            let page = revision == sync.dataRevision ? preparedPage : sync.cachedPage(domain: domain, status: nextStatus, offset: 0)
+            status = nextStatus
+            records = page.records
+            hasMore = page.hasMore
+            errorMessage = sync.syncError
+        }
+        guard !(reduceMotionOverride ?? reduceMotion) else {
+            applyStatus()
+            return
+        }
+        let id = UUID()
+        flipID = id
+        withAnimation(.easeIn(duration: 0.2)) {
+            flipAngle = 90
+        } completion: {
+            guard flipID == id else { return }
+            var transaction = Transaction(animation: nil)
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                applyStatus()
+                flipAngle = -90
+            }
+            // Render the replacement edge-on before animating its front into view.
+            DispatchQueue.main.async {
+                guard flipID == id else { return }
+                withAnimation(.easeOut(duration: 0.2)) {
+                    flipAngle = 0
+                } completion: {
+                    guard flipID == id else { return }
+                    flipID = nil
+                }
+            }
+        }
+    }
+
+    private func cancelFlip() {
+        flipID = nil
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { flipAngle = 0 }
     }
 
     private var listContent: some View {
@@ -191,8 +246,8 @@ struct DomainListView: View {
         }
     }
 
-    private func loadLocal(reset: Bool = false) {
-        let count = reset ? 30 : max(records.count, 30)
+    private func loadLocal() {
+        let count = max(records.count, 30)
         let page = sync.cachedPage(domain: domain, status: status, offset: 0, limit: count)
         records = page.records
         hasMore = page.hasMore

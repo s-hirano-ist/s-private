@@ -229,6 +229,12 @@ The bottom tab bar contains RSS, articles, notes, images, and books in that orde
 matching the Web app. RSS is initially selected after launch or sign-in.
 The domain name appears in the tab bar, so list screens have no duplicate title
 in the top navigation bar.
+The status button uses an eye for exported records and a crossed-out eye for
+unexported records, with the current status and next action available to VoiceOver.
+Switching flips the list around its vertical axis in 0.4 seconds, replacing the
+content at the midpoint with the first 30 locally cached records. The toolbar and
+tab bar stay fixed. Switching adds no network wait or spinner; uncached thumbnails
+still load independently. Reduce Motion switches immediately without rotation.
 Each list opens cross-domain search from its top toolbar. Settings is available
 from the Search toolbar and still shows shared inbox
 items from the feasibility test.

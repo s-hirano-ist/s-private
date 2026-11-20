@@ -12,7 +12,7 @@ struct ContentView: View {
                     RssReaderView()
                         .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
                     ForEach([MobileDomain.articles, .notes, .images, .books]) { domain in
-                        DomainListView(domain: domain)
+                        DomainListView(domain: domain, reduceMotionOverride: statusReduceMotionOverride)
                             .tabItem { Label(domain.title, systemImage: domain.symbol) }
                     }
                 }
@@ -28,6 +28,16 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    private var statusReduceMotionOverride: Bool? {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-ui-testing-list-fixtures") && arguments.contains("-ui-testing-reduce-motion") {
+            return true
+        }
+        #endif
+        return nil
     }
 
     @ViewBuilder
