@@ -2,12 +2,15 @@ import SwiftUI
 
 struct DomainListView: View {
     let domain: MobileDomain
+    var galleryLoadMedia: (@MainActor (String) async throws -> Data)?
+    var galleryDeleteRecord: (@MainActor (String) async throws -> Void)?
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var records: [MobileRecord] = []
     @State private var hasMore = false
     @State private var status: MobileContentStatus = .exported
     @State private var errorMessage: String?
+    @State private var gallery: ImageGallerySelection?
     @State private var showingCreate = false
     @State private var showingSearch = false
     @State private var isPullRefreshing = false
@@ -38,10 +41,19 @@ struct DomainListView: View {
                                 }
                             }
                             ForEach(records) { record in
-                                NavigationLink(value: record.id) {
-                                    MediaGridCell(domain: domain, record: record)
+                                if domain == .images {
+                                    Button {
+                                        gallery = sync.imageGallerySelection(status: status, selectedID: record.id)
+                                    } label: {
+                                        MediaGridCell(domain: domain, record: record)
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    NavigationLink(value: record.id) {
+                                        MediaGridCell(domain: domain, record: record)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                         .padding(.horizontal, domain == .images ? 3 : 12)
@@ -88,8 +100,11 @@ struct DomainListView: View {
                     .accessibilityIdentifier("settings-link")
                 }
             }
+            .fullScreenCover(item: $gallery, onDismiss: { loadLocal() }) { selection in
+                ImageGalleryView(selection: selection, loadMedia: galleryLoadMedia, deleteRecord: galleryDeleteRecord)
+            }
             .sheet(isPresented: $showingSearch) {
-                SearchView()
+                SearchView(galleryLoadMedia: galleryLoadMedia, galleryDeleteRecord: galleryDeleteRecord)
             }
             .sheet(isPresented: $showingCreate, onDismiss: { loadLocal() }) {
                 CreateView(domain: domain)

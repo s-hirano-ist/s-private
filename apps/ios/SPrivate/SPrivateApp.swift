@@ -131,7 +131,9 @@ struct SPrivateApp: App {
     @ViewBuilder
     private var rootContent: some View {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-ui-testing-action-layout") {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-gallery") {
+            ImageGalleryFixtureView()
+        } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-action-layout") {
             ActionLoadingFixtureView()
         } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-media-layout") {
             MediaLoadingFixtureView()

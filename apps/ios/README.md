@@ -234,13 +234,25 @@ from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
-Image and book-cover previews share `ImagePreviewView`. Its UIKit scroll view
-starts at the available viewport width while preserving the image aspect ratio.
-Tall images scroll vertically; short images are centered vertically. Pinch zoom
-ranges from the initial width to four times that size, with panning while zoomed.
-Reopening the sheet or resizing its viewport resets zoom and scroll position;
-ordinary SwiftUI updates retain the current interaction state. Native previews
-and `ImagePreviewTests` / `LoadingLayoutUITests` cover the shared viewer.
+Tapping an image opens a full-screen gallery directly, with close and delete
+controls. Swiping follows the current status filter and list order across all
+locally cached image metadata, including items beyond the grid's 30-item pages.
+The gallery snapshots its IDs on opening; new arrivals appear on the next opening,
+and synchronized deletions are removed. Search opens a single-image gallery.
+Deleting requires confirmation and selects the next image, or the previous image
+at the end; deleting the final image closes the gallery. Failed deletion retains
+the image and displays an error.
+
+Image and book-cover previews share the UIKit zooming scroll view. It starts at
+the available viewport width while preserving aspect ratio. Tall images scroll
+vertically; short images are centered vertically. Pinch zoom ranges from the
+initial width to four times that size. While zoomed, panning takes priority over
+gallery paging. Changing images or reopening resets zoom. Only current/adjacent
+gallery pages load originals, using the existing authenticated media API and disk
+cache, with per-page retry. Book covers retain their existing sheet presentation.
+Native previews, `ImageGalleryTests`, `ImagePreviewTests`, `ImageGalleryUITests`
+and `LoadingLayoutUITests` cover these flows. The gallery UI fixture uses the
+production list/viewer with injected media and deletion operations.
 
 The native screens support a full local SwiftData copy and registration queue,
 resumable uploads, durable create deduplication, and Share Extension registration.
