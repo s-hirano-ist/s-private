@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.10.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.9.0...s-private-v4.10.0) (2026-11-20)
+
+
+### Features
+
+* default content lists to exported on web and iOS ([3f49b0e](https://github.com/s-hirano-ist/s-private/commit/3f49b0e829c64bfc107dd053124e080662524d58))
+* **rss:** replace reader pagination with infinite scrolling ([872cf2b](https://github.com/s-hirano-ist/s-private/commit/872cf2ba7da82de882916efff1137b46471e74c0))
+
+
+### Bug Fixes
+
+* **ios:** align bottom tab order with web ([a798658](https://github.com/s-hirano-ist/s-private/commit/a798658afa628205c627303f67933e946a91dc0b))
+* **ios:** fit image previews to viewport width with pinch zoom ([41840f5](https://github.com/s-hirano-ist/s-private/commit/41840f55de0e75a7fb41abeca28da19db5c68304))
+* **ios:** hide book detail status ([b569acf](https://github.com/s-hirano-ist/s-private/commit/b569acf624e7fa7bbf81882f64b820a868b95af7))
+* **ios:** prepare simulator and expose busy control state ([80590eb](https://github.com/s-hirano-ist/s-private/commit/80590eb343ece2c78e54c188a2f36234a1210f43))
+* **ios:** preserve accessible RSS status labels ([21e33e3](https://github.com/s-hirano-ist/s-private/commit/21e33e36c198332e30f5c7631d71c3cee77c9343))
+* **ios:** preserve layout during asynchronous actions ([606ee54](https://github.com/s-hirano-ist/s-private/commit/606ee5492738932a1cf0ac589b8c5fb4276d9eb1))
+* **ios:** reveal new arrivals before RSS UI test actions ([dd7c02d](https://github.com/s-hirano-ist/s-private/commit/dd7c02dcdbb2fc4c0b4794a77f8e3cbb32187555))
+* **ios:** stabilize RSS operations and reduce metadata reloads ([5aff384](https://github.com/s-hirano-ist/s-private/commit/5aff384fa3a569743e520d75ecded02f03379b56))
+* **ios:** use square book detail cover frame ([f410293](https://github.com/s-hirano-ist/s-private/commit/f410293d39f24f1ef0f1c05b3caa4e99e939aee5))
+* keep iOS content status visible in toolbar ([8a1478b](https://github.com/s-hirano-ist/s-private/commit/8a1478b35a5f5336fc4320a903737f7e41d4e75b))
+* **rss:** schedule feed refreshes with Vercel Schedules ([976025a](https://github.com/s-hirano-ist/s-private/commit/976025a469f1615fc0a72cbf5ea39262dddbe56c))
+* **rss:** separate reader refreshes from server feed polling ([1e5b16d](https://github.com/s-hirano-ist/s-private/commit/1e5b16d861a30cad1e9e2315b9eabb964aea96fe))
+* **web:** keep RSS refresh spinner inside the button ([e030d49](https://github.com/s-hirano-ist/s-private/commit/e030d4908af448c9912d2c1267b706acafc56e23))
+
+
+### Documentation
+
+* **ios:** control RSS page responses during refresh assertions ([6b4050f](https://github.com/s-hirano-ist/s-private/commit/6b4050f514f7c246ce528023bc7d7e5d7020680d))
+* **ios:** dismiss confirmation through native popover region ([3c842ca](https://github.com/s-hirano-ist/s-private/commit/3c842ca3ec435289249a07f0b48f92e706545717))
+* **ios:** enter ASCII fixtures with the Latin keyboard ([18f0a0c](https://github.com/s-hirano-ist/s-private/commit/18f0a0c4ef2da7724a600afe5c6c473060bc8db6))
+* **ios:** stabilize zoom gestures and split layout checks ([0bc06af](https://github.com/s-hirano-ist/s-private/commit/0bc06af1b0038023c0dfcceb3ac8050ad7451c13))
+* **ios:** verify queued saves after metadata reconciliation ([2c451d8](https://github.com/s-hirano-ist/s-private/commit/2c451d88e532d6135279ede863197588faddaf19))
+
+
+### Maintenance
+
+* **deps:** update swift dependencies ([38fc68a](https://github.com/s-hirano-ist/s-private/commit/38fc68aac334ff4b75d506db471a080d67899acf))
+* **deps:** update tooling dependencies ([bb4ac0c](https://github.com/s-hirano-ist/s-private/commit/bb4ac0c7791fa6a9e12c3b84bccb984211069a4d))
+* **ios:** balance list tests and allow simulator startup variance ([5424cfa](https://github.com/s-hirano-ist/s-private/commit/5424cfa56ec448f83cb29369db14ec1cfab2a815))
+* **ios:** build test products for arm64 simulators ([99f921f](https://github.com/s-hirano-ist/s-private/commit/99f921f8ba533b6a89ce1e7d3ba227831ab47456))
+* **ios:** reuse test products and distribute UI tests ([d2106f6](https://github.com/s-hirano-ist/s-private/commit/d2106f6d18fc20a8be47b6671bc8eff11f13a8c2))
+* merge latest main and align iOS test groups ([dc33469](https://github.com/s-hirano-ist/s-private/commit/dc3346919d58cdb40c42a57d1a56b4c24adfb106))
+* merge latest main into book detail fix ([f7a258f](https://github.com/s-hirano-ist/s-private/commit/f7a258fe64322af9d0136c32bcd93f98ffa2f4ac))
+* merge main and retain loading layout UI tests ([54eabdc](https://github.com/s-hirano-ist/s-private/commit/54eabdc86af9adfcb8928e85b5858fcb873cc7ab))
+* merge main into ios layout fix ([ab53875](https://github.com/s-hirano-ist/s-private/commit/ab53875d51ad8f1d04f999c0fb9d5cf925d781ae))
+* **renovate:** enable Swift package updates ([4441e58](https://github.com/s-hirano-ist/s-private/commit/4441e58e6235ce248abb67e36ea8813efdb499e2))
+* **renovate:** split dependency updates by ecosystem ([af736e0](https://github.com/s-hirano-ist/s-private/commit/af736e0d736ade4f854359ecdaf4171d91e974a9))
+* **renovate:** Swift packagesの自動更新を有効化 ([c974064](https://github.com/s-hirano-ist/s-private/commit/c9740641a0b35cd123ff305637621bb48788bbcb))
+* **renovate:** 依存更新PRを種類別に分割 ([aa9a0ba](https://github.com/s-hirano-ist/s-private/commit/aa9a0baa6f115a63677a55fab227a18e6a34aa34))
+
 ## [4.9.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.8.0...s-private-v4.9.0) (2026-11-18)
 
 

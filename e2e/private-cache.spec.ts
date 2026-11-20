@@ -17,9 +17,10 @@ async function navigate(page: Page, path: string) {
 	await expect(page).toHaveURL(`http://localhost:4327/ja/${path}`);
 	await expect(page.getByLabel("Loading")).toHaveCount(0);
 }
-async function countExportedRequests(
+async function countListRequests(
 	request: APIRequestContext,
 	domain: string,
+	status = "EXPORTED",
 	user = "alice",
 ) {
 	const calls: Record<string, number> = await (
@@ -29,7 +30,7 @@ async function countExportedRequests(
 		.filter(
 			([key]) =>
 				key.startsWith(`${user}:GET:/api/v1/${domain}?`) &&
-				new URLSearchParams(key.split("?")[1]).get("status") === "EXPORTED",
+				new URLSearchParams(key.split("?")[1]).get("status") === status,
 		)
 		.reduce((total, [, value]) => total + value, 0);
 }
@@ -59,43 +60,59 @@ test.beforeEach(async ({ context, request, page }) => {
 });
 
 for (const domain of domains) {
-	test(`${domain}: a second visit reuses the private result and reload fetches again`, async ({
-		page,
-		request,
-	}) => {
-		await seed(request, domain, "EXPORTED");
-		await page.goto(`/ja/${domain}`);
-		await ready(page);
-		// The streamed list can appear before navigation has hydrated. Prove a
-		// client interaction works before measuring in-memory cache reuse.
-		await expect(async () => {
-			await page.getByRole("button", { name: "新規作成", exact: true }).click();
-			await expect(
-				page.getByRole("dialog", { name: "新規作成" }),
-			).toBeVisible();
-		}).toPass({ timeout: 15_000 });
-		await page.keyboard.press("Escape");
-		await expect(page.getByRole("dialog")).not.toBeVisible();
-		if (domain === "images") {
+	for (const status of ["EXPORTED", "UNEXPORTED"] as const) {
+		const path = status === "EXPORTED" ? domain : `${domain}/unexported`;
+		const otherDomain = domain === "notes" ? "articles" : "notes";
+		const otherPath =
+			status === "EXPORTED" ? otherDomain : `${otherDomain}/unexported`;
+		test(`${domain} ${status}: a second visit reuses the private result and reload fetches again`, async ({
+			page,
+			request,
+		}) => {
+			await seed(request, domain, status);
+			await page.goto(`/ja/${path}`);
+			await ready(page);
+			// The streamed list can appear before navigation has hydrated. Prove a
+			// client interaction works before measuring in-memory cache reuse.
+			await expect(async () => {
+				await page
+					.getByRole("button", { name: "新規作成", exact: true })
+					.click();
+				await expect(
+					page.getByRole("dialog", { name: "新規作成" }),
+				).toBeVisible();
+			}).toPass({ timeout: 15_000 });
+			await page.keyboard.press("Escape");
+			await expect(page.getByRole("dialog")).not.toBeVisible();
+			if (domain === "images") {
+				await expect(
+					page.getByRole("button", { name: "削除", exact: true }),
+				).toHaveCount(1);
+			} else {
+				await expect(
+					page.getByText(`${domain} alice 0`, { exact: true }),
+				).toBeVisible();
+			}
+			expect(await countListRequests(request, domain, status)).toBeGreaterThan(
+				0,
+			);
+			await navigate(page, otherPath);
+			const before = await countListRequests(request, domain, status);
+			await navigate(page, path);
 			await expect(
 				page.getByRole("button", { name: "削除", exact: true }),
 			).toHaveCount(1);
-		} else {
+			expect(await countListRequests(request, domain, status)).toBe(before);
+			await page.reload();
+			await ready(page);
 			await expect(
-				page.getByText(`${domain} alice 0`, { exact: true }),
-			).toBeVisible();
-		}
-		expect(await countExportedRequests(request, domain)).toBeGreaterThan(0);
-		await navigate(page, domain === "notes" ? "articles" : "notes");
-		const before = await countExportedRequests(request, domain);
-		await navigate(page, domain);
-		expect(await countExportedRequests(request, domain)).toBe(before);
-		await page.reload();
-		await ready(page);
-		expect(await countExportedRequests(request, domain)).toBeGreaterThan(
-			before,
-		);
-	});
+				page.getByRole("button", { name: "削除", exact: true }),
+			).toHaveCount(1);
+			expect(await countListRequests(request, domain, status)).toBeGreaterThan(
+				before,
+			);
+		});
+	}
 }
 
 test("private results expire after sixty seconds", async ({
@@ -106,12 +123,12 @@ test("private results expire after sixty seconds", async ({
 	await page.goto("/ja/articles");
 	await ready(page);
 	await navigate(page, "notes");
-	const before = await countExportedRequests(request, "articles");
+	const before = await countListRequests(request, "articles");
 	await page.clock.install();
 	await page.clock.fastForward(61_000);
 	await navigate(page, "articles");
 	await expect
-		.poll(() => countExportedRequests(request, "articles"))
+		.poll(() => countListRequests(request, "articles"))
 		.toBeGreaterThan(before);
 });
 
@@ -346,8 +363,13 @@ test("the static shell and dumper form render while backend data is blocked", as
 		await expect(page.locator("main")).toBeVisible();
 		await expect(page.locator("footer")).toBeVisible();
 		await expect(page.getByLabel("Loading").first()).toBeVisible();
-		await page.getByRole("button", { name: "新規作成", exact: true }).click();
-		await expect(page.getByLabel("カテゴリー", { exact: true })).toBeVisible();
+		// The static shell can paint before its event handlers hydrate.
+		await expect(async () => {
+			await page.getByRole("button", { name: "新規作成", exact: true }).click();
+			await expect(page.getByLabel("カテゴリー", { exact: true })).toBeVisible({
+				timeout: 1_000,
+			});
+		}).toPass({ timeout: 15_000 });
 		await expect(
 			page.getByText("articles alice 0", { exact: true }),
 		).toHaveCount(0);

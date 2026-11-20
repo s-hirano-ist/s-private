@@ -3,6 +3,9 @@ import { loadMoreUnexportedImages } from "@/application-services/images/load-mor
 import { renderContentListPage } from "@/components/common/layouts/content-list-page-server";
 import { ImagesStackLoader } from "@/loaders/images/images-stack-loader";
 
+// Keep ordinary client navigations fresh for the same 60s as private content.
+export const unstable_dynamicStaleTime = 60;
+
 export default function Page() {
 	return renderContentListPage({
 		stack: {

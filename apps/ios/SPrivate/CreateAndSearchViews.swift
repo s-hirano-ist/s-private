@@ -192,7 +192,7 @@ struct SearchView: View {
         NavigationStack {
             List {
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
-                ForEach(results) { result in
+                ForEach(results, id: \.pageID) { result in
                     if result.type == .images {
                         Button {
                             gallery = ImageGallerySelection(ids: [result.id], selectedID: result.id)
@@ -200,7 +200,11 @@ struct SearchView: View {
                         .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
                     } else {
                         NavigationLink {
-                            RecordDetailView(domain: result.type, id: result.id)
+                            RecordDetailPagerView(
+                                pages: results.map(\.pageID),
+                                selection: result.pageID,
+                                onDeleted: { search() }
+                            )
                         } label: { resultLabel(result) }
                         .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
                     }
@@ -244,4 +248,8 @@ struct SearchView: View {
         results = sync.localSearch(submitted)
         errorMessage = nil
     }
+}
+
+extension MobileSearchResult {
+    var pageID: RecordPageID { RecordPageID(domain: type, id: id) }
 }

@@ -234,6 +234,16 @@ from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
+Article, note, and book details opened from lists support horizontal paging.
+Swipe left for the next item and right for the previous item; endpoints do not
+wrap. Lists preserve the domain, status filter, and opening order, loading another
+30 cached records near the end. Non-image search results open a detail pager that
+follows the submitted result order across domains. Sync removes missing or
+filtered-out records without inserting new arrivals into the open sequence.
+Delete confirmation captures the selected item; success returns to the originating
+list or search. Paging and back navigation pause while deletion is pending.
+Media loads only for the current and adjacent pages.
+
 Tapping an image opens a full-screen gallery directly, with close and delete
 controls. Swiping follows the current status filter and list order across all
 locally cached image metadata, including items beyond the grid's 30-item pages.
