@@ -79,7 +79,12 @@ final class LoadingLayoutUITests: XCTestCase {
             scroll.swipeLeft()
             XCTAssertNotEqual(image.frame.minX, before.minX)
             attach(app, name: "image-preview-zoomed-\(arguments.first ?? "portrait")")
-            scroll.pinch(withScale: 0.2, velocity: -1)
+            // A synthesized pinch may stop above the minimum. Continue the user
+            // gesture up to three times, while still requiring an exact reset.
+            for _ in 0..<3 {
+                scroll.pinch(withScale: 0.2, velocity: -1)
+                if image.value as? String == "100%" { break }
+            }
             let reset = NSPredicate(format: "value == %@", "100%")
             expectation(for: reset, evaluatedWith: image)
             waitForExpectations(timeout: 5)

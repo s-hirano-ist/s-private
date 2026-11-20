@@ -19,11 +19,12 @@ case "$group" in
   all) ;;
   unit) selection+=(-only-testing:SPrivateTests) ;;
   rss) selection+=(-only-testing:SPrivateUITests/RssUITests) ;;
+  layout) selection+=(-only-testing:SPrivateUITests/LoadingLayoutUITests) ;;
   navigation)
     for identifier in "${navigation[@]}"; do selection+=("-only-testing:$identifier"); done
     ;;
   ui)
-    selection+=(-only-testing:SPrivateUITests -skip-testing:SPrivateUITests/RssUITests)
+    selection+=(-only-testing:SPrivateUITests -skip-testing:SPrivateUITests/RssUITests -skip-testing:SPrivateUITests/LoadingLayoutUITests)
     for identifier in "${navigation[@]}"; do selection+=("-skip-testing:$identifier"); done
     ;;
   *) echo "Unknown iOS test group: $group" >&2; exit 2 ;;

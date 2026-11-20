@@ -42,7 +42,7 @@ function includes(identifier, arguments_) {
 }
 
 test("every UI test runs in exactly one CI group, including future tests", () => {
-	const groups = ["unit", "rss", "navigation", "ui"].map((group) =>
+	const groups = ["unit", "rss", "navigation", "ui", "layout"].map((group) =>
 		selection(group),
 	);
 	let count = 0;

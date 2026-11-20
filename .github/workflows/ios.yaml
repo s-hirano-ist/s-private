@@ -73,7 +73,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [unit, rss, navigation, ui]
+        group: [unit, rss, navigation, ui, layout]
     steps:
       - name: Checkout files
         uses: actions/checkout@v7.0.1
