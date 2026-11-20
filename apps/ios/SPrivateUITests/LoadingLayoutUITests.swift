@@ -114,9 +114,9 @@ final class LoadingLayoutUITests: XCTestCase {
             for failure in [true, false] {
                 action.tap()
                 if image { app.buttons["削除"].tap() }
-                let confirmation = app.sheets.buttons["削除"].firstMatch
-                XCTAssertTrue(confirmation.waitForExistence(timeout: 3))
-                confirmation.tap()
+                // Native confirmation dialogs can appear as either a sheet or a popover.
+                XCTAssertTrue(app.staticTexts["この項目を削除しますか？"].waitForExistence(timeout: 5))
+                app.buttons["record-delete-confirm"].firstMatch.tap()
                 let release = app.buttons[failure ? "fixture-fail" : "fixture-complete"]
                 XCTAssertTrue(release.waitForExistence(timeout: 3))
                 let pending = NSPredicate(format: "enabled == true")

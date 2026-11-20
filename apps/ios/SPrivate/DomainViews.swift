@@ -59,7 +59,19 @@ struct DomainListView: View {
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: String.self) { id in
-                RecordDetailView(domain: domain, id: id) { loadLocal() }
+                RecordDetailPagerView(
+                    pages: records.map { RecordPageID(domain: domain, id: $0.id) },
+                    selection: RecordPageID(domain: domain, id: id),
+                    includesPage: { sync.cachedRecord(domain: $0.domain, id: $0.id)?.status == status },
+                    loadMore: { last in
+                        let page = sync.cachedPage(domain: domain, status: status, after: last.id)
+                        let known = Set(records.map(\.id))
+                        records.append(contentsOf: page.records.filter { !known.contains($0.id) })
+                        hasMore = page.hasMore
+                        return (page.records.map { RecordPageID(domain: domain, id: $0.id) }, page.hasMore)
+                    },
+                    onDeleted: { loadLocal() }
+                )
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -303,15 +315,25 @@ struct RecordDetailView: View {
     let id: String
     var deleteRecord: (@MainActor () async throws -> Void)?
     var onDeleted: () -> Void = {}
-    @EnvironmentObject private var authentication: AuthenticationModel
-    @EnvironmentObject private var sync: SyncCoordinator
-    @Environment(\.dismiss) private var dismiss
-    @State private var record: MobileRecord?
-    @State private var errorMessage: String?
-    @State private var showingDelete = false
-    @State private var deleting = false
 
     var body: some View {
+        RecordDetailPagerView(
+            pages: [RecordPageID(domain: domain, id: id)],
+            selection: RecordPageID(domain: domain, id: id),
+            deleteRecord: deleteRecord, onDeleted: onDeleted, standalone: true
+        )
+    }
+}
+
+struct RecordDetailContentView: View {
+    let domain: MobileDomain
+    let id: String
+    var actionError: String?
+    @EnvironmentObject private var sync: SyncCoordinator
+
+    var body: some View {
+        let record = sync.cachedRecord(domain: domain, id: id)
+        let errorMessage = actionError ?? (record == nil && !sync.isSynchronizing ? String(localized: "保存データがありません") : nil)
         ScrollView {
             if domain == .images {
                 if let errorMessage {
@@ -360,59 +382,6 @@ struct RecordDetailView: View {
         .accessibilityIdentifier("record-detail-\(domain.rawValue)")
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
-        .navigationTitle(domain == .images ? "" : domain.title)
-        .toolbar {
-            if record != nil {
-                if domain == .images {
-                    Menu {
-                        Button(String(localized: "削除"), systemImage: "trash", role: .destructive) { showingDelete = true }
-                    } label: {
-                        BusyLabel(isBusy: deleting, status: String(localized: "削除中")) {
-                            Image(systemName: "ellipsis.circle")
-                                .accessibilityLabel(String(localized: "その他"))
-                        }
-                    }
-                    .accessibilityLabel(deleting ? String(localized: "その他") + ", " + String(localized: "削除中") : String(localized: "その他"))
-                    .disabled(deleting)
-                    .accessibilityIdentifier("record-delete-menu")
-                } else {
-                    Button(role: .destructive) { showingDelete = true } label: {
-                        BusyLabel(isBusy: deleting, status: String(localized: "削除中")) {
-                            Label(String(localized: "削除"), systemImage: "trash")
-                        }
-                    }
-                    .labelStyle(.iconOnly)
-                    .accessibilityLabel(deleting ? String(localized: "削除") + ", " + String(localized: "削除中") : String(localized: "削除"))
-                    .disabled(deleting)
-                    .accessibilityIdentifier("record-delete-button")
-                }
-            }
-        }
-        .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete, titleVisibility: .visible) {
-            Button(String(localized: "削除"), role: .destructive) { Task { await delete() } }
-                .disabled(deleting)
-        }
-        .task(id: id) { reload() }
-        .onChange(of: sync.dataRevision) { _, _ in reload() }
-        .onChange(of: sync.isSynchronizing) { _, _ in reload() }
-    }
-
-    private func reload() {
-        record = sync.cachedRecord(domain: domain, id: id)
-        errorMessage = record == nil && !sync.isSynchronizing ? String(localized: "保存データがありません") : nil
-    }
-
-    private func delete() async {
-        guard !deleting else { return }
-        deleting = true
-        defer { deleting = false }
-        do {
-            if let deleteRecord { try await deleteRecord() }
-            else { try await MobileClient(authentication: authentication).delete(domain, id: id) }
-            sync.removeCached(domain: domain, id: id)
-            onDeleted()
-            dismiss()
-        } catch { errorMessage = MobileOperationError.message(error, taskIsCancelled: Task.isCancelled) }
     }
 }
 
