@@ -189,9 +189,13 @@ struct SearchView: View {
         NavigationStack {
             List {
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
-                ForEach(results) { result in
+                ForEach(results, id: \.pageID) { result in
                     NavigationLink {
-                        RecordDetailView(domain: result.type, id: result.id)
+                        RecordDetailPagerView(
+                            pages: results.map { RecordPageID(domain: $0.type, id: $0.id) },
+                            selection: RecordPageID(domain: result.type, id: result.id),
+                            onDeleted: { search() }
+                        )
                     } label: {
                         Label {
                             VStack(alignment: .leading) {
@@ -228,4 +232,8 @@ struct SearchView: View {
         results = sync.localSearch(submitted)
         errorMessage = nil
     }
+}
+
+extension MobileSearchResult {
+    var pageID: RecordPageID { RecordPageID(domain: type, id: id) }
 }

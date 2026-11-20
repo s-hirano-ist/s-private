@@ -234,6 +234,15 @@ from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
+Details opened from any content list or cross-domain search support horizontal
+paging. Swipe left for the next item and right for the previous item; endpoints
+do not wrap. Lists preserve the domain, status filter, and opening order, loading
+another 30 cached records near the end. Search follows the submitted result order
+across domains. Sync removes missing or filtered-out records without inserting new
+arrivals into the open sequence. Delete confirmation captures the selected item;
+success returns to the originating list or search. Paging and back navigation pause
+while deletion is pending. Media loads only for the current and adjacent pages, and enlarged image previews retain their own zoom and pan.
+
 Image and book-cover previews share `ImagePreviewView`. Its UIKit scroll view
 starts at the available viewport width while preserving the image aspect ratio.
 Tall images scroll vertically; short images are centered vertically. Pinch zoom

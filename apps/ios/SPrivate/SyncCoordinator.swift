@@ -110,6 +110,26 @@ final class SyncCoordinator: ObservableObject {
         return (records, rows.count > limit)
     }
 
+    /// Keyset continuation avoids offset shifts when sync inserts newer records.
+    func cachedPage(domain: MobileDomain, status: MobileContentStatus, after id: String, limit: Int = 30) -> (records: [MobileRecord], hasMore: Bool) {
+        let owner = authentication.ownerKey
+        let domainValue = domain.rawValue
+        let statusValue = status.rawValue
+        let key = "\(owner):\(domainValue):\(id)"
+        let anchor = try? context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.cacheKey == key })).first
+        guard let date = anchor?.createdAt else { return ([], false) }
+        var descriptor = FetchDescriptor<CachedMobileRecord>(
+            predicate: #Predicate {
+                $0.ownerKey == owner && $0.domainValue == domainValue && $0.statusValue == statusValue &&
+                (($0.createdAt ?? date) < date || ($0.createdAt == date && ($0.recordID ?? id) < id))
+            },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse), SortDescriptor(\.recordID, order: .reverse)]
+        )
+        descriptor.fetchLimit = limit + 1
+        let rows = (try? context.fetch(descriptor)) ?? []
+        return (rows.prefix(limit).compactMap { try? MobileAPICoding.decoder().decode(MobileRecord.self, from: $0.recordData) }, rows.count > limit)
+    }
+
     func cachedRecord(domain: MobileDomain, id: String) -> MobileRecord? {
         let key = "\(authentication.ownerKey):\(domain.rawValue):\(id)"
         guard let item = try? context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.cacheKey == key })).first,
