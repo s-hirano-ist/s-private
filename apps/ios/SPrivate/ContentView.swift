@@ -42,6 +42,7 @@ struct ContentView: View {
             } label: {
                 BusyLabel(isBusy: authentication.status == .working) { Text(String(localized: "Auth0でログイン")) }
             }
+            .accessibilityValue(authentication.status == .working ? String(localized: "処理中") : "")
             .disabled(authentication.status == .working)
             .foregroundStyle(AppColors.primary)
             .accessibilityIdentifier("auth0-login-button")
@@ -78,6 +79,7 @@ struct SettingsView: View {
                     BusyLabel(isBusy: authentication.isLoggingOut) { Text(String(localized: "ログアウト")) }
                 }
                 .foregroundStyle(AppColors.destructive)
+                .accessibilityValue(authentication.isLoggingOut ? String(localized: "処理中") : "")
                 .disabled(authentication.isLoggingOut || sync.isSynchronizing)
             }
             Section("RSS") {
@@ -97,6 +99,7 @@ struct SettingsView: View {
                     BusyLabel(isBusy: sync.isSynchronizing) { Text(String(localized: "今すぐ同期")) }
                 }
                     .foregroundStyle(AppColors.primary)
+                    .accessibilityValue(sync.isSynchronizing ? String(localized: "処理中") : "")
                     .disabled(sync.isSynchronizing)
                 Button(String(localized: "キャッシュを削除"), role: .destructive) { confirmingCacheClear = true }
                     .foregroundStyle(AppColors.destructive)
@@ -197,6 +200,7 @@ struct SyncManagementView: View {
             Button { Task { await sync.synchronize(force: true) } } label: {
                 BusyLabel(isBusy: sync.isSynchronizing) { Text(String(localized: "今すぐ同期")) }
             }
+                .accessibilityLabel(sync.isSynchronizing ? String(localized: "今すぐ同期") + ", " + String(localized: "処理中") : String(localized: "今すぐ同期"))
                 .disabled(sync.isSynchronizing)
         }
     }

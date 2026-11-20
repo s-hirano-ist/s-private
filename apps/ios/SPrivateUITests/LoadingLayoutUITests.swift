@@ -79,7 +79,12 @@ final class LoadingLayoutUITests: XCTestCase {
             scroll.swipeLeft()
             XCTAssertNotEqual(image.frame.minX, before.minX)
             attach(app, name: "image-preview-zoomed-\(arguments.first ?? "portrait")")
-            scroll.pinch(withScale: 0.2, velocity: -1)
+            // A synthesized pinch may stop above the minimum. Continue the user
+            // gesture up to three times, while still requiring an exact reset.
+            for _ in 0..<3 {
+                scroll.pinch(withScale: 0.2, velocity: -1)
+                if image.value as? String == "100%" { break }
+            }
             let reset = NSPredicate(format: "value == %@", "100%")
             expectation(for: reset, evaluatedWith: image)
             waitForExpectations(timeout: 5)
@@ -118,8 +123,7 @@ final class LoadingLayoutUITests: XCTestCase {
                 expectation(for: pending, evaluatedWith: release)
                 waitForExpectations(timeout: 3)
                 XCTAssertFalse(action.isEnabled)
-                XCTAssertEqual(action.label, originalLabel)
-                XCTAssertEqual(action.value as? String, "削除中")
+                XCTAssertEqual(action.label, originalLabel + ", 削除中")
                 XCTAssertEqual(action.frame.minX, original.minX, accuracy: 1)
                 XCTAssertEqual(action.frame.minY, original.minY, accuracy: 1)
                 XCTAssertEqual(action.frame.width, original.width, accuracy: 1)
@@ -129,6 +133,7 @@ final class LoadingLayoutUITests: XCTestCase {
                 if failure {
                     expectation(for: pending, evaluatedWith: action)
                     waitForExpectations(timeout: 3)
+                    XCTAssertEqual(action.label, originalLabel)
                     XCTAssertTrue(app.staticTexts["fixture-calls"].label == "1")
                 } else {
                     XCTAssertTrue(app.staticTexts["fixture-deleted"].waitForExistence(timeout: 5))
@@ -159,6 +164,7 @@ final class LoadingLayoutUITests: XCTestCase {
         expectation(for: enabled, evaluatedWith: complete)
         waitForExpectations(timeout: 5)
         XCTAssertFalse(save.isEnabled)
+        XCTAssertEqual(save.value as? String, "処理中")
         XCTAssertEqual(save.frame.minX, before.minX, accuracy: 1)
         XCTAssertEqual(save.frame.minY, before.minY, accuracy: 1)
         XCTAssertEqual(save.frame.width, before.width, accuracy: 1)
@@ -171,6 +177,7 @@ final class LoadingLayoutUITests: XCTestCase {
         expectation(for: enabled, evaluatedWith: save)
         waitForExpectations(timeout: 5)
         XCTAssertEqual(save.frame.minY, before.minY, accuracy: 1)
+        XCTAssertEqual(save.value as? String, "")
     }
 
     @MainActor

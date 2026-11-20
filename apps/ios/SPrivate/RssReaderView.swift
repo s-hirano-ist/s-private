@@ -126,6 +126,7 @@ struct RssReaderView: View {
                                 }
                             }
                                 .labelStyle(.iconOnly)
+                                .accessibilityLabel(rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }) ? String(localized: "すべて既読") + ", " + String(localized: "処理中") : String(localized: "すべて既読"))
                                 .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty || rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }))
                                 .accessibilityIdentifier("rss-read-all")
                         }
@@ -135,6 +136,7 @@ struct RssReaderView: View {
                             BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
                         }
                         .labelStyle(.iconOnly)
+                        .accessibilityLabel(rss.isLoading ? String(localized: "更新") + ", " + String(localized: "処理中") : String(localized: "更新"))
                         .disabled(!rss.isOnline || rss.isLoading)
                         .accessibilityIdentifier("rss-refresh")
                         NavigationLink {
@@ -258,6 +260,7 @@ private struct RssEntryRow: View {
                 .frame(minWidth: 44, minHeight: 44)
             }
             .buttonStyle(.borderless)
+            .accessibilityValue(saving ? String(localized: "処理中") : "")
             .disabled(!canSave)
             .accessibilityIdentifier("rss-save-\(entry.id)")
         }

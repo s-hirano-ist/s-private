@@ -216,8 +216,10 @@ final class RssUITests: XCTestCase {
         if app.buttons["キャンセル"].exists {
             app.buttons["キャンセル"].tap()
         } else {
-            // iOS 27 popovers dismiss on an outside tap and can omit Cancel.
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.05, dy: 0.5)).tap()
+            // iOS 27 popovers can omit Cancel; target their native dismissal region.
+            let dismissRegion = app.otherElements["PopoverDismissRegion"]
+            XCTAssertTrue(dismissRegion.waitForExistence(timeout: 5))
+            dismissRegion.tap()
         }
     }
 

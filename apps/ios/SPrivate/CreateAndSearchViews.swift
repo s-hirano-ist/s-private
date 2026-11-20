@@ -76,6 +76,7 @@ struct CreateView: View {
                     } label: {
                         BusyLabel(isBusy: saving) { Text(String(localized: "保存")) }
                     }
+                    .accessibilityLabel(saving ? String(localized: "保存") + ", " + String(localized: "処理中") : String(localized: "保存"))
                     .disabled(!canSave || saving || selectingPhoto)
                     .accessibilityIdentifier("save-button")
                 }
@@ -119,6 +120,7 @@ struct CreateView: View {
                 }
             }
             .foregroundStyle(AppColors.primary)
+            .accessibilityValue(selectingPhoto ? String(localized: "写真を読み込み中") : "")
             .disabled(saving || selectingPhoto)
             Button(String(localized: "ファイルから選択"), systemImage: "folder") { importingFile = true }
                 .foregroundStyle(AppColors.primary)

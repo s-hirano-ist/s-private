@@ -71,17 +71,23 @@ mise run ios:run
 without code changes, use `mise run ios:test:run`; after changes, use
 `mise run ios:test:build` first. All products and `.xctestrun` specifications stay
 inside this worktree's `.derivedData`. Each run saves an `.xcresult` bundle under
-`apps/ios/.test-results/`.
+`apps/ios/.test-results/`. Before XCTest starts, the runner waits for the selected
+Simulator to finish booting and starts the Debug fixture app once with its
+in-memory store and network disabled. Preparation and testing use the same device
+ID. Set `IOS_SIMULATOR_UDID` to use a separate available iOS 27 Simulator when
+running tests alongside another worktree.
 
 CI builds those products once, preserves executable permissions and symlinks in
-a tar archive, and distributes them to four independent iPhone 17 / iOS 27 jobs:
-unit tests, RSS UI tests, navigation/list-layout UI cases, and the remaining UI
-cases. The two text-list layout cases share the navigation group to balance
+a tar archive, and distributes them to five independent iPhone 17 / iOS 27 jobs:
+unit tests, RSS UI tests, navigation/list-layout UI cases, loading-layout UI tests,
+and the remaining UI cases. Loading-layout tests run separately so cold startup
+and media gestures fit within each job's timeout. The two text-list layout cases
+share the navigation group to balance
 the observed XCTest animation waits across jobs. Each test job allows 20 minutes
 including cold Simulator startup. Navigation and list-layout tests use in-memory
 fixtures, so they do not start live synchronization while XCTest waits for the
 app to become idle.
-`IOS_TEST_GROUP=unit|rss|navigation|ui mise run ios:test:run` selects the
+`IOS_TEST_GROUP=unit|rss|navigation|ui|layout mise run ios:test:run` selects the
 same groups locally. The default runs all tests. Each job uses one Simulator;
 there is no extra Xcode test-worker cloning. API-package tests still run on the
 build job. The existing `build-and-test` check requires all jobs to pass.
