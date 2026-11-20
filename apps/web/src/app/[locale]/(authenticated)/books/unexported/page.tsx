@@ -3,6 +3,9 @@ import { loadMoreUnexportedBooks } from "@/application-services/books/load-more-
 import { renderContentListPage } from "@/components/common/layouts/content-list-page-server";
 import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
 
+// Keep ordinary client navigations fresh for the same 60s as private content.
+export const unstable_dynamicStaleTime = 60;
+
 export default function Page() {
 	return renderContentListPage({
 		stack: {

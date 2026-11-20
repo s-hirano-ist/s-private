@@ -3,6 +3,9 @@ import { loadMoreUnexportedNotes } from "@/application-services/notes/load-more-
 import { renderContentListPage } from "@/components/common/layouts/content-list-page-server";
 import { NotesStackLoader } from "@/loaders/notes/notes-stack-loader";
 
+// Keep ordinary client navigations fresh for the same 60s as private content.
+export const unstable_dynamicStaleTime = 60;
+
 export default function Page() {
 	return renderContentListPage({
 		stack: {

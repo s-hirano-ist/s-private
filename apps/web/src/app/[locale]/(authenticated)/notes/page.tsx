@@ -4,6 +4,9 @@ import { renderContentListPage } from "@/components/common/layouts/content-list-
 import { NotesCounterLoader } from "@/loaders/notes/notes-counter-loader";
 import { NotesStackLoader } from "@/loaders/notes/notes-stack-loader";
 
+// Keep ordinary client navigations fresh for the same 60s as private content.
+export const unstable_dynamicStaleTime = 60;
+
 export default function Page() {
 	return renderContentListPage({
 		counter: {
