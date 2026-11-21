@@ -3,6 +3,7 @@ import SwiftUI
 
 /// Exercises the production delete toolbar with a response held until the test releases it.
 struct ActionLoadingFixtureView: View {
+    @EnvironmentObject private var sync: SyncCoordinator
     @State private var path = ["detail"]
     @State private var request = MediaFixtureRequest()
     @State private var fail = false
@@ -13,14 +14,26 @@ struct ActionLoadingFixtureView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            Text("Deleted").accessibilityIdentifier("fixture-deleted")
-                .navigationDestination(for: String.self) { _ in
-                    RecordDetailView(domain: domain, id: "exported-\(domain.rawValue)", deleteRecord: {
-                        calls += 1
-                        try await request.waitForCompletion()
-                        if fail { throw URLError(.notConnectedToInternet) }
-                    })
+            VStack {
+                Text("Deleted").accessibilityIdentifier("fixture-deleted")
+                if ProcessInfo.processInfo.arguments.contains("-action-paging") {
+                    Text(sync.cachedRecord(domain: domain, id: "exported-\(domain.rawValue)") == nil ? "missing" : "present")
+                        .accessibilityIdentifier("fixture-original-record")
+                    Text(sync.cachedRecord(domain: domain, id: "unexported-\(domain.rawValue)") == nil ? "missing" : "present")
+                        .accessibilityIdentifier("fixture-next-record")
                 }
+            }
+            .navigationDestination(for: String.self) { _ in
+                if ProcessInfo.processInfo.arguments.contains("-action-paging") {
+                    RecordDetailPagerView(
+                        pages: ["exported", "unexported"].map { RecordPageID(domain: domain, id: "\($0)-\(domain.rawValue)") },
+                        selection: RecordPageID(domain: domain, id: "exported-\(domain.rawValue)"),
+                        deleteRecord: deleteRecord
+                    )
+                } else {
+                    RecordDetailView(domain: domain, id: "exported-\(domain.rawValue)", deleteRecord: deleteRecord)
+                }
+            }
         }
         .safeAreaInset(edge: .bottom) {
             HStack {
@@ -32,6 +45,12 @@ struct ActionLoadingFixtureView: View {
             }
             .font(.caption)
         }
+    }
+
+    private func deleteRecord() async throws {
+        calls += 1
+        try await request.waitForCompletion()
+        if fail { throw URLError(.notConnectedToInternet) }
     }
 }
 #endif

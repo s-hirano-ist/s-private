@@ -4,6 +4,9 @@ import { renderContentListPage } from "@/components/common/layouts/content-list-
 import { BooksCounterLoader } from "@/loaders/books/books-counter-loader";
 import { BooksStackLoader } from "@/loaders/books/books-stack-loader";
 
+// Keep ordinary client navigations fresh for the same 60s as private content.
+export const unstable_dynamicStaleTime = 60;
+
 export default function Page() {
 	return renderContentListPage({
 		counter: {

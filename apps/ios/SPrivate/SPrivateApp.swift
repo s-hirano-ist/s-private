@@ -59,6 +59,22 @@ struct SPrivateApp: App {
                 Self.fixtureRecord(id: "book-short", title: "Short book"),
                 Self.fixtureRecord(id: "book-long", title: "A long book title that wraps across two lines"),
             ])
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-paging-fixtures") {
+                for domain in MobileDomain.allCases {
+                    let records = (0..<32).map { index in
+                        let record = Self.fixtureRecord(id: String(format: "page-%02d", index), title: index == 0 ? "Cross-domain \(domain.rawValue)" : "Paging \(domain.rawValue) \(index)", status: .exported, createdAt: Date(timeIntervalSince1970: Double(1000 - index)), imagePath: domain == .books ? "fixture.jpg" : nil)
+                        if domain == .images || domain == .books {
+                            let image = UIGraphicsImageRenderer(size: CGSize(width: 60, height: 90)).jpegData(withCompressionQuality: 0.8) { context in
+                                UIColor.systemBlue.setFill()
+                                context.fill(CGRect(x: 0, y: 0, width: 60, height: 90))
+                            }
+                            try! coordinator.cacheMedia(image, domain: domain, id: record.id, variant: "original")
+                        }
+                        return record
+                    }
+                    try! coordinator.cache(domain: domain, records: records)
+                }
+            }
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-deletion-fixtures") {
                 for domain in MobileDomain.allCases {
                     try! coordinator.cache(domain: domain, records: [
@@ -131,7 +147,9 @@ struct SPrivateApp: App {
     @ViewBuilder
     private var rootContent: some View {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-ui-testing-action-layout") {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-gallery") {
+            ImageGalleryFixtureView()
+        } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-action-layout") {
             ActionLoadingFixtureView()
         } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-media-layout") {
             MediaLoadingFixtureView()
@@ -155,12 +173,12 @@ struct SPrivateApp: App {
     }
 
     #if DEBUG
-    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported) -> MobileRecord {
+    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported, createdAt: Date = .now, imagePath: String? = nil) -> MobileRecord {
         MobileRecord(
-            id: id, status: status, createdAt: .now, updatedAt: .now,
+            id: id, status: status, createdAt: createdAt, updatedAt: createdAt,
             exportedAt: nil, title: title, url: nil, quote: nil, categoryId: nil,
             categoryName: nil, markdown: nil, isbn: nil, rating: nil, tags: nil,
-            path: nil, imagePath: nil, contentType: nil, fileSize: nil
+            path: nil, imagePath: imagePath, contentType: nil, fileSize: nil
         )
     }
     #endif

@@ -56,8 +56,12 @@ test("rejects unrelated ZIP files and unknown JSON export shapes", async () => {
 	);
 });
 test("rejects a compressed archive whose selected content exceeds the expansion limit", async () => {
-	const archive = zipSync({ "starred.json": new Uint8Array(33 * 1024 * 1024) });
+	// ZIP generation processes 33MiB even though the archive itself is small.
+	const archive = zipSync(
+		{ "starred.json": new Uint8Array(33 * 1024 * 1024) },
+		{ level: 1 },
+	);
 	await expect(
 		readImportFile(new File([archive], "too-large.zip")),
 	).rejects.toThrow("Expanded import too large");
-});
+}, 30_000);
