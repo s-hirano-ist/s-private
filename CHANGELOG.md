@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.10.0...s-private-v4.11.0) (2026-11-21)
+
+
+### Features
+
+* **ios:** open images directly in a swipeable gallery ([587359f](https://github.com/s-hirano-ist/s-private/commit/587359f2884c93daf34de4a5a035ce68b705dec2))
+* **ios:** support swiping between record details ([257e8a5](https://github.com/s-hirano-ist/s-private/commit/257e8a57d1484728ff63603ad9552fd9edf5827a))
+
+
+### Bug Fixes
+
+* **web:** retain content lists on client revisits ([43fa601](https://github.com/s-hirano-ist/s-private/commit/43fa601ff494a5de3dff437a7e3184263b2be785))
+
 ## [4.10.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.9.0...s-private-v4.10.0) (2026-11-20)
 
 
