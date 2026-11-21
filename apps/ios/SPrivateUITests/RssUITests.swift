@@ -81,7 +81,7 @@ final class RssUITests: XCTestCase {
     @MainActor
     func testUnreadInfiniteScrollWorksOfflineThroughTheLastBatch() {
         let app = launch(offline: true, large: true)
-        assertScrollsThroughAllBatches(app, lastID: "fixture-large-unread-119")
+        assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-unread-")
         attach(app, name: "rss-unread-infinite-offline")
     }
 
@@ -89,20 +89,28 @@ final class RssUITests: XCTestCase {
     func testSavedInfiniteScrollWorksOfflineThroughTheLastBatch() {
         let app = launch(offline: true, large: true)
         app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
-        assertScrollsThroughAllBatches(app, lastID: "fixture-large-saved-119")
+        assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-saved-")
         attach(app, name: "rss-saved-infinite-offline")
     }
 
     @MainActor
-    private func assertScrollsThroughAllBatches(_ app: XCUIApplication, lastID: String) {
+    private func assertScrollsThroughAllBatches(_ app: XCUIApplication, entryPrefix: String) {
         XCTAssertFalse(app.buttons["前へ"].exists)
         XCTAssertFalse(app.buttons["次へ"].exists)
-        let reader = app.descendants(matching: .any)["rss-reader"].firstMatch
-        let last = app.buttons["rss-entry-\(lastID)"]
-        for _ in 0..<45 {
-            if last.exists && last.isHittable { break }
-            reader.swipeUp(velocity: .fast)
+        let reader = app.collectionViews["rss-reader"].firstMatch
+        XCTAssertTrue(reader.waitForExistence(timeout: 5))
+        // Query the native collection directly while SwiftUI appends batches,
+        // avoiding a search through every element type in the application.
+        // Check each boundary before scrolling into the newly appended rows.
+        for suffix in ["49", "99", "119"] {
+            let boundary = reader.buttons["rss-entry-\(entryPrefix)\(suffix)"].firstMatch
+            for _ in 0..<20 {
+                if boundary.exists && boundary.isHittable { break }
+                reader.swipeUp()
+            }
+            XCTAssertTrue(boundary.exists && boundary.isHittable, "Did not reach RSS batch ending at \(suffix)")
         }
+        let last = reader.buttons["rss-entry-\(entryPrefix)119"].firstMatch
         XCTAssertTrue(last.exists && last.isHittable)
         reader.swipeUp()
         XCTAssertTrue(last.exists)
