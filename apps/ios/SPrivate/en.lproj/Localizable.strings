@@ -125,3 +125,5 @@
 "最終同期" = "Last synced";
 "未公開に切り替え" = "Switch to unexported";
 "公開済みに切り替え" = "Switch to exported";
+
+"%lld / %lld" = "%lld / %lld";

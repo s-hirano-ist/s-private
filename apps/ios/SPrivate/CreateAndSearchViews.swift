@@ -179,8 +179,11 @@ struct CreateView: View {
 }
 
 struct SearchView: View {
+    var galleryLoadMedia: (@MainActor (String) async throws -> Data)?
+    var galleryDeleteRecord: (@MainActor (String) async throws -> Void)?
     @EnvironmentObject private var sync: SyncCoordinator
     @Environment(\.dismiss) private var dismiss
+    @State private var gallery: ImageGallerySelection?
     @State private var query = ""
     @State private var results: [MobileSearchResult] = []
     @State private var errorMessage: String?
@@ -190,19 +193,20 @@ struct SearchView: View {
             List {
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                 ForEach(results, id: \.pageID) { result in
-                    NavigationLink {
-                        RecordDetailPagerView(
-                            pages: results.map { RecordPageID(domain: $0.type, id: $0.id) },
-                            selection: RecordPageID(domain: result.type, id: result.id),
-                            onDeleted: { search() }
-                        )
-                    } label: {
-                        Label {
-                            VStack(alignment: .leading) {
-                                Text(result.title)
-                                Text(result.snippet).font(.caption).foregroundStyle(AppColors.mutedForeground).lineLimit(2)
-                            }
-                        } icon: { Image(systemName: result.type.symbol) }
+                    if result.type == .images {
+                        Button {
+                            gallery = ImageGallerySelection(ids: [result.id], selectedID: result.id)
+                        } label: { resultLabel(result) }
+                        .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
+                    } else {
+                        NavigationLink {
+                            RecordDetailPagerView(
+                                pages: results.map(\.pageID),
+                                selection: result.pageID,
+                                onDeleted: { search() }
+                            )
+                        } label: { resultLabel(result) }
+                        .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
                     }
                 }
             }
@@ -216,6 +220,9 @@ struct SearchView: View {
                         .accessibilityIdentifier("search-close-button")
                 }
             }
+            .fullScreenCover(item: $gallery, onDismiss: { search() }) { selection in
+                ImageGalleryView(selection: selection, loadMedia: galleryLoadMedia, deleteRecord: galleryDeleteRecord)
+            }
             .searchable(text: $query)
             .onSubmit(of: .search) { search() }
             .overlay {
@@ -224,6 +231,15 @@ struct SearchView: View {
                 }
             }
         }
+    }
+
+    private func resultLabel(_ result: MobileSearchResult) -> some View {
+        Label {
+            VStack(alignment: .leading) {
+                Text(result.title)
+                Text(result.snippet).font(.caption).foregroundStyle(AppColors.mutedForeground).lineLimit(2)
+            }
+        } icon: { Image(systemName: result.type.symbol) }
     }
 
     private func search() {

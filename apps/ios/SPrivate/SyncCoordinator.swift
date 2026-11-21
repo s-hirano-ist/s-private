@@ -90,6 +90,10 @@ final class SyncCoordinator: ObservableObject {
             .sorted { $0.createdAt == $1.createdAt ? $0.id > $1.id : $0.createdAt > $1.createdAt }
     }
 
+    func imageGallerySelection(status: MobileContentStatus, selectedID: String) -> ImageGallerySelection {
+        ImageGallerySelection(ids: cached(domain: .images).filter { $0.status == status }.map(\.id), selectedID: selectedID, statusFilter: status)
+    }
+
     func cachedPage(domain: MobileDomain, status: MobileContentStatus?, offset: Int, limit: Int = 30) -> (records: [MobileRecord], hasMore: Bool) {
         let owner = authentication.ownerKey
         let domainValue = domain.rawValue

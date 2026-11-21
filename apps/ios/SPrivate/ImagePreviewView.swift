@@ -16,14 +16,16 @@ struct ImagePreviewView: View {
     }
 }
 
-private struct ZoomableImageView: UIViewRepresentable {
+struct ZoomableImageView: UIViewRepresentable {
     let image: UIImage
+    var onZoomChange: ((Bool) -> Void)?
 
     func makeUIView(context: Context) -> ImagePreviewScrollView {
         ImagePreviewScrollView()
     }
 
     func updateUIView(_ uiView: ImagePreviewScrollView, context: Context) {
+        uiView.onZoomChange = onZoomChange
         uiView.display(image)
     }
 }
@@ -32,6 +34,7 @@ private struct ZoomableImageView: UIViewRepresentable {
 final class ImagePreviewScrollView: UIScrollView, UIScrollViewDelegate {
     let imageView = UIImageView()
     private var viewportSize: CGSize = .zero
+    var onZoomChange: ((Bool) -> Void)?
 
     init() {
         super.init(frame: .zero)
@@ -74,7 +77,10 @@ final class ImagePreviewScrollView: UIScrollView, UIScrollViewDelegate {
 
     func viewForZooming(in scrollView: UIScrollView) -> UIView? { imageView }
 
-    func scrollViewDidZoom(_ scrollView: UIScrollView) { centerImage() }
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        centerImage()
+        onZoomChange?(zoomScale > minimumZoomScale + 0.01)
+    }
 
     private func centerImage() {
         let horizontal = max(0, (bounds.width - imageView.frame.width) / 2)

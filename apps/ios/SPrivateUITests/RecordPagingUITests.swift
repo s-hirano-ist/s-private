@@ -26,6 +26,23 @@ final class RecordPagingUITests: XCTestCase {
             app.tabBars.buttons.element(boundBy: index + 1).tap()
             let prefix = index < 2 ? "domain-record-" : "media-cell-"
             app.descendants(matching: .any)[prefix + "page-00"].firstMatch.tap()
+            if domain == "images" {
+                XCTAssertTrue(app.navigationBars["1 / 32"].waitForExistence(timeout: 5))
+                let scroll = app.scrollViews["media-preview-scroll"].firstMatch
+                scroll.swipeLeft()
+                XCTAssertTrue(app.navigationBars["2 / 32"].waitForExistence(timeout: 5))
+                scroll.swipeRight()
+                XCTAssertTrue(app.navigationBars["1 / 32"].waitForExistence(timeout: 5))
+                scroll.swipeRight()
+                XCTAssertTrue(app.navigationBars["1 / 32"].exists)
+                scroll.pinch(withScale: 2, velocity: 1)
+                XCTAssertNotEqual(app.images["media-preview-image"].firstMatch.value as? String, "100%")
+                scroll.swipeLeft()
+                XCTAssertTrue(app.navigationBars["1 / 32"].exists)
+                app.buttons["閉じる"].tap()
+                XCTAssertTrue(app.descendants(matching: .any)[prefix + "page-00"].firstMatch.isHittable)
+                continue
+            }
             assertPage(app, domain, "page-00")
             let detail = app.descendants(matching: .any)["record-detail-\(domain)"].firstMatch
             detail.swipeLeft()
@@ -34,17 +51,6 @@ final class RecordPagingUITests: XCTestCase {
             assertPage(app, domain, "page-00")
             detail.swipeRight()
             assertPage(app, domain, "page-00")
-            if domain == "images" {
-                app.buttons["media-open"].firstMatch.tap()
-                let image = app.images["media-preview-image"]
-                XCTAssertTrue(image.waitForExistence(timeout: 5))
-                let scroll = app.scrollViews["media-preview-scroll"]
-                scroll.pinch(withScale: 2, velocity: 1)
-                XCTAssertNotEqual(image.value as? String, "100%")
-                scroll.swipeLeft()
-                app.buttons["閉じる"].tap()
-                assertPage(app, domain, "page-00")
-            }
             if domain == "articles" {
                 detail.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
                     .press(forDuration: 0.05, thenDragTo: detail.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)))
