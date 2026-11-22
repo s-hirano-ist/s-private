@@ -97,7 +97,14 @@ struct RssReaderView: View {
                 .navigationTitle("")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
+                    ToolbarItemGroup(placement: .topBarLeading) {
+                        ContentStatusToggle(
+                            title: list.title,
+                            nextTitle: list == .unread ? String(localized: "保存済みに切り替え") : String(localized: "未読に切り替え"),
+                            symbol: list == .unread ? "eye.slash" : "eye",
+                            count: rss.totalCount(for: list)
+                        ) { list = list == .unread ? .saved : .unread }
+                        .accessibilityIdentifier("rss-status-filter")
                         if list == .unread {
                             Button { readAll = (entries, presentationIdentity) } label: {
                                 BusyLabel(isBusy: rss.pendingKeys.contains(where: { $0.hasPrefix("read-") })) {
@@ -176,14 +183,10 @@ struct RssReaderView: View {
             }
         }
     }
+    @ViewBuilder
     private var readerHeader: some View {
-        VStack(alignment: .leading, spacing: AppLayout.medium) {
-            Picker(String(localized: "RSSの表示"), selection: $list) {
-                ForEach(RssList.allCases) { Text($0.title).tag($0) }
-            }
-            .pickerStyle(.segmented)
-            .accessibilityIdentifier("rss-view-picker")
-            if list == .unread {
+        if list == .unread {
+            VStack(alignment: .leading, spacing: AppLayout.medium) {
                 Picker(String(localized: "購読で絞り込み"), selection: $feedID) {
                     Text(subscriptionLabel(String(localized: "すべての購読"), count: presentation.unreadCount)).tag("")
                     ForEach(rss.snapshot.feeds) { feed in
@@ -198,20 +201,21 @@ struct RssReaderView: View {
                     count: feedID.isEmpty ? presentation.unreadCount : presentation.unreadCounts[feedID, default: 0]
                 ))
                 .accessibilityIdentifier("rss-feed-filter")
-            }
-            if list == .unread && newCount > 0 {
-                Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
-                    initialized = false
-                    acceptanceVersion += 1
-                    visibleLimit = 50
+                if newCount > 0 {
+                    Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
+                        initialized = false
+                        acceptanceVersion += 1
+                        visibleLimit = 50
+                    }
+                    .appTapTarget()
+                    .disabled(!presentationIsCurrent)
+                    .accessibilityIdentifier("rss-show-new")
                 }
-                .appTapTarget()
-                .disabled(!presentationIsCurrent)
-                .accessibilityIdentifier("rss-show-new")
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, AppLayout.inset)
+            .padding(.vertical, AppLayout.medium)
         }
-        .padding(.horizontal, AppLayout.inset)
-        .padding(.vertical, AppLayout.medium)
     }
 
     private func subscriptionLabel(_ title: String, count: Int) -> String {

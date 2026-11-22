@@ -6,7 +6,7 @@ final class RecordPagingUITests: XCTestCase {
     @MainActor
     private func launch() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-paging-fixtures", "-AppleLanguages", "(ja)"]
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-paging-fixtures", "-ui-testing-article-links", "-AppleLanguages", "(ja)"]
         app.launch()
         return app
     }
@@ -20,11 +20,11 @@ final class RecordPagingUITests: XCTestCase {
     }
 
     @MainActor
-    func testAllDomainsSwipeAndReturnToList() throws {
+    func testNotesAndMediaSwipeAndReturnToList() throws {
         let app = launch()
-        for (index, domain) in ["articles", "notes", "images", "books"].enumerated() {
-            app.tabBars.buttons.element(boundBy: index + 1).tap()
-            let prefix = index < 2 ? "domain-record-" : "media-cell-"
+        for (index, domain) in ["notes", "images", "books"].enumerated() {
+            app.tabBars.buttons.element(boundBy: index + 2).tap()
+            let prefix = domain == "notes" ? "domain-record-" : "media-cell-"
             app.descendants(matching: .any)[prefix + "page-00"].firstMatch.tap()
             if domain == "images" {
                 XCTAssertTrue(app.navigationBars["1 / 32"].waitForExistence(timeout: 5))
@@ -44,7 +44,6 @@ final class RecordPagingUITests: XCTestCase {
                 continue
             }
             assertPage(app, domain, "page-00")
-            let detail = app.descendants(matching: .any)["record-detail-\(domain)"].firstMatch
             // Send horizontal gestures to the pager, not the nested vertical
             // detail ScrollView. A slow gesture also completes under CI load.
             let pager = app.descendants(matching: .any)["record-pager"].firstMatch
@@ -54,12 +53,7 @@ final class RecordPagingUITests: XCTestCase {
             assertPage(app, domain, "page-00")
             pager.swipeRight(velocity: .slow)
             assertPage(app, domain, "page-00")
-            if domain == "articles" {
-                detail.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
-                    .press(forDuration: 0.05, thenDragTo: detail.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)))
-            } else {
-                app.navigationBars.buttons.firstMatch.tap()
-            }
+            app.navigationBars.buttons.firstMatch.tap()
             XCTAssertTrue(app.descendants(matching: .any)[prefix + "page-00"].firstMatch.isHittable)
         }
     }
@@ -97,8 +91,8 @@ final class RecordPagingUITests: XCTestCase {
     @MainActor
     func testPagingContinuesPastThirtyAndStopsAtLastRecord() throws {
         let app = launch()
-        app.tabBars.buttons.element(boundBy: 1).tap()
-        let list = app.descendants(matching: .any)["domain-list-articles"]
+        app.tabBars.buttons.element(boundBy: 2).tap()
+        let list = app.descendants(matching: .any)["domain-list-notes"]
         let row = app.descendants(matching: .any)["domain-record-page-28"]
         for _ in 0..<12 {
             if row.exists && row.isHittable { break }
@@ -106,19 +100,19 @@ final class RecordPagingUITests: XCTestCase {
         }
         XCTAssertTrue(row.isHittable)
         row.tap()
-        assertPage(app, "articles", "page-28")
+        assertPage(app, "notes", "page-28")
         for index in 29...31 {
-            app.descendants(matching: .any)["record-detail-articles"].firstMatch.swipeLeft()
-            assertPage(app, "articles", String(format: "page-%02d", index))
+            app.descendants(matching: .any)["record-detail-notes"].firstMatch.swipeLeft()
+            assertPage(app, "notes", String(format: "page-%02d", index))
         }
-        app.descendants(matching: .any)["record-detail-articles"].firstMatch.swipeLeft()
-        assertPage(app, "articles", "page-31")
+        app.descendants(matching: .any)["record-detail-notes"].firstMatch.swipeLeft()
+        assertPage(app, "notes", "page-31")
         app.navigationBars.buttons.firstMatch.tap()
         XCTAssertTrue(row.isHittable)
     }
 
     @MainActor
-    func testSearchSwipesAcrossDomainsAndUpdatesDeleteToolbar() throws {
+    private func launchSearch() -> XCUIApplication {
         let app = launch()
         app.tabBars.buttons.element(boundBy: 1).tap()
         app.buttons["search-button"].tap()
@@ -126,12 +120,32 @@ final class RecordPagingUITests: XCTestCase {
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         search.tap()
         search.typeText("Cross-domain\n")
-        // A single result per domain gives deterministic cross-domain traversal.
-        let row = app.staticTexts["Cross-domain articles"].firstMatch
+        return app
+    }
+
+    @MainActor
+    func testArticleSearchResultOpensItsURL() {
+        let app = launchSearch()
+        let row = app.buttons["search-result-articles-page-00"]
         XCTAssertTrue(row.waitForExistence(timeout: 5))
         row.tap()
-        assertPage(app, "articles", "page-00")
-        for (current, next) in [("articles", "notes"), ("notes", "books"), ("books", "images")] {
+        XCTAssertFalse(app.descendants(matching: .any)["record-pager"].exists)
+        let close = app.buttons["search-close-button"]
+        if !close.isHittable { app.buttons["閉じる"].firstMatch.tap() }
+        close.tap()
+        let openedURL = app.staticTexts["opened-article-url"]
+        XCTAssertTrue(openedURL.waitForExistence(timeout: 5))
+        XCTAssertEqual(openedURL.label, "https://example.com/page-00")
+    }
+
+    @MainActor
+    func testSearchSwipesAcrossDomainsAndUpdatesDeleteToolbar() {
+        let app = launchSearch()
+        let row = app.buttons["search-result-notes-page-00"]
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        row.tap()
+        assertPage(app, "notes", "page-00")
+        for (current, next) in [("notes", "books"), ("books", "images")] {
             app.descendants(matching: .any)["record-detail-\(current)"].firstMatch.swipeLeft()
             assertPage(app, next, "page-00")
         }
@@ -146,9 +160,9 @@ final class RecordPagingUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-deletion-fixtures", "-ui-testing-action-layout", "-action-paging", "-AppleLanguages", "(ja)"]
         app.launch()
-        assertPage(app, "articles", "exported-articles")
-        app.descendants(matching: .any)["record-detail-articles"].firstMatch.swipeLeft()
-        assertPage(app, "articles", "unexported-articles")
+        assertPage(app, "notes", "exported-notes")
+        app.descendants(matching: .any)["record-detail-notes"].firstMatch.swipeLeft()
+        assertPage(app, "notes", "unexported-notes")
         app.buttons["record-delete-button"].tap()
         XCTAssertTrue(app.staticTexts["この項目を削除しますか？"].waitForExistence(timeout: 5))
         app.buttons["record-delete-confirm"].firstMatch.tap()
@@ -158,8 +172,8 @@ final class RecordPagingUITests: XCTestCase {
         // exposed. A loaded CI simulator can take longer than the default
         // interaction timeout to publish that state.
         waitForExpectations(timeout: 10)
-        app.descendants(matching: .any)["record-detail-articles"].firstMatch.swipeRight()
-        assertPage(app, "articles", "unexported-articles")
+        app.descendants(matching: .any)["record-detail-notes"].firstMatch.swipeRight()
+        assertPage(app, "notes", "unexported-notes")
         complete.tap()
         XCTAssertTrue(app.staticTexts["fixture-deleted"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["fixture-original-record"].label, "present")

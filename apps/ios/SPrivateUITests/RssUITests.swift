@@ -33,13 +33,18 @@ final class RssUITests: XCTestCase {
         XCTAssertEqual(app.tabBars.buttons.element(boundBy: 0).label, "RSS")
         XCTAssertTrue(app.tabBars.buttons.element(boundBy: 0).isSelected)
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
+        let toggle = app.buttons["rss-status-filter"]
+        XCTAssertEqual(toggle.label, "未読 (1)")
         app.buttons["rss-save-fixture-unread"].tap()
         XCTAssertTrue(app.buttons["rss-save-fixture-unread"].waitForExistence(timeout: 5))
-        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        toggle.tap()
         let saved = app.buttons["rss-entry-fixture-saved"]
         XCTAssertTrue(saved.waitForExistence(timeout: 5))
+        expectation(for: NSPredicate(format: "label == %@", "保存済み (2)"), evaluatedWith: toggle)
+        waitForExpectations(timeout: 5)
         app.buttons["rss-save-fixture-saved"].tap()
         XCTAssertTrue(saved.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(toggle.label, "保存済み (1)")
         attach(app, name: "rss-saved")
     }
 
@@ -117,7 +122,7 @@ final class RssUITests: XCTestCase {
         add.tap()
         XCTAssertTrue(app.textFields["rss-subscribe-url"].waitForExistence(timeout: 5))
         app.buttons["キャンセル"].tap()
-        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        app.buttons["rss-status-filter"].tap()
         XCTAssertTrue(app.staticTexts["記事の星マークをタップすると、あとで読めるように保存できます。"].exists)
         attach(app, name: "rss-empty-saved")
     }
@@ -145,7 +150,7 @@ final class RssUITests: XCTestCase {
         XCTAssertFalse(app.buttons["rss-save-fixture-unread"].isEnabled)
         XCTAssertFalse(app.buttons["rss-read-all"].isEnabled)
         XCTAssertFalse(app.buttons["rss-refresh"].isEnabled)
-        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        app.buttons["rss-status-filter"].tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].exists)
         attach(app, name: "rss-offline")
     }
@@ -153,6 +158,7 @@ final class RssUITests: XCTestCase {
     @MainActor
     func testUnreadInfiniteScrollWorksOfflineThroughTheLastBatch() {
         let app = launch(offline: true, large: true)
+        XCTAssertEqual(app.buttons["rss-status-filter"].label, "未読 (120)")
         assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-unread-")
         attach(app, name: "rss-unread-infinite-offline")
     }
@@ -160,7 +166,7 @@ final class RssUITests: XCTestCase {
     @MainActor
     func testSavedInfiniteScrollWorksOfflineThroughTheLastBatch() {
         let app = launch(offline: true, large: true)
-        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        app.buttons["rss-status-filter"].tap()
         assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-saved-")
         attach(app, name: "rss-saved-infinite-offline")
     }
@@ -193,8 +199,10 @@ final class RssUITests: XCTestCase {
     @MainActor
     func testRssEnglishLabels() throws {
         let app = launch(offline: true, language: "en")
-        XCTAssertTrue(app.segmentedControls["rss-view-picker"].buttons["Unread"].exists)
-        XCTAssertTrue(app.segmentedControls["rss-view-picker"].buttons["Saved"].exists)
+        let toggle = app.buttons["rss-status-filter"]
+        XCTAssertEqual(toggle.label, "Unread (1)")
+        toggle.tap()
+        XCTAssertEqual(toggle.label, "Saved (1)")
         attach(app, name: "rss-english")
     }
 
@@ -213,7 +221,7 @@ final class RssUITests: XCTestCase {
         app.buttons["rss-save-fixture-second"].tap()
         app.tabBars.buttons.element(boundBy: 3).tap()
         app.tabBars.buttons["RSS"].tap()
-        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        app.buttons["rss-status-filter"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["rss-loading"].exists)
         // Both inputs were accepted during sync. Let the pending metadata
         // reconciliation finish before checking the serialized writes' result.
@@ -233,7 +241,7 @@ final class RssUITests: XCTestCase {
         app.buttons["rss-entry-fixture-second"].tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-second"].waitForNonExistence(timeout: 10))
         XCTAssertTrue(app.buttons["rss-entry-fixture-third"].exists)
-        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        app.buttons["rss-status-filter"].tap()
         XCTAssertTrue(app.staticTexts["Third unread article"].waitForExistence(timeout: 10))
         attach(app, name: "rss-concurrent-reads")
     }

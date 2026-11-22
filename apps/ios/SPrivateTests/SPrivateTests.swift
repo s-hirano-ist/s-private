@@ -432,6 +432,44 @@ struct OfflineQueueTests {
         try await coordinator.applyChanges(MobileAPICoding.decoder().decode([MobileSyncChange].self, from: deleted), owner: authentication.ownerKey)
         #expect(coordinator.cachedRecord(domain: .notes, id: "one") == nil)
     }
+
+    @Test("Article category queries include legacy rows and filter before pagination")
+    func paginatesArticleCategories() async throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let authentication = AuthenticationModel()
+        func record(_ id: String, category: String, status: String = "EXPORTED") throws -> MobileRecord {
+            let json = """
+            {"id":"\(id)","status":"\(status)","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z","categoryId":"\(category)"}
+            """
+            return try MobileAPICoding.decoder().decode(MobileRecord.self, from: Data(json.utf8))
+        }
+        let oldRow = try CachedMobileRecord(ownerKey: authentication.ownerKey, domain: .articles, record: record("legacy", category: "reading"))
+        oldRow.articleCategoryID = nil
+        container.mainContext.insert(oldRow)
+        try container.mainContext.save()
+
+        let coordinator = SyncCoordinator(container: container, authentication: authentication)
+        let reading = try (0..<31).map { try record("reading-\($0)", category: "reading") }
+        try coordinator.cache(domain: .articles, records: reading + [
+            record("archive", category: "archive"),
+            record("unexported", category: "reading", status: "UNEXPORTED")
+        ])
+
+        let deadline = ContinuousClock.now + .seconds(3)
+        while coordinator.dataRevision == 1 && ContinuousClock.now < deadline { await Task.yield() }
+        let first = coordinator.cachedPage(domain: .articles, status: .exported, categoryID: "reading", offset: 0)
+        let second = coordinator.cachedPage(domain: .articles, status: .exported, categoryID: "reading", offset: 30)
+        #expect(first.records.count == 30 && first.hasMore)
+        #expect(second.records.count == 2 && !second.hasMore)
+        #expect(Set((first.records + second.records).map(\.id)) == Set(reading.map(\.id) + ["legacy"]))
+        #expect(coordinator.cachedCount(domain: .articles, status: .exported) == 33)
+        coordinator.removeCached(domain: .articles, id: "legacy")
+        #expect(coordinator.cachedCount(domain: .articles, status: .exported) == 32)
+        #expect(coordinator.cachedCount(domain: .articles, status: .unexported) == 1)
+    }
 }
 
 struct SimulatorEntitlementTests {

@@ -247,9 +247,9 @@ final class SPrivateUITests: XCTestCase {
     }
 
     @MainActor
-    func testArticleAndNoteRowsShowLongTitlesAndOpenDetails() throws {
+    func testArticleAndNoteRowsShowLongTitlesAndOpenTheirDestinations() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures"]
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-article-links", "-AppleLanguages", "(ja)"]
         app.launch()
 
         let tabs = app.tabBars.firstMatch.buttons
@@ -261,14 +261,78 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
             XCTAssertTrue(longRow.waitForExistence(timeout: 5))
             XCTAssertGreaterThan(longRow.frame.height, shortRow.frame.height)
+            XCTAssertFalse(longRow.staticTexts["未公開"].exists)
             let screenshot = XCTAttachment(screenshot: app.screenshot())
             screenshot.name = "\(domain)-list"
             screenshot.lifetime = .keepAlways
             add(screenshot)
             longRow.tap()
-            XCTAssertTrue(app.descendants(matching: .any)["record-detail-\(domain)s"].waitForExistence(timeout: 5))
-            app.navigationBars.buttons.firstMatch.tap()
+            if domain == "article" {
+                let url = app.staticTexts["opened-article-url"]
+                XCTAssertTrue(url.waitForExistence(timeout: 5))
+                XCTAssertEqual(url.label, "https://example.com/article-long")
+                XCTAssertFalse(app.descendants(matching: .any)["record-pager"].exists)
+            } else {
+                let detail = app.descendants(matching: .any)["record-detail-notes"].firstMatch
+                XCTAssertTrue(detail.waitForExistence(timeout: 5))
+                XCTAssertFalse(detail.staticTexts["未公開"].exists)
+                app.navigationBars.buttons.firstMatch.tap()
+            }
         }
+    }
+
+    @MainActor
+    func testArticleCategoryAndSwipeDeletionUpdateTheListAndTotal() {
+        let app = XCUIApplication()
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-article-links", "-AppleLanguages", "(ja)"]
+        app.launch()
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        let status = app.buttons["status-filter"]
+        XCTAssertEqual(status.label, "公開済み (0)")
+        status.tap()
+        let shortRow = app.buttons["domain-record-article-short"]
+        let longRow = app.buttons["domain-record-article-long"]
+        XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
+        let category = app.buttons["article-category-filter"]
+
+        category.tap()
+        app.buttons["Archive"].tap()
+        XCTAssertTrue(shortRow.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(status.label, "未公開 (2)")
+        XCTAssertTrue(longRow.exists)
+        status.tap()
+        XCTAssertTrue(longRow.waitForNonExistence(timeout: 5))
+        status.tap()
+        XCTAssertTrue(longRow.waitForExistence(timeout: 5))
+        XCTAssertFalse(shortRow.exists)
+
+        longRow.swipeLeft()
+        app.buttons["削除"].tap()
+        app.buttons["article-delete-confirm"].firstMatch.tap()
+        XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5))
+        app.alerts.buttons["OK"].tap()
+        XCTAssertTrue(longRow.exists)
+        XCTAssertEqual(status.label, "未公開 (2)")
+
+        category.tap()
+        app.buttons["Reading"].tap()
+        XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
+        shortRow.swipeLeft()
+        app.buttons["削除"].tap()
+        XCTAssertTrue(app.buttons["article-delete-confirm"].firstMatch.waitForExistence(timeout: 5))
+        if app.buttons["キャンセル"].exists {
+            app.buttons["キャンセル"].tap()
+        } else {
+            let dismissRegion = app.otherElements["PopoverDismissRegion"]
+            XCTAssertTrue(dismissRegion.waitForExistence(timeout: 5))
+            dismissRegion.tap()
+        }
+        XCTAssertTrue(shortRow.exists)
+        shortRow.swipeLeft()
+        app.buttons["削除"].tap()
+        app.buttons["article-delete-confirm"].firstMatch.tap()
+        XCTAssertTrue(shortRow.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(status.label, "未公開 (1)")
     }
 
     @MainActor

@@ -229,7 +229,8 @@ final class MobileClient: MobileSyncClient, RssClient {
     }
 
     func delete(_ domain: MobileDomain, id: String) async throws {
-        try await perform { client in
+        let owner = authentication.ownerKey
+        try await perform(whileValid: { self.authentication.ownerKey == owner }) { client in
             switch domain {
             case .articles: _ = try await client.deleteArticles(.init(path: .init(id: id))).noContent
             case .notes: _ = try await client.deleteNotes(.init(path: .init(id: id))).noContent

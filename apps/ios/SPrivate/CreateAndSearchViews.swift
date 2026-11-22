@@ -220,10 +220,18 @@ struct SearchView: View {
                         } label: { resultLabel(result) }
                         .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
                         .appContentRow()
+                    } else if result.type == .articles {
+                        ArticleLinkRow(id: result.id, onDeleted: {
+                            results.removeAll { $0.pageID == result.pageID }
+                        }) {
+                            resultLabel(result)
+                        }
+                        .accessibilityIdentifier("search-result-articles-\(result.id)")
+                        .appContentRow()
                     } else {
                         NavigationLink {
                             RecordDetailPagerView(
-                                pages: results.map(\.pageID),
+                                pages: results.filter { $0.type != .articles }.map(\.pageID),
                                 selection: result.pageID,
                                 onDeleted: { Task { await search() } }
                             )
