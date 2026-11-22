@@ -32,10 +32,14 @@
                     .init(id: "fixture-large-saved-\($0)", url: "https://example.com/large-saved/\($0)", title: "Saved article \($0)", savedID: "fixture-large-saved-\($0)")
                 }
             }
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-empty") {
+                return RssSnapshot(fetchedAt: .now)
+            }
             return value
         }
         var data = snapshot
         private let delayed: Bool
+        var failsMetadata = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-error")
         let controlledPages: Bool
         let controlledMutations = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-controlled-mutations")
         let mutationRequest = MediaFixtureRequest()
@@ -66,6 +70,7 @@
             }
         }
         func rssPage(_ list: RssList, offset: Int, snapshotRevision: Int?) async throws -> RssPage {
+            if failsMetadata { throw URLError(.timedOut) }
             if holdsRemainingPages && offset > 0 { try await waitForPageRelease() }
             else if delayed { try await Task.sleep(for: .milliseconds(150)) }
             let entries = list == .unread ? data.unread : data.saved
@@ -169,17 +174,20 @@
     }
 
     @MainActor
-    private func rssPreview(offline: Bool = false) -> RssReaderModel {
+    private func rssPreview(offline: Bool = false, error: Bool = false) -> RssReaderModel {
         let container = try! ModelContainer(
             for: CachedRssSnapshot.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        let client = RssFixtureClient()
+        client.failsMetadata = error
         let model = RssReaderModel(
-            cache: .init(container: container), client: RssFixtureClient(), monitorNetwork: false)
+            cache: .init(container: container), client: client, monitorNetwork: false)
         model.configure(owner: "preview", endpoint: "https://example.com/api/v1", signedIn: true)
-        model.useFixtures(offline: offline)
+        model.useFixtures(offline: offline, live: error)
         return model
     }
 
     #Preview("RSS — Unread") { RssReaderView().environment(rssPreview()) }
+    #Preview("RSS — Refresh error") { RssReaderView().environment(rssPreview(error: true)) }
     #Preview("RSS — Offline") { RssReaderView().environment(rssPreview(offline: true)) }
     #Preview("RSS — Subscriptions") { NavigationStack { RssSubscriptionsView().environment(rssPreview()) } }
 #endif

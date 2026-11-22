@@ -157,8 +157,8 @@ final class LoadingLayoutUITests: XCTestCase {
         let row = app.buttons["rss-entry-fixture-unread"]
         let before = save.frame
         let rowBefore = row.frame
-        let count = app.staticTexts["rss-count"]
-        let countBefore = count.frame
+        let filter = app.buttons["rss-feed-filter"]
+        let filterBefore = filter.frame
         save.tap()
         let complete = app.buttons["fixture-rss-complete-mutation"]
         expectation(for: enabled, evaluatedWith: complete)
@@ -171,7 +171,7 @@ final class LoadingLayoutUITests: XCTestCase {
         XCTAssertEqual(save.frame.height, before.height, accuracy: 1)
         XCTAssertEqual(row.frame.minY, rowBefore.minY, accuracy: 1)
         XCTAssertEqual(row.frame.height, rowBefore.height, accuracy: 1)
-        XCTAssertEqual(count.frame.minY, countBefore.minY, accuracy: 1)
+        XCTAssertEqual(filter.frame.minY, filterBefore.minY, accuracy: 1)
         attach(app, name: "rss-save-pending")
         complete.tap()
         expectation(for: enabled, evaluatedWith: save)

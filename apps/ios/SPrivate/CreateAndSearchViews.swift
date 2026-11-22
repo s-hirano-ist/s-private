@@ -58,13 +58,12 @@ struct CreateView: View {
                     imagePicker
                 }
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
-                Text(String(localized: "端末に保存してから同期します。通信が切れても同じ操作として再送されます。"))
-                    .font(.footnote).foregroundStyle(AppColors.mutedForeground)
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
             .foregroundStyle(AppColors.foreground)
             .navigationTitle(domain.title)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "キャンセル")) { dismiss() }
@@ -198,6 +197,7 @@ struct SearchView: View {
                             gallery = ImageGallerySelection(ids: [result.id], selectedID: result.id)
                         } label: { resultLabel(result) }
                         .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
+                        .appContentRow()
                     } else {
                         NavigationLink {
                             RecordDetailPagerView(
@@ -207,13 +207,16 @@ struct SearchView: View {
                             )
                         } label: { resultLabel(result) }
                         .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
+                        .appContentRow()
                     }
                 }
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
             .foregroundStyle(AppColors.foreground)
+            .listStyle(.plain)
             .navigationTitle(String(localized: "検索"))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(String(localized: "閉じる")) { dismiss() }
@@ -227,7 +230,12 @@ struct SearchView: View {
             .onSubmit(of: .search) { search() }
             .overlay {
                 if results.isEmpty && errorMessage == nil {
-                    ContentUnavailableView.search(text: query)
+                    if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        AppEmptyState(title: String(localized: "コンテンツを検索"), symbol: "magnifyingglass",
+                                      message: String(localized: "タイトルや本文のキーワードを入力してください。"))
+                    } else {
+                        ContentUnavailableView.search(text: query)
+                    }
                 }
             }
         }
@@ -235,8 +243,8 @@ struct SearchView: View {
 
     private func resultLabel(_ result: MobileSearchResult) -> some View {
         Label {
-            VStack(alignment: .leading) {
-                Text(result.title)
+            VStack(alignment: .leading, spacing: AppLayout.small) {
+                Text(result.title).font(.headline)
                 Text(result.snippet).font(.caption).foregroundStyle(AppColors.mutedForeground).lineLimit(2)
             }
         } icon: { Image(systemName: result.type.symbol) }

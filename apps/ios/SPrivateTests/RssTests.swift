@@ -1002,4 +1002,28 @@ extension RssTests {
         let empty = RssPresentation(snapshot: snapshot, list: .unread, feedID: "other", acceptedIDs: [], initialized: true)
         #expect(empty.entries.isEmpty && empty.newCount == 0)
     }
+    @Test("Filter counts include all accepted articles across feeds and exclude unaccepted arrivals")
+    func presentationCounts() {
+        let unread = (0..<120).map { index in
+            RssEntry(id: "item-\(index)", feedID: index < 80 ? "a" : "b", url: "https://example.com/\(index)", title: "Article")
+        }
+        let snapshot = RssSnapshot(unread: unread)
+        let accepted = Set(unread.dropLast().map(\.id))
+        let filtered = RssPresentation(snapshot: snapshot, list: .unread, feedID: "b", acceptedIDs: accepted, initialized: true)
+        #expect(filtered.unreadCount == 119)
+        #expect(filtered.unreadCounts == ["a": 80, "b": 39])
+        #expect(filtered.entries.count == 39)
+        #expect(filtered.newCount == 1)
+        let all = RssPresentation(snapshot: snapshot, list: .unread, feedID: "", acceptedIDs: [], initialized: false)
+        #expect(all.unreadCount == 120 && all.entries.count == 120)
+        let afterDeletion = RssPresentation(snapshot: .init(unread: unread.filter { $0.feedID == "a" }), list: .unread,
+                                            feedID: "b", acceptedIDs: accepted, initialized: true)
+        #expect(afterDeletion.entries.isEmpty && afterDeletion.unreadCount == 80)
+        #expect(afterDeletion.unreadCounts["b"] == nil)
+        let saved = RssPresentation(snapshot: snapshot, list: .saved, feedID: "b", acceptedIDs: accepted, initialized: true)
+        #expect(saved.entries.isEmpty && saved.unreadCount == 119)
+        let empty = RssPresentation(snapshot: .init(), list: .unread, feedID: "", acceptedIDs: [], initialized: true)
+        #expect(empty.unreadCount == 0 && empty.unreadCounts.isEmpty)
+    }
+
 }

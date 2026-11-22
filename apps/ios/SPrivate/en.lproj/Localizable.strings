@@ -127,3 +127,14 @@
 "公開済みに切り替え" = "Switch to exported";
 
 "%lld / %lld" = "%lld / %lld";
+"%@ (%lld)" = "%@ (%lld)";
+"新しい項目を登録すると、ここに表示されます。" = "Add an item to see it here.";
+"記事の星マークをタップすると、あとで読めるように保存できます。" = "Tap the star on an article to save it for later.";
+"お気に入りのサイトを追加して、記事を読み始めましょう。" = "Add your favorite sites to start reading.";
+"新しい記事が届くと、ここに表示されます。" = "New articles will appear here when they arrive.";
+"追加したサイトの記事は、次回の自動取得後に表示されます。" = "Articles will appear after the next automatic feed update.";
+"診断情報" = "Diagnostics";
+"コンテンツ最終同期" = "Content last synced";
+"RSS最終同期" = "RSS last synced";
+"コンテンツを検索" = "Search your content";
+"タイトルや本文のキーワードを入力してください。" = "Enter keywords from a title or its content.";
