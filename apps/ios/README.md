@@ -321,7 +321,8 @@ Run `pnpm api:generate` from the repository root after changing the Hono/Zod
 contract. The Swift generator reads `docs/openapi/backend-v1.json` directly; no copy is
 stored in the package. Do not edit this snapshot by hand. Run `pnpm api:check`
 to compare the OpenAPI snapshot without modifying it, and
-`swift test --package-path apps/ios/Packages/SPrivateAPI` to test the generated models.
+`swift test --package-path apps/ios/Packages/SPrivateAPI --force-resolved-versions`
+to test the generated models.
 
 `mise run ios:generate` first runs the pinned generator CLI on the development
 host, then runs XcodeGen. Generated Swift sources stay in the current worktree
@@ -329,10 +330,39 @@ and are ignored by Git. Xcode links only the generated client and runtime, so th
 generator tool itself is never built for iOS and no plugin trust bypass is needed.
 Run `mise run ios:generate` before testing the Swift Package on a fresh checkout.
 
-`Packages/SPrivateAPI/Package.resolved` is generated locally and ignored by Git
-so dependency resolution on different Macs does not create repository changes.
-Direct dependency versions remain pinned in `Package.swift`; transitive dependency
-resolution is local to each environment and is not shared through a lockfile.
+### Swift dependency lockfiles
+
+Both lockfiles are committed: `Packages/SPrivateAPI/Package.resolved` fixes the
+host generator and API-package test dependencies; `Package.resolved` fixes the
+complete Xcode app graph, including Auth0 and ZIPFoundation. Normal generation,
+CI API tests, and CLI app builds require the recorded versions and fail if the
+lockfiles no longer satisfy the manifests.
+
+`ios:generate` copies the app lockfile into the generated project's
+`project.xcworkspace/xcshareddata/swiftpm/Package.resolved` after XcodeGen runs.
+Without that file, Xcode adopts and overwrites the local API package's lockfile.
+Its `originHash` includes the local package's absolute path, so it also changes
+between Macs and worktrees. The committed app lockfile omits this metadata;
+Xcode may write it into the ignored project copy. Package versions and Git
+revisions remain committed and are not normalized or discarded.
+
+After intentionally changing dependency manifests, refresh and review both
+lockfiles before committing:
+
+```bash
+swift package --package-path apps/ios/Packages/SPrivateAPI resolve
+mise run ios:generate
+xcodebuild -resolvePackageDependencies -project apps/ios/SPrivate.xcodeproj \
+  -scheme SPrivate -derivedDataPath apps/ios/.derivedData
+sed '/"originHash"/d' \
+  apps/ios/SPrivate.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved \
+  > apps/ios/Package.resolved
+```
+
+Use `swift package update` in place of `resolve` when intentionally updating
+eligible transitive dependencies. Export any intentional Xcode dependency changes
+before running `ios:generate` again, since generation restores the committed app
+lockfile. Run generation, API tests, and an app build after reviewing the update.
 
 ## RSS reader
 

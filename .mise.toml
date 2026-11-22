@@ -18,19 +18,20 @@ description = "Generate the iOS Xcode project"
 run = [
 	"bash apps/ios/scripts/generate-api.sh",
 	"xcodegen generate --spec apps/ios/project.yml --project apps/ios",
+	"bash apps/ios/scripts/prepare-xcode-packages.sh",
 ]
 
 [tasks."ios:build"]
 description = "Build the iOS app for an iOS 27 Simulator"
 depends = ["ios:generate"]
-run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual build"
+run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -onlyUsePackageVersionsFromResolvedFile -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual build"
 
 [tasks."ios:test:build"]
 description = "Build iOS app and test targets once for Simulator testing"
 depends = ["ios:generate"]
 run = [
 	"rm -f apps/ios/.derivedData/Build/Products/*.xctestrun",
-	"xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual ARCHS=arm64 ONLY_ACTIVE_ARCH=YES build-for-testing",
+	"xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -onlyUsePackageVersionsFromResolvedFile -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath apps/ios/.derivedData CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual ARCHS=arm64 ONLY_ACTIVE_ARCH=YES build-for-testing",
 ]
 
 [tasks."ios:test:run"]
@@ -45,7 +46,7 @@ run = "bash apps/ios/scripts/test-without-building.sh"
 [tasks."ios:device-build"]
 description = "Build the iOS app and Share Extension with local Personal Team signing"
 depends = ["ios:generate"]
-run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -destination 'generic/platform=iOS' -derivedDataPath apps/ios/.derivedData build"
+run = "xcodebuild -project apps/ios/SPrivate.xcodeproj -scheme SPrivate -onlyUsePackageVersionsFromResolvedFile -destination 'generic/platform=iOS' -derivedDataPath apps/ios/.derivedData build"
 
 [tasks."ios:run"]
 description = "Build and launch the app in an iPhone 17 iOS 27 Simulator"
