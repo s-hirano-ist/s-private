@@ -13,7 +13,7 @@ final class RecordPagingUITests: XCTestCase {
 
     @MainActor
     private func assertPage(_ app: XCUIApplication, _ domain: String, _ id: String, file: StaticString = #filePath, line: UInt = #line) {
-        let pager = app.descendants(matching: .any)["record-pager"].firstMatch
+        let pager = app.collectionViews["record-pager"].firstMatch
         XCTAssertTrue(NSPredicate(format: "value == %@", "\(domain):\(id)").evaluate(with: pager) ||
                       XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "\(domain):\(id)"), object: pager)], timeout: 5) == .completed,
                       file: file, line: line)
@@ -45,11 +45,14 @@ final class RecordPagingUITests: XCTestCase {
             }
             assertPage(app, domain, "page-00")
             let detail = app.descendants(matching: .any)["record-detail-\(domain)"].firstMatch
-            detail.swipeLeft()
+            // Send horizontal gestures to the pager, not the nested vertical
+            // detail ScrollView. A slow gesture also completes under CI load.
+            let pager = app.collectionViews["record-pager"].firstMatch
+            pager.swipeLeft(velocity: .slow)
             assertPage(app, domain, "page-01")
-            detail.swipeRight()
+            pager.swipeRight(velocity: .slow)
             assertPage(app, domain, "page-00")
-            detail.swipeRight()
+            pager.swipeRight(velocity: .slow)
             assertPage(app, domain, "page-00")
             if domain == "articles" {
                 detail.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
