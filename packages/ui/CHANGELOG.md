@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v3.0.2...@s-hirano-ist/s-ui-v3.0.3) (2026-11-22)
+
+
+### Maintenance
+
+* **deps:** update npm dependencies ([b77a05c](https://github.com/s-hirano-ist/s-private/commit/b77a05c7aa8679ad086ca8804aa9dd4748fcb623))
+
 ## [3.0.2](https://github.com/s-hirano-ist/s-private/compare/@s-hirano-ist/s-ui-v3.0.1...@s-hirano-ist/s-ui-v3.0.2) (2026-11-12)
 
 
