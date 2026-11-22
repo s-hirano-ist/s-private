@@ -15,10 +15,17 @@ final class SPrivateUITests: XCTestCase {
             let identifier = index < 2 ? "domain-record-exported-\(domain)" : "media-cell-exported-\(domain)"
             let row = app.descendants(matching: .any)[identifier]
             XCTAssertTrue(row.waitForExistence(timeout: 5))
-            row.tap()
-            let detail = app.descendants(matching: .any)[domain == "images" ? "image-gallery" : "record-detail-\(domain)"].firstMatch
-            XCTAssertTrue(detail.waitForExistence(timeout: 5))
-            app.buttons[domain == "images" ? "gallery-delete" : "record-delete-button"].tap()
+            let deletionSurface: XCUIElement
+            if domain == "articles" {
+                row.swipeLeft()
+                app.buttons["削除"].tap()
+                deletionSurface = row
+            } else {
+                row.tap()
+                deletionSurface = app.descendants(matching: .any)[domain == "images" ? "image-gallery" : "record-detail-\(domain)"].firstMatch
+                XCTAssertTrue(deletionSurface.waitForExistence(timeout: 5))
+                app.buttons[domain == "images" ? "gallery-delete" : "record-delete-button"].tap()
+            }
             let confirmation = app.staticTexts["この項目を削除しますか？"]
             XCTAssertTrue(confirmation.waitForExistence(timeout: 5))
             if app.buttons["キャンセル"].exists {
@@ -30,13 +37,13 @@ final class SPrivateUITests: XCTestCase {
                 dismissRegion.tap()
             }
             XCTAssertTrue(confirmation.waitForNonExistence(timeout: 5))
-            XCTAssertTrue(detail.exists)
+            XCTAssertTrue(deletionSurface.exists)
             let screenshot = XCTAttachment(screenshot: app.screenshot())
             screenshot.name = "exported-\(domain)-delete"
             screenshot.lifetime = .keepAlways
             add(screenshot)
             if domain == "images" { app.buttons["閉じる"].tap() }
-            else { app.navigationBars.buttons.firstMatch.tap() }
+            else if domain != "articles" { app.navigationBars.buttons.firstMatch.tap() }
         }
     }
 
