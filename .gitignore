@@ -70,6 +70,7 @@ xcuserdata/
 # Swift Package build artifacts
 .build/
 .swiftpm/
+apps/ios/Packages/SPrivateAPI/Package.resolved
 apps/ios/Packages/SPrivateAPI/Sources/SPrivateAPI/Generated/
 
 # Self-contained CLI publish artifact

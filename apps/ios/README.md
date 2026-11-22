@@ -329,6 +329,11 @@ and are ignored by Git. Xcode links only the generated client and runtime, so th
 generator tool itself is never built for iOS and no plugin trust bypass is needed.
 Run `mise run ios:generate` before testing the Swift Package on a fresh checkout.
 
+`Packages/SPrivateAPI/Package.resolved` is generated locally and ignored by Git
+so dependency resolution on different Macs does not create repository changes.
+Direct dependency versions remain pinned in `Package.swift`; transitive dependency
+resolution is local to each environment and is not shared through a lockfile.
+
 ## RSS reader
 
 The first tab lists unread and saved RSS links. Opening an unread link in the
