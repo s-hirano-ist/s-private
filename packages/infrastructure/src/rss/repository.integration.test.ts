@@ -2,12 +2,13 @@ import type {
 	FeedLease,
 	FeedResult,
 } from "@s-hirano-ist/s-application/rss/ports";
+import { createRssService } from "@s-hirano-ist/s-application/rss/service";
 import { PrismaClient, PrismaPg } from "@s-hirano-ist/s-database";
 import { extendDatabase } from "@s-hirano-ist/s-infrastructure/database";
 import { createRssRepository } from "@s-hirano-ist/s-infrastructure/rss/repository";
 import { tenantContext } from "@s-hirano-ist/s-infrastructure/shared/tenant-context";
 import { applyTenantFilter } from "@s-hirano-ist/s-infrastructure/shared/tenant-filter";
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 const connectionString = process.env.RSS_TEST_DATABASE_URL;
 const client = new PrismaClient({
 	adapter: new PrismaPg({
@@ -70,6 +71,63 @@ describe.skipIf(!connectionString)("RSS CockroachDB integration", () => {
 		await client.rssSaved.deleteMany({ where: { userId: owner } });
 		await client.$disconnect();
 	});
+	test("bulk imports skip existing and intra-file duplicates and can be repeated without overwriting", async () => {
+		const userId = "rss-bulk-integration-owner";
+		const other = "rss-bulk-integration-other";
+		const saved = Array.from({ length: 201 }, (_, index) => ({
+			url: `https://example.com/bulk/${index}`,
+			title: `Saved ${index}`,
+			publishedAt: "2026-11-22T00:00:00Z",
+		}));
+		const service = createRssService(rss, vi.fn(), vi.fn());
+		const run = <T>(work: () => Promise<T>) =>
+			tenantContext.run({ userId }, work);
+		try {
+			await run(() =>
+				rss.saveMany(userId, [
+					{
+						...saved[0],
+						title: "Existing",
+						imageUrl: "https://example.com/image.jpg",
+					},
+				]),
+			);
+			const existing = await client.rssSaved.findFirstOrThrow({
+				where: { userId, url: saved[0].url },
+			});
+			await tenantContext.run({ userId: other }, () =>
+				rss.saveMany(other, [saved[1]]),
+			);
+			const data = {
+				feeds: [],
+				saved: [...saved, saved[0], saved[100]],
+				invalid: 1,
+			};
+			expect(await run(() => service.import(userId, data))).toEqual({
+				added: 200,
+				duplicates: 3,
+				invalid: 1,
+			});
+			expect(await run(() => service.import(userId, data))).toEqual({
+				added: 0,
+				duplicates: 203,
+				invalid: 1,
+			});
+			expect(await client.rssSaved.count({ where: { userId } })).toBe(201);
+			expect(await client.rssSaved.count({ where: { userId: other } })).toBe(1);
+			expect(await client.rssUnread.count({ where: { userId } })).toBe(0);
+			expect(
+				await client.rssSaved.findFirstOrThrow({
+					where: { userId, url: saved[0].url },
+				}),
+			).toEqual(existing);
+		} finally {
+			await client.rssSaved.deleteMany({
+				where: { userId: { in: [userId, other] } },
+			});
+		}
+	});
+
 	test("scheduled selection returns owners for due feeds, excluding fresh attempts and active leases", async () => {
 		const now = new Date();
 		const ids = Array.from({ length: 4 }, () => crypto.randomUUID());

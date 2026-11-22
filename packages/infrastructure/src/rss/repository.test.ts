@@ -54,6 +54,61 @@ const result: FeedResult = {
 		},
 	],
 };
+test("bulk saving uses one duplicate-safe insert and no per-entry transactions or reads", async () => {
+	const { db, rss } = fixture();
+	const entries: {
+		imageUrl?: string;
+		publishedAt: string | null;
+		title: string;
+		url: string;
+	}[] = Array.from({ length: 100 }, (_, index) => ({
+		url: `https://example.com/${index}`,
+		title: `Saved ${index}`,
+		publishedAt: null,
+	}));
+	entries[0] = {
+		...entries[0],
+		publishedAt: "2026-11-22T00:00:00Z",
+		imageUrl: "https://example.com/image.jpg",
+	};
+	const expected = entries.map((entry) => ({
+		url: entry.url,
+		title: entry.title,
+		publishedAt: null as Date | null,
+		imageUrl: null as string | null,
+		userId: "owner",
+		id: expect.any(String),
+		savedAt: expect.any(Date),
+	}));
+	expected[0].publishedAt = new Date("2026-11-22T00:00:00Z");
+	expected[0].imageUrl = "https://example.com/image.jpg";
+	db.rssSaved.createMany.mockResolvedValue({ count: 98 });
+	expect(await rss.saveMany("owner", entries)).toBe(98);
+	expect(db.rssSaved.createMany).toHaveBeenCalledExactlyOnceWith({
+		data: expected,
+		skipDuplicates: true,
+	});
+	expect(db.$transaction).not.toHaveBeenCalled();
+	expect(db.rssSaved.findFirstOrThrow).not.toHaveBeenCalled();
+	expect(await rss.saveMany("owner", [])).toBe(0);
+	expect(db.rssSaved.createMany).toHaveBeenCalledTimes(1);
+});
+
+test("bulk saving retries serialization conflicts and propagates final failures", async () => {
+	const { db, rss } = fixture();
+	const entries = [
+		{ url: "https://example.com/one", title: "One", publishedAt: null },
+	];
+	db.rssSaved.createMany
+		.mockRejectedValueOnce({ code: "P2034" })
+		.mockResolvedValueOnce({ count: 1 });
+	expect(await rss.saveMany("owner", entries)).toBe(1);
+	expect(db.rssSaved.createMany).toHaveBeenCalledTimes(2);
+	const error = new Error("database unavailable");
+	db.rssSaved.createMany.mockRejectedValueOnce(error);
+	await expect(rss.saveMany("owner", entries)).rejects.toBe(error);
+});
+
 test("page scopes every query and serializes dates while keeping saved links independent of feed filters", async () => {
 	const { db, rss } = fixture();
 	const date = new Date("2026-11-15T00:00:00Z");

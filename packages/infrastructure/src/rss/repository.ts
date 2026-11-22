@@ -214,6 +214,23 @@ export function createRssRepository(
 				}),
 			);
 		},
+		async saveMany(userId, entries) {
+			if (entries.length === 0) return 0;
+			// Imports only need the inserted count, avoiding a transaction and read per entry.
+			const data = entries.map((entry) => ({
+				url: entry.url,
+				title: entry.title,
+				imageUrl: entry.imageUrl ?? null,
+				publishedAt: entry.publishedAt ? new Date(entry.publishedAt) : null,
+				userId,
+				id: randomUUID(),
+				savedAt: new Date(),
+			}));
+			const { count } = await retry(() =>
+				db.rssSaved.createMany({ data, skipDuplicates: true }),
+			);
+			return count;
+		},
 		async unsave(userId, id) {
 			await retry(() => db.rssSaved.deleteMany({ where: { userId, id } }));
 		},
