@@ -48,6 +48,7 @@ xcrun simctl bootstatus "${device_id}" -b
 xcodebuild \
   -project "${project_path}" \
   -scheme "${scheme}" \
+  -onlyUsePackageVersionsFromResolvedFile \
   -destination "platform=iOS Simulator,id=${device_id}" \
   -derivedDataPath "${derived_data_path}" \
   CODE_SIGNING_ALLOWED=YES \

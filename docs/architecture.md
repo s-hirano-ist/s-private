@@ -672,6 +672,8 @@ Commandは所有者条件と操作ごとに必要な状態条件で書き込み�
 
 独立した実行対象は `apps/`（Web・iOS・backend）、共有ライブラリは `packages/` に置く。iOSはpnpm packageではなく、ルートのMise taskから生成・ビルドする。
 
+iOSのSwift依存はAPI生成・単体テスト用とXcodeアプリ用のlockfileを分け、双方をGit管理する。`ios:generate`はアプリ用lockfileを生成project内へコピーし、XcodeがAPI packageのlockfileを採用して上書きすることを防ぐ。アプリ用正本には絶対パスに依存する`originHash`を含めず、versionとrevisionを保持する。通常の生成・CLIビルド・CI APIテストではlockfileのバージョンだけを使用する。依存更新手順は[iOS開発ガイド](../apps/ios/README.md#swift-dependency-lockfiles)を参照する。
+
 Workspace package 間の依存関係は各 `package.json` の `workspace:*` dependency を正本とし、タスクの依存順と build 成果物は `pnpm-workspace.yaml` の `tasks` で定義する。`pnpm build` は `pnpm pipeline build --full` を実行し、全 workspace の build を依存順に実行してローカルキャッシュを利用する。`packages:build` と `typecheck` は pnpm の再帰実行を使う。開発起動や Storybook・Pages など成果物を読むルート task は、必要な package をビルドしてから実行する。公開 package は別 repository から単独利用されるため、配布対象の `dist` や generated code を package 自身の publish lifecycle で生成する。
 
 pnpm pipeline は実験的機能で、キャッシュは全体ビルドにだけ利用する。VercelではWebを `apps/web`、backendを `apps/backend` の別projectとして配置し、それぞれとworkspace依存を再帰buildする。個別の lint・生成コマンドは毎回実行する。

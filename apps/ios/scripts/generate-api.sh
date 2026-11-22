@@ -6,7 +6,7 @@ package="$root/apps/ios/Packages/SPrivateAPI"
 sources="$package/Sources/SPrivateAPI"
 
 # Keep the generator on the host; Xcode must only compile the generated API for iOS.
-swift run --package-path "$package" swift-openapi-generator generate \
+swift run --package-path "$package" --force-resolved-versions swift-openapi-generator generate \
   "$root/docs/openapi/backend-v1.json" \
   --config "$sources/openapi-generator-config.yaml" \
   --output-directory "$sources/Generated"

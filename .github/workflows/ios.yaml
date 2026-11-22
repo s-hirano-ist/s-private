@@ -52,7 +52,10 @@ jobs:
         run: mise run ios:test:build
 
       - name: Test generated API package
-        run: swift test --package-path apps/ios/Packages/SPrivateAPI
+        run: swift test --package-path apps/ios/Packages/SPrivateAPI --force-resolved-versions
+
+      - name: Verify dependency lockfiles stay unchanged
+        run: git diff --exit-code -- apps/ios/Package.resolved apps/ios/Packages/SPrivateAPI/Package.resolved
 
       - name: Package test products
         run: tar -czf "$RUNNER_TEMP/ios-tests.tar.gz" -C apps/ios/.derivedData/Build Products

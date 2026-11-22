@@ -1,0 +1,131 @@
+{
+  "pins": [
+    {
+      "identity": "auth0.swift",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/auth0/Auth0.swift.git",
+      "state": {
+        "revision": "aee409f35a4ed5a26f52de15d3cffcadab01d6d4",
+        "version": "3.3.1"
+      }
+    },
+    {
+      "identity": "jwtdecode.swift",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/auth0/JWTDecode.swift.git",
+      "state": {
+        "revision": "c4e60d71afb09c1e7f8a11a7db629469da92630b",
+        "version": "4.0.0"
+      }
+    },
+    {
+      "identity": "openapikit",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/mattpolzin/OpenAPIKit",
+      "state": {
+        "revision": "5b72eb9a6b23b1fec439d9a0bf38f115400421f9",
+        "version": "6.4.0"
+      }
+    },
+    {
+      "identity": "simplekeychain",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/auth0/SimpleKeychain.git",
+      "state": {
+        "revision": "776c4a6db74d5c6c143974be91c383680d468630",
+        "version": "1.3.0"
+      }
+    },
+    {
+      "identity": "swift-algorithms",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-algorithms",
+      "state": {
+        "revision": "87e50f483c54e6efd60e885f7f5aa946cee68023",
+        "version": "1.2.1"
+      }
+    },
+    {
+      "identity": "swift-argument-parser",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-argument-parser",
+      "state": {
+        "revision": "6a52f3251125d74daf04fcbd5e6f08a75d074382",
+        "version": "1.8.2"
+      }
+    },
+    {
+      "identity": "swift-collections",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-collections",
+      "state": {
+        "revision": "3b69cedbaa49957e97c092ae400bb57602ef941f",
+        "version": "1.7.2"
+      }
+    },
+    {
+      "identity": "swift-http-types",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-http-types",
+      "state": {
+        "revision": "bff4b6903cdc99dda49649dd52f46c11cfd3ed50",
+        "version": "1.8.0"
+      }
+    },
+    {
+      "identity": "swift-numerics",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-numerics.git",
+      "state": {
+        "revision": "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
+        "version": "1.1.1"
+      }
+    },
+    {
+      "identity": "swift-openapi-generator",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-openapi-generator.git",
+      "state": {
+        "revision": "fbf4512ebc69ccbca33aa3c5fa4393887e687b76",
+        "version": "1.14.4"
+      }
+    },
+    {
+      "identity": "swift-openapi-runtime",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-openapi-runtime.git",
+      "state": {
+        "revision": "b9ebb3f06f1dac717156a04f0919ad444cbcf8f5",
+        "version": "1.13.4"
+      }
+    },
+    {
+      "identity": "swift-openapi-urlsession",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/apple/swift-openapi-urlsession.git",
+      "state": {
+        "revision": "c97e0f0187d95542b4a254f5bb4dc67f43bf73c9",
+        "version": "1.4.0"
+      }
+    },
+    {
+      "identity": "yams",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/jpsim/Yams",
+      "state": {
+        "revision": "a27b21e0c81c5bf42049b897a62aaf387e80f279",
+        "version": "6.2.2"
+      }
+    },
+    {
+      "identity": "zipfoundation",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/weichsel/ZIPFoundation.git",
+      "state": {
+        "revision": "e7048f0569f0ba37df26f8357f560b9d25e9a284",
+        "version": "0.9.21"
+      }
+    }
+  ],
+  "version": 3
+}
