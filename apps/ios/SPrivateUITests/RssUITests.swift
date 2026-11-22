@@ -59,10 +59,82 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(url.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["rss-subscribe-submit"].isEnabled)
         app.buttons["キャンセル"].tap()
+        app.buttons["rss-feed-options-fixture-feed"].tap()
         app.buttons["rss-unsubscribe-fixture-feed"].tap()
         XCTAssertTrue(app.staticTexts["購読を解除しますか？保存済みの記事は残ります"].waitForExistence(timeout: 5))
         dismissConfirmation(app)
         attach(app, name: "rss-subscriptions")
+    }
+
+    @MainActor
+    func testCountsLiveInFilterAndDiagnosticsAreInSettings() {
+        let app = launch()
+        let filter = app.buttons["rss-feed-filter"]
+        XCTAssertTrue(filter.waitForExistence(timeout: 5))
+        XCTAssertTrue(filter.label.contains("(1)") || (filter.value as? String)?.contains("(1)") == true)
+        XCTAssertFalse(app.staticTexts["rss-count"].exists)
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "最終同期")).firstMatch.exists)
+        filter.tap()
+        XCTAssertTrue(app.buttons["すべての購読 (1)"].waitForExistence(timeout: 5))
+        app.buttons["News / Example Feed (1)"].tap()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].exists)
+        app.buttons["settings-link"].tap()
+        app.swipeUp()
+        app.buttons["diagnostics-link"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["diagnostics-view"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["RSS最終同期"].exists)
+        XCTAssertTrue(app.staticTexts["最終取得"].exists)
+        attach(app, name: "rss-diagnostics")
+    }
+
+    @MainActor
+    func testRemovingSelectedSubscriptionReturnsToAllSubscriptions() {
+        let app = launch()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
+        app.buttons["rss-feed-filter"].tap()
+        app.buttons["News / Example Feed (1)"].tap()
+        app.buttons["settings-link"].tap()
+        app.buttons["rss-subscriptions-link"].tap()
+        app.buttons["rss-feed-options-fixture-feed"].tap()
+        app.buttons["rss-unsubscribe-fixture-feed"].tap()
+        app.buttons["購読解除"].tap()
+        XCTAssertTrue(app.staticTexts["購読はありません"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.firstMatch.tap()
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["すべての購読 (0)"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["購読を追加"].exists)
+        attach(app, name: "rss-unsubscribed-empty")
+    }
+
+    @MainActor
+    func testEmptyReaderOffersSubscriptionAndSavedGuidance() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-ui-testing-rss-empty", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["購読はありません"].waitForExistence(timeout: 5))
+        let add = app.buttons["購読を追加"]
+        XCTAssertGreaterThanOrEqual(add.frame.height, 44)
+        add.tap()
+        XCTAssertTrue(app.textFields["rss-subscribe-url"].waitForExistence(timeout: 5))
+        app.buttons["キャンセル"].tap()
+        app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
+        XCTAssertTrue(app.staticTexts["記事の星マークをタップすると、あとで読めるように保存できます。"].exists)
+        attach(app, name: "rss-empty-saved")
+    }
+
+    @MainActor
+    func testRefreshErrorKeepsCachedArticlesAndOffersRetry() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-ui-testing-rss-delayed", "-ui-testing-rss-error", "-AppleLanguages", "(ja)"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["rss-error"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)["rss-empty"].exists)
+        let retry = app.buttons["再試行"]
+        XCTAssertTrue(retry.isEnabled && retry.isHittable)
+        retry.tap()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].exists)
+        attach(app, name: "rss-refresh-error")
     }
 
     @MainActor
@@ -106,7 +178,9 @@ final class RssUITests: XCTestCase {
             let boundary = reader.buttons["rss-entry-\(entryPrefix)\(suffix)"].firstMatch
             for _ in 0..<20 {
                 if boundary.exists && boundary.isHittable { break }
-                reader.swipeUp()
+                // A fast fling can skip the boundary row after the next batch is appended.
+                // Use overlapping viewports so each batch boundary is actually observed.
+                reader.swipeUp(velocity: .slow)
             }
             XCTAssertTrue(boundary.exists && boundary.isHittable, "Did not reach RSS batch ending at \(suffix)")
         }

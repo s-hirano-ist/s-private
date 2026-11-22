@@ -39,6 +39,7 @@ struct ShareCategoryPickerView: View {
                             } label: {
                                 HStack {
                                     Text(category)
+                                        .frame(minHeight: AppLayout.minimumTarget)
                                     if category == ArticleCategoryName.normalized(name) {
                                         Spacer()
                                         Image(systemName: "checkmark")
@@ -51,6 +52,7 @@ struct ShareCategoryPickerView: View {
             }
             .searchable(text: $search)
             .navigationTitle(String(localized: "カテゴリ"))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "キャンセル")) { dismiss() }

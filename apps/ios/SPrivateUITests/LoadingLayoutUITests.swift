@@ -55,7 +55,7 @@ final class LoadingLayoutUITests: XCTestCase {
     }
 
     @MainActor
-    func testPreviewFitsWidthAndSupportsZoomForAllImageShapes() {
+    func testPreviewFitsWidthZoomsAndResetsOnReopenForAllImageShapes() {
         for arguments in [[], ["-media-landscape"], ["-media-square"]] {
             let app = launch(arguments)
             completeRequest(app)
@@ -74,22 +74,14 @@ final class LoadingLayoutUITests: XCTestCase {
                 scroll.swipeDown()
             }
             scroll.pinch(withScale: 2, velocity: 1)
-            XCTAssertNotEqual(image.value as? String, "100%")
+            let zoomedPercentage = ((image.value as? String ?? "") as NSString).integerValue
+            XCTAssertGreaterThan(zoomedPercentage, 100)
             let before = image.frame
             scroll.swipeLeft()
             XCTAssertNotEqual(image.frame.minX, before.minX)
             attach(app, name: "image-preview-zoomed-\(arguments.first ?? "portrait")")
-            // A synthesized pinch may stop above the minimum. Continue the user
-            // gesture up to three times, while still requiring an exact reset.
-            for _ in 0..<3 {
-                scroll.pinch(withScale: 0.2, velocity: -1)
-                if image.value as? String == "100%" { break }
-            }
-            let reset = NSPredicate(format: "value == %@", "100%")
-            expectation(for: reset, evaluatedWith: image)
-            waitForExpectations(timeout: 5)
-            XCTAssertEqual(image.frame.width, scroll.frame.width, accuracy: 1)
-            scroll.pinch(withScale: 2, velocity: 1)
+            // Reopen from the observed zoomed state to verify the app-owned reset.
+            // Exact zoom-out clamping and panned geometry are covered by ImagePreviewTests.
             app.buttons["閉じる"].tap()
             open.tap()
             XCTAssertTrue(image.waitForExistence(timeout: 5))
@@ -157,8 +149,8 @@ final class LoadingLayoutUITests: XCTestCase {
         let row = app.buttons["rss-entry-fixture-unread"]
         let before = save.frame
         let rowBefore = row.frame
-        let count = app.staticTexts["rss-count"]
-        let countBefore = count.frame
+        let filter = app.buttons["rss-feed-filter"]
+        let filterBefore = filter.frame
         save.tap()
         let complete = app.buttons["fixture-rss-complete-mutation"]
         expectation(for: enabled, evaluatedWith: complete)
@@ -171,7 +163,7 @@ final class LoadingLayoutUITests: XCTestCase {
         XCTAssertEqual(save.frame.height, before.height, accuracy: 1)
         XCTAssertEqual(row.frame.minY, rowBefore.minY, accuracy: 1)
         XCTAssertEqual(row.frame.height, rowBefore.height, accuracy: 1)
-        XCTAssertEqual(count.frame.minY, countBefore.minY, accuracy: 1)
+        XCTAssertEqual(filter.frame.minY, filterBefore.minY, accuracy: 1)
         attach(app, name: "rss-save-pending")
         complete.tap()
         expectation(for: enabled, evaluatedWith: save)

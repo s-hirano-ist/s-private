@@ -11,74 +11,84 @@ struct RssSubscriptionsView: View {
 
     var body: some View {
         List {
-            Section {
-                RssStatusView()
-                Button(String(localized: "購読を追加"), systemImage: "plus") { sheet = .subscribe }
-                    .disabled(!rss.canMutate || rss.pendingKeys.contains(where: { $0.hasPrefix("subscribe:") })).accessibilityIdentifier("rss-add-subscription")
-                Button { importIdentity = rss.identityID; importing = true } label: {
-                    BusyLabel(isBusy: rss.pendingKeys.contains("import")) {
-                        Label(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down")
-                    }
-                }
-                    .accessibilityValue(rss.pendingKeys.contains("import") ? String(localized: "処理中") : "")
-                    .disabled(!rss.canMutate || rss.pendingKeys.contains("import")).accessibilityIdentifier("rss-import")
-                Text(String(localized: "Inoreader ZIP、OPML、starred.jsonに対応します"))
-                    .font(.caption).foregroundStyle(AppColors.mutedForeground)
-                if let summary = rss.importSummary {
-                    Text(summary).font(.caption).accessibilityIdentifier("rss-import-summary")
-                }
-                if let fileError { Text(fileError).foregroundStyle(AppColors.destructive) }
+            if let summary = rss.importSummary {
+                Text(summary).font(.caption).accessibilityIdentifier("rss-import-summary").appContentRow()
             }
-            .listRowBackground(AppColors.background)
+            if let fileError { Text(fileError).foregroundStyle(AppColors.destructive).appContentRow() }
             if rss.snapshot.feeds.isEmpty && rss.isLoading {
                 ForEach(0..<6) { _ in
                     LoadingContent { SkeletonText() }
-                        .listRowBackground(AppColors.background)
+                        .appContentRow()
                 }
             }
             ForEach(rss.snapshot.feeds) { feed in
                 let identity = rss.identityID
-                Section {
-                    VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top, spacing: AppLayout.medium) {
+                    VStack(alignment: .leading, spacing: AppLayout.small) {
                         Text(feed.label).font(.headline)
                         Text(feed.url).font(.caption).textSelection(.enabled).foregroundStyle(AppColors.mutedForeground)
-                        if let date = feed.lastFetchedAt {
-                            Text(String(localized: "最終取得") + " " + date.formatted(date: .abbreviated, time: .shortened))
-                                .font(.caption)
-                        } else {
-                            Text(String(localized: "未取得")).font(.caption)
-                        }
                         if feed.error != nil {
-                            Label(String(localized: "フィードを取得できませんでした"), systemImage: "exclamationmark.triangle").font(
-                                .caption
-                            ).foregroundStyle(AppColors.destructive)
+                            Label(String(localized: "フィードを取得できませんでした"), systemImage: "exclamationmark.triangle")
+                                .font(.caption).foregroundStyle(AppColors.destructive)
                         }
-                        Button(role: .destructive) { removing = (feed, identity) } label: {
-                            BusyLabel(isBusy: rss.pendingKeys.contains("unsubscribe:\(feed.id)")) { Text(String(localized: "購読解除")) }
-                        }
-                            .accessibilityValue(rss.pendingKeys.contains("unsubscribe:\(feed.id)") ? String(localized: "処理中") : "")
-                            .disabled(!rss.canMutate || rss.pendingKeys.contains("unsubscribe:\(feed.id)")).accessibilityIdentifier("rss-unsubscribe-\(feed.id)")
                     }
-                    .listRowBackground(AppColors.background)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Menu {
+                        Button(role: .destructive) { removing = (feed, identity) } label: {
+                            Label(String(localized: "購読解除"), systemImage: "trash")
+                        }
+                        .disabled(!rss.canMutate || rss.pendingKeys.contains("unsubscribe:\(feed.id)"))
+                        .accessibilityIdentifier("rss-unsubscribe-\(feed.id)")
+                    } label: {
+                        BusyLabel(isBusy: rss.pendingKeys.contains("unsubscribe:\(feed.id)")) {
+                            Image(systemName: "ellipsis")
+                        }.appTapTarget()
+                    }
+                    .accessibilityLabel(feed.label + ", " + String(localized: "その他") + (rss.pendingKeys.contains("unsubscribe:\(feed.id)") ? ", " + String(localized: "処理中") : ""))
+                    .accessibilityIdentifier("rss-feed-options-\(feed.id)")
                 }
-            }
-            if rss.snapshot.feeds.isEmpty && !rss.isLoading {
-                ContentUnavailableView(String(localized: "購読はありません"), systemImage: "dot.radiowaves.left.and.right")
-                    .listRowBackground(AppColors.background)
+                .appContentRow()
             }
         }
+        .listStyle(.plain)
+        .overlay {
+            if rss.snapshot.feeds.isEmpty && !rss.isLoading && rss.errorMessage == nil {
+                AppEmptyState(title: String(localized: "購読はありません"), symbol: "dot.radiowaves.left.and.right",
+                              message: String(localized: "お気に入りのサイトを追加して、記事を読み始めましょう。"),
+                              actionTitle: String(localized: "購読を追加"), action: { sheet = .subscribe })
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) { RssStatusView() }
         .scrollContentBackground(.hidden)
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(String(localized: "RSSの購読管理"))
         .accessibilityIdentifier("rss-subscriptions")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button { Task { await rss.synchronize(manual: true) } } label: {
-                BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button(String(localized: "購読を追加"), systemImage: "plus") { sheet = .subscribe }
+                    .disabled(!rss.canMutate || rss.pendingKeys.contains(where: { $0.hasPrefix("subscribe:") }))
+                    .accessibilityIdentifier("rss-add-subscription")
+                Menu {
+                    Text(String(localized: "Inoreader ZIP、OPML、starred.jsonに対応します"))
+                    Button { importIdentity = rss.identityID; importing = true } label: {
+                        Label(String(localized: "Inoreaderから取り込み"), systemImage: "square.and.arrow.down")
+                    }
+                    .disabled(!rss.canMutate || rss.pendingKeys.contains("import"))
+                    .accessibilityIdentifier("rss-import")
+                    Button { Task { await rss.synchronize(manual: true) } } label: {
+                        Label(String(localized: "更新"), systemImage: "arrow.clockwise")
+                    }
+                    .disabled(!rss.isOnline || rss.isLoading)
+                } label: {
+                    BusyLabel(isBusy: rss.pendingKeys.contains("import")) {
+                        Label(String(localized: "その他"), systemImage: "ellipsis")
+                    }
+                }
+                .accessibilityLabel(rss.pendingKeys.contains("import") ? String(localized: "その他") + ", " + String(localized: "処理中") : String(localized: "その他"))
+                .accessibilityIdentifier("rss-subscriptions-options")
             }
-            .labelStyle(.iconOnly)
-            .accessibilityLabel(rss.isLoading ? String(localized: "更新") + ", " + String(localized: "処理中") : String(localized: "更新"))
-            .disabled(!rss.isOnline || rss.isLoading)
         }
         .task { await rss.synchronize() }
         .onChange(of: rss.identityID) { _, _ in removing = nil; sheet = nil; importing = false; importIdentity = nil; fileError = nil }
@@ -121,7 +131,7 @@ private enum RssSheet: String, Identifiable {
     var id: String { rawValue }
 }
 
-private struct RssSubscribeView: View {
+struct RssSubscribeView: View {
     @Environment(RssReaderModel.self) private var rss
     @Environment(\.dismiss) private var dismiss
     @State private var url = ""
@@ -140,11 +150,15 @@ private struct RssSubscribeView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField(String(localized: "フィードURL"), text: $url)
-                    .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
-                    .accessibilityIdentifier("rss-subscribe-url")
-                TextField(String(localized: "タイトル（任意）"), text: $title).accessibilityIdentifier("rss-subscribe-title")
-                TextField(String(localized: "フォルダー（任意）"), text: $folder)
+                Section {
+                    TextField(String(localized: "フィードURL"), text: $url)
+                        .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                        .accessibilityIdentifier("rss-subscribe-url")
+                    TextField(String(localized: "タイトル（任意）"), text: $title).accessibilityIdentifier("rss-subscribe-title")
+                    TextField(String(localized: "フォルダー（任意）"), text: $folder)
+                } footer: {
+                    Text(String(localized: "追加したサイトの記事は、次回の自動取得後に表示されます。"))
+                }
                 if let error = rss.errorMessage { Text(error).foregroundStyle(AppColors.destructive) }
             }
             .disabled(submitting)
@@ -152,6 +166,7 @@ private struct RssSubscribeView: View {
             .background(AppColors.background)
             .foregroundStyle(AppColors.foreground)
             .navigationTitle(String(localized: "購読を追加"))
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear { identity = rss.identityID }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

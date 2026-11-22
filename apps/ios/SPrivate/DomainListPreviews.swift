@@ -7,6 +7,7 @@ private struct DomainListPreview: View {
     var reduceMotion: Bool
     private let authentication: AuthenticationModel
     private let sync: SyncCoordinator
+    private let navigation = AppNavigationModel()
 
     init(domain: MobileDomain, empty: Bool = false, reduceMotion: Bool = false) {
         self.domain = domain
@@ -35,6 +36,7 @@ private struct DomainListPreview: View {
         DomainListView(domain: domain, reduceMotionOverride: reduceMotion ? true : nil)
             .environmentObject(authentication)
             .environmentObject(sync)
+            .environmentObject(navigation)
     }
 }
 

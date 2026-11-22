@@ -227,50 +227,41 @@ struct DomainListView: View {
             if isInitialLoading {
                 ForEach(0..<8) { _ in
                     LoadingContent {
-                        HStack(spacing: 16) {
+                        HStack(spacing: AppLayout.inset) {
                             SkeletonBlock().frame(width: 28, height: 28)
                             SkeletonText()
                         }
                     }
-                    .listRowBackground(AppColors.background)
+                    .appContentRow()
                 }
             }
             if let errorMessage {
                 Text(errorMessage).foregroundStyle(AppColors.destructive)
                     .accessibilityIdentifier("domain-error")
-                    .listRowBackground(AppColors.background)
+                    .appContentRow()
             }
             ForEach(records) { record in
                 NavigationLink(value: record.id) {
-                    HStack(spacing: 16) {
+                    HStack(spacing: AppLayout.inset) {
                         Image(systemName: domain.symbol)
                             .font(.system(size: 22))
                             .frame(width: 28)
                             .foregroundStyle(AppColors.primary)
                             .accessibilityHidden(true)
-                        VStack(alignment: .leading) {
-                            Text(record.displayTitle).lineLimit(2)
+                        VStack(alignment: .leading, spacing: AppLayout.small) {
+                            Text(record.displayTitle).font(.headline).lineLimit(2)
                             Text(record.status.localizedTitle).font(.caption).foregroundStyle(AppColors.mutedForeground)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
                 .accessibilityIdentifier("domain-record-\(record.id)")
-                .listRowInsets(.horizontal, 16)
-                .listRowBackground(AppColors.background)
-                .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
-                .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
+                .appContentRow()
             }
             if hasMore {
                 Button(String(localized: "さらに読み込む")) { loadNextPage() }
                     .foregroundStyle(AppColors.primary)
-                    .listRowBackground(AppColors.background)
-            }
-            if let fetchedAt = sync.lastSyncAt {
-                Text(lastFetchedText(fetchedAt))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.mutedForeground)
-                    .listRowBackground(AppColors.background)
+                    .appContentRow()
             }
         }
         .listStyle(.plain)
@@ -289,10 +280,7 @@ struct DomainListView: View {
                     .padding()
             }
             if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive).accessibilityIdentifier("domain-error") }
-            if let fetchedAt = sync.lastSyncAt {
-                Text(lastFetchedText(fetchedAt))
-                    .font(.caption).foregroundStyle(AppColors.mutedForeground).padding()
-            }
+
         }
         .frame(maxWidth: .infinity)
     }
@@ -300,9 +288,10 @@ struct DomainListView: View {
     @ViewBuilder
     private var emptyOrLoadingOverlay: some View {
         if records.isEmpty && errorMessage == nil && !isPullRefreshing && !isInitialLoading {
-            ContentUnavailableView(String(localized: "項目がありません"), systemImage: domain.symbol)
+            AppEmptyState(title: String(localized: "項目がありません"), symbol: domain.symbol,
+                          message: String(localized: "新しい項目を登録すると、ここに表示されます。"),
+                          actionTitle: String(localized: "登録"), action: { showingCreate = true })
                 .accessibilityIdentifier("domain-empty-\(domain.rawValue)")
-                .allowsHitTesting(false)
         }
     }
 
@@ -320,13 +309,6 @@ struct DomainListView: View {
         hasMore = page.hasMore
     }
 
-    private func lastFetchedText(_ date: Date) -> String {
-        String(
-            format: String(localized: "最終取得: %@"),
-            locale: .current,
-            date.formatted(date: .abbreviated, time: .shortened)
-        )
-    }
 }
 
 private struct MediaGridCell: View {
@@ -448,7 +430,7 @@ struct RecordDetailContentView: View {
                     DetailSkeleton(domain: domain)
                 }
             } else {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: AppLayout.inset) {
                     if record == nil && errorMessage == nil { DetailSkeleton(domain: domain) }
                     if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                     if let record {
@@ -515,13 +497,13 @@ struct AuthenticatedImageView: View {
             } else if let errorMessage {
                 VStack(spacing: 12) {
                     Text(errorMessage).foregroundStyle(AppColors.destructive)
-                    Button(String(localized: "再試行")) { retryID += 1 }
+                    Button(String(localized: "再試行")) { retryID += 1 }.appTapTarget().buttonStyle(.bordered)
                 }
             } else if loading {
                 LoadingContent { SkeletonBlock() }
                     .accessibilityIdentifier("media-loading")
             } else {
-                Button(String(localized: "再試行")) { retryID += 1 }
+                Button(String(localized: "再試行")) { retryID += 1 }.appTapTarget().buttonStyle(.bordered)
             }
         }
         .accessibilityIdentifier("media-frame")
