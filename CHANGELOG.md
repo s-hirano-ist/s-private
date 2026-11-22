@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.10.0...s-private-v4.11.0) (2026-11-22)
+
+
+### Features
+
+* **ios:** animate status filtering with a flip ([c504c2c](https://github.com/s-hirano-ist/s-private/commit/c504c2c22265c4e97d5d2e533f18b336638e7b04))
+* **ios:** open images directly in a swipeable gallery ([587359f](https://github.com/s-hirano-ist/s-private/commit/587359f2884c93daf34de4a5a035ce68b705dec2))
+* **ios:** support swiping between record details ([257e8a5](https://github.com/s-hirano-ist/s-private/commit/257e8a57d1484728ff63603ad9552fd9edf5827a))
+
+
+### Bug Fixes
+
+* **ci:** allow cold simulator startup before iOS tests ([ee8e146](https://github.com/s-hirano-ist/s-private/commit/ee8e146dd4cb39cc0613cc462d3e56e702b2c822))
+* **deps:** regenerate lockfile and retain compatible test tooling ([7a05f6b](https://github.com/s-hirano-ist/s-private/commit/7a05f6ba6ad1eed9d1f750d13a0f16a7b725af2b))
+* **web:** retain content lists on client revisits ([43fa601](https://github.com/s-hirano-ist/s-private/commit/43fa601ff494a5de3dff437a7e3184263b2be785))
+
+
+### Documentation
+
+* **ios:** target native pager for horizontal swipes ([af31a8d](https://github.com/s-hirano-ist/s-private/commit/af31a8d8f38638497ea3a68e06a6781c74875b60))
+
+
+### Maintenance
+
+* **deps:** update github actions dependencies ([8528844](https://github.com/s-hirano-ist/s-private/commit/8528844cb130261f56765eca9f2be4a3c671d54d))
+* **deps:** update npm dependencies ([b77a05c](https://github.com/s-hirano-ist/s-private/commit/b77a05c7aa8679ad086ca8804aa9dd4748fcb623))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @s-hirano-ist/s-ui bumped to 3.0.3
+
 ## [4.10.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.9.0...s-private-v4.10.0) (2026-11-20)
 
 
