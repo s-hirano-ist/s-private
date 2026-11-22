@@ -182,16 +182,37 @@ struct SearchView: View {
     var galleryLoadMedia: (@MainActor (String) async throws -> Data)?
     var galleryDeleteRecord: (@MainActor (String) async throws -> Void)?
     @EnvironmentObject private var sync: SyncCoordinator
+    @EnvironmentObject private var localIntelligence: LocalIntelligenceCoordinator
     @Environment(\.dismiss) private var dismiss
     @State private var gallery: ImageGallerySelection?
-    @State private var query = ""
+    @State private var query: String
     @State private var results: [MobileSearchResult] = []
     @State private var errorMessage: String?
+    @State private var aiAnswer = ""
+    @State private var isAnswering = false
+    @State private var answerTask: Task<Void, Never>?
+
+    init(
+        initialQuery: String = "",
+        galleryLoadMedia: (@MainActor (String) async throws -> Data)? = nil,
+        galleryDeleteRecord: (@MainActor (String) async throws -> Void)? = nil
+    ) {
+        self.galleryLoadMedia = galleryLoadMedia
+        self.galleryDeleteRecord = galleryDeleteRecord
+        _query = State(initialValue: initialQuery)
+    }
 
     var body: some View {
         NavigationStack {
             List {
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
+                if !aiAnswer.isEmpty || isAnswering {
+                    Section(String(localized: "Apple Intelligenceの回答")) {
+                        Text(aiAnswer)
+                            .textSelection(.enabled)
+                        if isAnswering { ProgressView() }
+                    }
+                }
                 ForEach(results, id: \.pageID) { result in
                     if result.type == .images {
                         Button {
@@ -203,7 +224,7 @@ struct SearchView: View {
                             RecordDetailPagerView(
                                 pages: results.map(\.pageID),
                                 selection: result.pageID,
-                                onDeleted: { search() }
+                                onDeleted: { Task { await search() } }
                             )
                         } label: { resultLabel(result) }
                         .accessibilityIdentifier("search-result-\(result.type.rawValue)-\(result.id)")
@@ -219,12 +240,30 @@ struct SearchView: View {
                     Button(String(localized: "閉じる")) { dismiss() }
                         .accessibilityIdentifier("search-close-button")
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        answer()
+                    } label: {
+                        Label(String(localized: "AIで回答"), systemImage: "sparkles")
+                    }
+                    .disabled(
+                        query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                        !localIntelligence.canAnswerWithAppleIntelligence || isAnswering
+                    )
+                }
             }
-            .fullScreenCover(item: $gallery, onDismiss: { search() }) { selection in
+            .fullScreenCover(item: $gallery, onDismiss: { Task { await search() } }) { selection in
                 ImageGalleryView(selection: selection, loadMedia: galleryLoadMedia, deleteRecord: galleryDeleteRecord)
             }
             .searchable(text: $query)
-            .onSubmit(of: .search) { search() }
+            .onSubmit(of: .search) { Task { await search() } }
+            .task(id: query) {
+                do {
+                    try await Task.sleep(for: .milliseconds(300))
+                    await search()
+                } catch {}
+            }
+            .onDisappear { answerTask?.cancel() }
             .overlay {
                 if results.isEmpty && errorMessage == nil {
                     ContentUnavailableView.search(text: query)
@@ -242,11 +281,46 @@ struct SearchView: View {
         } icon: { Image(systemName: result.type.symbol) }
     }
 
-    private func search() {
+    @MainActor
+    private func search() async {
         let submitted = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !submitted.isEmpty else { results = []; return }
+        if localIntelligence.isEnabled {
+            do {
+                results = try await localIntelligence.search(submitted)
+                errorMessage = nil
+                return
+            } catch is CancellationError {
+                return
+            } catch {
+                errorMessage = String(localized: "Spotlight検索を利用できないため、文字列検索に切り替えました")
+            }
+        } else {
+            errorMessage = nil
+        }
         results = sync.localSearch(submitted)
-        errorMessage = nil
+    }
+
+    private func answer() {
+        let submitted = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !submitted.isEmpty else { return }
+        answerTask?.cancel()
+        aiAnswer = ""
+        isAnswering = true
+        answerTask = Task { @MainActor in
+            defer { isAnswering = false }
+            do {
+                let stream = try localIntelligence.answerStream(question: submitted)
+                for try await partial in stream {
+                    guard !Task.isCancelled else { return }
+                    aiAnswer = partial
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
     }
 }
 

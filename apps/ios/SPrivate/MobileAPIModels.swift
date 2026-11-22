@@ -1,7 +1,7 @@
 import Foundation
 
 // Device cache status and coding preserve existing SwiftData payloads. HTTP DTOs are generated.
-enum MobileContentStatus: String, Codable {
+enum MobileContentStatus: String, Codable, Sendable {
     case unexported = "UNEXPORTED"
     case lastUpdated = "LAST_UPDATED"
     case exported = "EXPORTED"

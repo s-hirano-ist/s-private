@@ -127,3 +127,20 @@
 "公開済みに切り替え" = "Switch to exported";
 
 "%lld / %lld" = "%lld / %lld";
+"ローカルAI検索" = "Local AI search";
+"Apple IntelligenceとSpotlightを使用" = "Use Apple Intelligence and Spotlight";
+"端末内インデックスを更新中" = "Updating on-device index";
+"有効にすると、保存内容の全文をこの端末の保護されたSpotlightインデックスへ追加します。データは検索とApple Intelligenceによる回答に使われ、サーバーへは送信されません。" = "When enabled, the full text of saved content is added to a protected Spotlight index on this device. It is used for search and Apple Intelligence answers and is not sent to the server.";
+"Apple Intelligenceの回答" = "Apple Intelligence answer";
+"AIで回答" = "Answer with AI";
+"Spotlight検索を利用できないため、文字列検索に切り替えました" = "Spotlight search is unavailable. Using text search instead.";
+"Apple Intelligenceをこの端末で利用できません" = "Apple Intelligence is unavailable on this device";
+"ローカルAI検索を設定で有効にしてください" = "Enable Local AI search in Settings";
+"Memdexにノートを作成" = "Create a note in Memdex";
+"タイトルと本文を端末へ保存し、Memdexと同期します。" = "Save a title and body on this device and sync them with Memdex.";
+"ノートを端末に保存しました。同期を開始します。" = "The note was saved on this device. Sync is starting.";
+"Memdexコンテンツ" = "Memdex content";
+"種類" = "Type";
+"抜粋" = "Excerpt";
+"本文" = "Body";
+"ノートを作成" = "Create note";

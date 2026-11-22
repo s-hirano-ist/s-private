@@ -154,7 +154,10 @@ final class RecordPagingUITests: XCTestCase {
         app.buttons["record-delete-confirm"].firstMatch.tap()
         let complete = app.buttons["fixture-complete"]
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: complete)
-        waitForExpectations(timeout: 3)
+        // The paged detail updates its selection before the fixture request is
+        // exposed. A loaded CI simulator can take longer than the default
+        // interaction timeout to publish that state.
+        waitForExpectations(timeout: 10)
         app.descendants(matching: .any)["record-detail-articles"].firstMatch.swipeRight()
         assertPage(app, "articles", "unexported-articles")
         complete.tap()

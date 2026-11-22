@@ -40,10 +40,14 @@ targets:
       - path: SPrivate
       - path: Shared
     dependencies:
+      - sdk: CoreSpotlight.framework
+      - sdk: FoundationModels.framework
       - package: Auth0
       - package: ZIPFoundation
       - package: SPrivateAPI
       - target: SPrivateShareExtension
+        embed: true
+      - target: SPrivateSpotlightExtension
         embed: true
     settings:
       base:
@@ -54,6 +58,7 @@ targets:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         PRODUCT_BUNDLE_IDENTIFIER: ist.s-hirano.s-private
         PRODUCT_NAME: SPrivate
+        "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
     info:
       path: SPrivate/Info.plist
       properties:
@@ -68,6 +73,10 @@ targets:
             CFBundleURLName: Auth0
             CFBundleURLSchemes:
               - ist.s-hirano.s-private
+          - CFBundleTypeRole: Viewer
+            CFBundleURLName: Memdex Content
+            CFBundleURLSchemes:
+              - memdex
 
   SPrivateShareExtension:
     type: app-extension
@@ -95,6 +104,29 @@ targets:
               NSExtensionActivationSupportsWebURLWithMaxCount: 1
           NSExtensionPointIdentifier: com.apple.share-services
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+  SPrivateSpotlightExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: SPrivateSpotlightExtension
+      - path: Shared/SpotlightSnapshot.swift
+    dependencies:
+      - sdk: CoreSpotlight.framework
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: SPrivateSpotlightExtension/SPrivateSpotlightExtension.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: ist.s-hirano.s-private.spotlight
+        PRODUCT_NAME: SPrivateSpotlightExtension
+        SKIP_INSTALL: YES
+    info:
+      path: SPrivateSpotlightExtension/Info.plist
+      properties:
+        CFBundleDisplayName: Memdex Spotlight Index
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.spotlight.index
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).SpotlightIndexRequestHandler
   SPrivateTests:
     type: bundle.unit-test
     platform: iOS

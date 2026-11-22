@@ -12,15 +12,22 @@ final class SyncCoordinator: ObservableObject {
     @Published private(set) var isSynchronizing = false
     private let context: ModelContext
     private let authentication: AuthenticationModel
+    private let localIntelligence: LocalIntelligenceCoordinator?
     private let makeClient: @MainActor () -> any MobileSyncClient
     private var synchronizationTask: Task<Void, Never>?
     private var forceAfterCurrentSync = false
     private var lastRefreshAttempt: Date?
     private var thumbnailTask: Task<Void, Never>?
 
-    init(container: ModelContainer, authentication: AuthenticationModel, clientFactory: (@MainActor () -> any MobileSyncClient)? = nil) {
+    init(
+        container: ModelContainer,
+        authentication: AuthenticationModel,
+        localIntelligence: LocalIntelligenceCoordinator? = nil,
+        clientFactory: (@MainActor () -> any MobileSyncClient)? = nil
+    ) {
         context = ModelContext(container)
         self.authentication = authentication
+        self.localIntelligence = localIntelligence
         makeClient = clientFactory ?? { MobileClient(authentication: authentication) }
         refreshCount()
         Task { await migrateLegacyMetadata() }
@@ -80,6 +87,7 @@ final class SyncCoordinator: ObservableObject {
         }
         try context.save()
         if publishRevision { dataRevision += 1 }
+        localIntelligence?.didUpsert(owner: owner, domain: domain, records: records)
     }
 
     func cached(domain: MobileDomain) -> [MobileRecord] {
@@ -188,11 +196,13 @@ final class SyncCoordinator: ObservableObject {
     }
 
     func removeCached(domain: MobileDomain, id: String, publishRevision: Bool = true) {
-        let key = "\(authentication.ownerKey):\(domain.rawValue):\(id)"
+        let owner = authentication.ownerKey
+        let key = "\(owner):\(domain.rawValue):\(id)"
         if let item = try? context.fetch(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.cacheKey == key })).first {
             context.delete(item)
             try? context.save()
             if publishRevision { dataRevision += 1 }
+            localIntelligence?.didDelete(owner: owner, domain: domain, recordID: id)
         }
     }
 
@@ -422,6 +432,7 @@ final class SyncCoordinator: ObservableObject {
                 if let domain = MobileDomain(rawValue: item.domainValue), let id = item.recordID {
                     await ThumbnailStore.shared.remove(owner: owner, domain: domain, id: id)
                     removeCachedMedia(domain: domain, id: id)
+                    localIntelligence?.didDelete(owner: owner, domain: domain, recordID: id)
                 }
                 context.delete(item)
             }
@@ -504,6 +515,15 @@ final class SyncCoordinator: ObservableObject {
         dataRevision += 1
         if let directory = try? mediaDirectory() { try? FileManager.default.removeItem(at: directory) }
         Task { await ThumbnailStore.shared.clearDisk() }
+        Task { await localIntelligence?.purgeIndex() }
+    }
+
+    func enqueueNoteFromIntent(title: String, markdown: String) throws -> UUID {
+        guard authentication.status == .authenticated else { throw MobileClientError.authenticationRequired }
+        let operationID = UUID()
+        try enqueue(domain: .notes, input: MobileCreate(operationId: operationID, title: title, markdown: markdown))
+        Task { await synchronize(force: true) }
+        return operationID
     }
 
     func discardPending() {

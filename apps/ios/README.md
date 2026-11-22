@@ -1,5 +1,8 @@
 # iOS Development
 
+The local semantic search, Apple Intelligence, Siri, and App Intents design is
+documented in [iOS local intelligence](../../docs/ios-local-intelligence.md).
+
 `apps/ios/project.yml` is the source of truth for the Xcode project. The generated
 `SPrivate.xcodeproj` is intentionally excluded from Git.
 
