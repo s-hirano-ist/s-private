@@ -32,6 +32,7 @@ function fixture() {
 			},
 		}),
 		unsave: vi.fn(),
+		saveMany: vi.fn().mockResolvedValue(1),
 		claim: vi.fn().mockResolvedValue(null),
 		complete: vi.fn(),
 		fail: vi.fn(),
@@ -167,6 +168,49 @@ test("authenticated RSS mutations forward the owner and parsed input", async () 
 		added: 1,
 		duplicates: 0,
 		invalid: 0,
+	});
+});
+
+test("starred import writes one metadata batch for the authenticated owner and reports duplicates", async () => {
+	const { app, repository } = fixture();
+	const items = Array.from({ length: 100 }, (_, index) => ({
+		title: `Saved ${index}`,
+		canonical: [{ href: `https://example.com/${index}` }],
+		published: 1795299907,
+	}));
+	repository.saveMany.mockResolvedValueOnce(98).mockResolvedValueOnce(0);
+	const request = () =>
+		app.request("https://web.example/api/v1/rss/import", {
+			method: "POST",
+			headers: {
+				authorization: "Bearer valid",
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({
+				kind: "starred",
+				content: JSON.stringify({
+					items: [...items, { url: "javascript:invalid" }],
+				}),
+			}),
+		});
+	const first = await request();
+	expect(first.status).toBe(200);
+	expect(await first.json()).toEqual({ added: 98, duplicates: 2, invalid: 1 });
+	expect(repository.saveMany).toHaveBeenCalledExactlyOnceWith(
+		"owner",
+		items.map((item, index) => ({
+			title: item.title,
+			url: `https://example.com/${index}`,
+			publishedAt: new Date(item.published * 1000).toISOString(),
+		})),
+	);
+	expect(repository.save).not.toHaveBeenCalled();
+	const repeated = await request();
+	expect(repeated.status).toBe(200);
+	expect(await repeated.json()).toEqual({
+		added: 0,
+		duplicates: 100,
+		invalid: 1,
 	});
 });
 

@@ -41,6 +41,7 @@ export type RssRepository = {
 		input: { feedId?: string; ids?: string[]; snapshotRevision?: number },
 	): Promise<void>;
 	save(owner: string, input: EntryInput): Promise<SaveResult>;
+	saveMany(owner: string, entries: EntryInput[]): Promise<number>;
 	subscribe(owner: string, input: FeedInput): Promise<boolean>;
 	unsave(owner: string, id: string): Promise<void>;
 	unsubscribe(owner: string, id: string): Promise<void>;

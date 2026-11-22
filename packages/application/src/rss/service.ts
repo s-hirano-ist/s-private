@@ -150,9 +150,11 @@ export function createRssService(
 				if (await repository.subscribe(owner, feed)) added++;
 				else duplicates++;
 			}
-			for (const entry of data.saved) {
-				if ((await repository.save(owner, entry)).added) added++;
-				else duplicates++;
+			for (let offset = 0; offset < data.saved.length; offset += 100) {
+				const entries = data.saved.slice(offset, offset + 100);
+				const count = await repository.saveMany(owner, entries);
+				added += count;
+				duplicates += entries.length - count;
 			}
 			return { added, duplicates, invalid: data.invalid };
 		},

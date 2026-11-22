@@ -24,6 +24,7 @@ function repository() {
 		unsubscribe: vi.fn(),
 		read: vi.fn(),
 		save: vi.fn(),
+		saveMany: vi.fn(),
 		unsave: vi.fn(),
 		claim: vi.fn(),
 		complete: vi.fn(),
@@ -59,7 +60,7 @@ test("a claimed feed failure releases its lease without preventing another feed 
 test("import reports invalid and duplicate metadata without creating unread entries", async () => {
 	const repo = repository();
 	repo.subscribe.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
-	repo.save.mockResolvedValue({ added: false });
+	repo.saveMany.mockResolvedValue(0);
 	const service = createRssService(repo, vi.fn(), vi.fn());
 	expect(
 		await service.import("owner", {
@@ -71,6 +72,65 @@ test("import reports invalid and duplicate metadata without creating unread entr
 		}),
 	).toEqual({ added: 1, duplicates: 2, invalid: 1 });
 	expect(repo.complete).not.toHaveBeenCalled();
+});
+
+test("imports 1000 saved entries with ten bulk writes and counts duplicate rows", async () => {
+	const repo = repository();
+	repo.saveMany.mockResolvedValueOnce(98).mockResolvedValue(100);
+	const saved = Array.from({ length: 1000 }, (_, index) => ({
+		title: `Saved ${index}`,
+		url: `https://example.com/${index}`,
+		publishedAt: null,
+	}));
+	const service = createRssService(repo, vi.fn(), vi.fn());
+	expect(
+		await service.import("owner", { feeds: [], saved, invalid: 2 }),
+	).toEqual({
+		added: 998,
+		duplicates: 2,
+		invalid: 2,
+	});
+	expect(repo.saveMany).toHaveBeenCalledTimes(10);
+	for (let index = 0; index < 10; index++) {
+		expect(repo.saveMany).toHaveBeenNthCalledWith(
+			index + 1,
+			"owner",
+			saved.slice(index * 100, (index + 1) * 100),
+		);
+	}
+	expect(repo.save).not.toHaveBeenCalled();
+});
+
+test("an empty or entirely invalid import performs no saved writes", async () => {
+	const repo = repository();
+	const service = createRssService(repo, vi.fn(), vi.fn());
+	expect(
+		await service.import("owner", { feeds: [], saved: [], invalid: 3 }),
+	).toEqual({
+		added: 0,
+		duplicates: 0,
+		invalid: 3,
+	});
+	expect(repo.saveMany).not.toHaveBeenCalled();
+});
+
+test("a failed bulk write stops the import before later batches", async () => {
+	const repo = repository();
+	const error = new Error("database unavailable");
+	repo.saveMany.mockResolvedValueOnce(100).mockRejectedValueOnce(error);
+	const saved = Array.from({ length: 201 }, (_, index) => ({
+		title: "Saved",
+		url: `https://example.com/${index}`,
+		publishedAt: null,
+	}));
+	await expect(
+		createRssService(repo, vi.fn(), vi.fn()).import("owner", {
+			feeds: [],
+			saved,
+			invalid: 0,
+		}),
+	).rejects.toBe(error);
+	expect(repo.saveMany).toHaveBeenCalledTimes(2);
 });
 
 test("owner-scoped operations forward filters and mutations", async () => {
@@ -101,7 +161,7 @@ test("owner-scoped operations forward filters and mutations", async () => {
 	expect(repo.save).toHaveBeenCalledWith("owner", entry);
 	await service.unsave("owner", "one");
 	expect(repo.unsave).toHaveBeenCalledWith("owner", "one");
-	repo.save.mockResolvedValue({ added: true });
+	repo.saveMany.mockResolvedValue(1);
 	expect(
 		await service.import("owner", { feeds: [], saved: [entry], invalid: 0 }),
 	).toEqual({ added: 1, duplicates: 0, invalid: 0 });
