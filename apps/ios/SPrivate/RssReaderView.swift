@@ -54,13 +54,7 @@ struct RssReaderView: View {
                             let identity = presentationIdentity
                             RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry), saving: rss.pendingKeys.contains("save:\(entry.url)")) {
                                 guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
-                                let sessionID = rss.sessionID
-                                let shouldMarkRead = rss.isOnline && entry.feedID != nil
-                                openURL(url) { accepted in
-                                    if accepted && shouldMarkRead && rss.sessionID == sessionID {
-                                        Task { await rss.markRead([entry], sessionID: sessionID) }
-                                    }
-                                }
+                                openURL(url)
                             } onSave: {
                                 guard presentationIsCurrent, rss.identityID == identity else { return }
                                 let sessionID = rss.sessionID

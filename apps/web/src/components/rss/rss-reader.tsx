@@ -86,13 +86,11 @@ function RssEntryCard({
 	savedId,
 	busy,
 	loading,
-	onOpen,
 	onToggle,
 }: {
 	busy: boolean;
 	entry: RssUnread | RssSaved;
 	loading: boolean;
-	onOpen: () => void;
 	onToggle: () => void;
 	savedId: string | null;
 	source: string;
@@ -135,11 +133,9 @@ function RssEntryCard({
 				aria-disabled={loading}
 				onClick={(event) => {
 					if (loading) event.preventDefault();
-					else onOpen();
 				}}
 				onAuxClick={(event) => {
 					if (loading) event.preventDefault();
-					else if (event.button === 1) onOpen();
 				}}
 			>
 				<h2 className="min-w-0 flex-1 text-sm leading-relaxed font-semibold break-words sm:text-base">
@@ -169,29 +165,27 @@ function useRssMutations(
 	setBusy: (value: boolean) => void,
 	setRevision: (value: (previous: number) => number) => void,
 ) {
-	const mutationQueue = useRef(Promise.resolve());
-	const pendingMutations = useRef(new Set<string>());
-	return function perform(work: () => Promise<unknown>, key = "form") {
-		if (pendingMutations.current.has(key)) return;
-		if (pendingMutations.current.size === 0) setError(false);
-		pendingMutations.current.add(key);
+	const pending = useRef(false);
+	return function perform(work: () => Promise<unknown>) {
+		if (pending.current || !isMounted()) return;
+		pending.current = true;
+		setError(false);
 		invalidate();
 		setBusy(true);
 		const execute = async () => {
-			if (!isMounted()) return;
 			try {
 				await work();
 			} catch {
 				if (isMounted()) setError(true);
 			} finally {
-				pendingMutations.current.delete(key);
+				pending.current = false;
 				if (isMounted()) {
 					setRevision((value) => value + 1);
-					setBusy(pendingMutations.current.size > 0);
+					setBusy(false);
 				}
 			}
 		};
-		mutationQueue.current = mutationQueue.current.then(execute);
+		void execute();
 	};
 }
 
@@ -411,13 +405,6 @@ export function RssReader({
 		setRevision,
 	);
 
-	function openEntry(entry: RssUnread | RssSaved) {
-		if ("feedId" in entry)
-			perform(
-				() => services.markRssRead({ ids: [entry.id] }),
-				`read:${entry.id}`,
-			);
-	}
 	function toggleSaved(entry: RssUnread | RssSaved) {
 		const id = savedIdFor(entry);
 		if (id) {
@@ -650,7 +637,6 @@ export function RssReader({
 										new URL(entry.url).hostname
 									}
 									savedId={savedIdFor(entry)}
-									onOpen={() => openEntry(entry)}
 									onToggle={() => toggleSaved(entry)}
 								/>
 							))}

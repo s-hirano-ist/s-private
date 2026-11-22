@@ -224,18 +224,24 @@ final class RssUITests: XCTestCase {
     }
 
     @MainActor
-    func testOpeningDifferentArticlesWhileASaveIsPendingKeepsBothReads() {
-        let app = launch(delayed: true)
-        XCTAssertTrue(app.buttons["rss-entry-fixture-third"].waitForExistence(timeout: 10))
-        app.buttons["rss-save-fixture-third"].tap()
-        app.buttons["rss-entry-fixture-unread"].tap()
-        XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForNonExistence(timeout: 10))
-        app.buttons["rss-entry-fixture-second"].tap()
-        XCTAssertTrue(app.buttons["rss-entry-fixture-second"].waitForNonExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["rss-entry-fixture-third"].exists)
+    func testOpeningAnArticleKeepsItUnreadAndAvailableToSaveUntilBulkRead() {
+        let app = launch()
+        let article = app.buttons["rss-entry-fixture-unread"]
+        XCTAssertTrue(article.waitForExistence(timeout: 5))
+        article.tap()
+        let star = app.buttons["rss-save-fixture-unread"]
+        XCTAssertTrue(star.isEnabled)
+        star.tap()
+        XCTAssertTrue(star.wait(for: \.label, toEqual: "保存を解除", timeout: 10))
+        XCTAssertTrue(article.exists)
+
+        app.buttons["rss-read-all"].tap()
+        let confirm = app.buttons.matching(NSPredicate(format: "label == %@ AND identifier != %@", "すべて既読", "rss-read-all")).firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        confirm.tap()
+        XCTAssertTrue(article.waitForNonExistence(timeout: 10))
         app.segmentedControls["rss-view-picker"].buttons["保存済み"].tap()
-        XCTAssertTrue(app.staticTexts["Third unread article"].waitForExistence(timeout: 10))
-        attach(app, name: "rss-concurrent-reads")
+        XCTAssertTrue(app.staticTexts["RSSの記事タイトル — a long title that remains readable across multiple lines"].waitForExistence(timeout: 5))
     }
 
     @MainActor

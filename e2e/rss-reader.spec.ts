@@ -178,8 +178,9 @@ test.describe("RSS reader", () => {
 		}
 	});
 
-	test("renders article thumbnails, toggles stars, marks all read, and imports saved links", async ({
+	test("opens an article without marking it read, toggles stars, marks all read, and imports saved links", async ({
 		page,
+		context,
 	}) => {
 		const db = localDatabase();
 		const feedId = randomUUID();
@@ -222,9 +223,8 @@ test.describe("RSS reader", () => {
 		try {
 			await page.goto("/ja/rss");
 			const reader = page.getByRole("main", { name: "RSSリーダー" });
-			await expect(
-				reader.getByRole("link", { name: "E2E unread article" }),
-			).toBeVisible();
+			const article = reader.getByRole("link", { name: "E2E unread article" });
+			await expect(article).toBeVisible();
 			await expect(
 				reader.getByRole("button", { name: "既読にする", exact: true }),
 			).toHaveCount(0);
@@ -240,6 +240,17 @@ test.describe("RSS reader", () => {
 					{ timeout: 30_000 },
 				)
 				.toBe(true);
+			await context.route(articleUrl, (route) =>
+				route.fulfill({ contentType: "text/plain", body: "RSS article" }),
+			);
+			const [popup] = await Promise.all([
+				page.waitForEvent("popup"),
+				article.click(),
+			]);
+			await expect(popup).toHaveURL(articleUrl);
+			await popup.close();
+			await expect(article).toBeVisible();
+			await expect(reader.getByText("1 / 1件を表示")).toBeVisible();
 			await reader
 				.getByRole("button", { name: "あとで読むに保存", exact: true })
 				.click();
