@@ -73,9 +73,9 @@ catalog:
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
   '@vercel/related-projects': 1.1.1
-  '@vitest/browser': 5.1.1
-  '@vitest/browser-playwright': 5.1.1
-  '@vitest/coverage-v8': 5.1.1
+  '@vitest/browser': 5.1.0
+  '@vitest/browser-playwright': 5.1.0
+  '@vitest/coverage-v8': 5.1.0
   fast-xml-parser: 5.12.1
   fast-xml-validator: 1.4.4
   fflate: 0.8.3
@@ -93,8 +93,8 @@ catalog:
   tailwindcss: 4.3.5
   typescript: 6.0.3
   vite: 8.3.8
-  vite-plus: 1.7.0
-  vitest: 5.1.1
+  vite-plus: 1.6.0
+  vitest: 5.1.0
   zod: 4.6.7
 
 catalogMode: prefer
