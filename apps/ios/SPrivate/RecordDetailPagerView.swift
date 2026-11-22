@@ -78,23 +78,20 @@ struct RecordDetailPagerView: View {
     private var id: String { paging.selection.id }
     private var record: MobileRecord? { sync.cachedRecord(domain: domain, id: id) }
 
+    private struct ContentRevision: Hashable {
+        let data: Int
+        let error: String?
+    }
+
     var body: some View {
-        let nearby = paging.nearbyPages
-        TabView(selection: $paging.selection) {
-            ForEach(paging.pages, id: \.self) { page in
-                Group {
-                    if nearby.contains(page) {
-                        RecordDetailContentView(domain: page.domain, id: page.id,
-                                                actionError: page == paging.selection ? errorMessage : nil)
-                    } else {
-                        Color.clear
-                    }
-                }
-                .tag(page)
-                .accessibilityHidden(page != paging.selection)
-            }
+        RecordPager(pages: paging.pages, selection: $paging.selection,
+                    pagingEnabled: !showingDelete && !deleting,
+                    contentRevision: ContentRevision(data: sync.dataRevision, error: errorMessage)) { page in
+            RecordDetailContentView(domain: page.domain, id: page.id,
+                                    actionError: page == paging.selection ? errorMessage : nil)
+                .environmentObject(authentication)
+                .environmentObject(sync)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
         .disabled(showingDelete || deleting)
         .allowsHitTesting(!deleting)
         .accessibilityIdentifier("record-pager")
