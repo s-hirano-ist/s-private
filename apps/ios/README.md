@@ -277,6 +277,10 @@ Native previews, `ImageGalleryTests`, `ImagePreviewTests`, `ImageGalleryUITests`
 and `LoadingLayoutUITests` cover these flows. The gallery UI fixture uses the
 production list/viewer with injected media and deletion operations.
 
+Image-preview UI tests verify fit-to-width layout, pinch zoom-in, panning, and
+reset when reopening. `ImagePreviewTests` verifies exact zoom limits and the
+geometry after zooming out from a panned position for all three image shapes.
+
 The native screens support a full local SwiftData copy and registration queue,
 resumable uploads, durable create deduplication, and Share Extension registration.
 Background execution while the app is terminated is not guaranteed.

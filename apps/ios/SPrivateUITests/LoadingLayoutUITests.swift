@@ -55,7 +55,7 @@ final class LoadingLayoutUITests: XCTestCase {
     }
 
     @MainActor
-    func testPreviewFitsWidthAndSupportsZoomForAllImageShapes() {
+    func testPreviewFitsWidthZoomsAndResetsOnReopenForAllImageShapes() {
         for arguments in [[], ["-media-landscape"], ["-media-square"]] {
             let app = launch(arguments)
             completeRequest(app)
@@ -80,14 +80,8 @@ final class LoadingLayoutUITests: XCTestCase {
             scroll.swipeLeft()
             XCTAssertNotEqual(image.frame.minX, before.minX)
             attach(app, name: "image-preview-zoomed-\(arguments.first ?? "portrait")")
-            // XCTest's synthesized scale is not the resulting UIScrollView scale.
-            // Verify a moderate pinch reduces zoom; unit tests cover exact clamping,
-            // and reopening below verifies the deterministic reset to 100%.
-            scroll.pinch(withScale: 0.5, velocity: -1)
-            let zoomedOut = NSPredicate(format: "value.intValue >= 100 AND value.intValue < %d", zoomedPercentage)
-            expectation(for: zoomedOut, evaluatedWith: image)
-            waitForExpectations(timeout: 5)
-            scroll.pinch(withScale: 2, velocity: 1)
+            // Reopen from the observed zoomed state to verify the app-owned reset.
+            // Exact zoom-out clamping and panned geometry are covered by ImagePreviewTests.
             app.buttons["閉じる"].tap()
             open.tap()
             XCTAssertTrue(image.waitForExistence(timeout: 5))

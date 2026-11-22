@@ -44,6 +44,24 @@ struct ImagePreviewTests {
         #expect(view.imageView.frame.size == CGSize(width: 390, height: 390))
     }
 
+    @Test(arguments: [CGSize(width: 900, height: 300), CGSize(width: 300, height: 600), CGSize(width: 600, height: 600)])
+    func zoomingOutAfterPanningFitsWidthAndClampsOffset(_ size: CGSize) {
+        let view = makeView(size)
+        view.setZoomScale(2, animated: false)
+        view.contentOffset = CGPoint(
+            x: max(0, view.contentSize.width - view.bounds.width),
+            y: max(0, view.contentSize.height - view.bounds.height)
+        )
+        view.setZoomScale(0.5, animated: false)
+        view.layoutIfNeeded()
+        #expect(view.zoomScale == view.minimumZoomScale)
+        #expect(view.imageView.frame.width == view.bounds.width)
+        #expect(view.imageView.accessibilityValue == "100%")
+        #expect(view.contentOffset.x == -view.contentInset.left)
+        #expect(view.contentOffset.y >= -view.contentInset.top)
+        #expect(view.contentOffset.y <= max(-view.contentInset.top, view.contentSize.height - view.bounds.height + view.contentInset.bottom))
+    }
+
     private func makeView(_ size: CGSize) -> ImagePreviewScrollView {
         let view = ImagePreviewScrollView()
         view.frame = CGRect(x: 0, y: 0, width: 390, height: 700)
