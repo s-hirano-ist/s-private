@@ -13,7 +13,7 @@ final class RecordPagingUITests: XCTestCase {
 
     @MainActor
     private func assertPage(_ app: XCUIApplication, _ domain: String, _ id: String, file: StaticString = #filePath, line: UInt = #line) {
-        let pager = app.collectionViews["record-pager"].firstMatch
+        let pager = app.descendants(matching: .any)["record-pager"].firstMatch
         XCTAssertTrue(NSPredicate(format: "value == %@", "\(domain):\(id)").evaluate(with: pager) ||
                       XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "\(domain):\(id)"), object: pager)], timeout: 5) == .completed,
                       file: file, line: line)
@@ -47,7 +47,7 @@ final class RecordPagingUITests: XCTestCase {
             let detail = app.descendants(matching: .any)["record-detail-\(domain)"].firstMatch
             // Send horizontal gestures to the pager, not the nested vertical
             // detail ScrollView. A slow gesture also completes under CI load.
-            let pager = app.collectionViews["record-pager"].firstMatch
+            let pager = app.descendants(matching: .any)["record-pager"].firstMatch
             pager.swipeLeft(velocity: .slow)
             assertPage(app, domain, "page-01")
             pager.swipeRight(velocity: .slow)
@@ -62,6 +62,36 @@ final class RecordPagingUITests: XCTestCase {
             }
             XCTAssertTrue(app.descendants(matching: .any)[prefix + "page-00"].firstMatch.isHittable)
         }
+    }
+
+    @MainActor
+    func testLongNoteCancelledDragAndConsecutiveSwipes() throws {
+        let app = launch()
+        app.tabBars.buttons.element(boundBy: 2).tap()
+        app.descendants(matching: .any)["domain-record-page-00"].firstMatch.tap()
+        assertPage(app, "notes", "page-00")
+        let pager = app.descendants(matching: .any)["record-pager"].firstMatch
+        let start = pager.coordinate(withNormalizedOffset: CGVector(dx: 0.7, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: pager.coordinate(withNormalizedOffset: CGVector(dx: 0.62, dy: 0.5)),
+                    withVelocity: .slow, thenHoldForDuration: 0.5)
+        assertPage(app, "notes", "page-00")
+        for _ in 0..<3 { pager.swipeLeft(velocity: .fast) }
+        assertPage(app, "notes", "page-03")
+        let title = app.staticTexts["Paging notes 3"].firstMatch
+        XCTAssertEqual(title.frame.minX, app.windows.firstMatch.frame.minX + 16, accuracy: 2)
+        XCTAssertGreaterThanOrEqual(title.frame.minX, pager.frame.minX)
+        XCTAssertLessThanOrEqual(title.frame.maxX, pager.frame.maxX)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Long note after consecutive swipes"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        for _ in 0..<3 { pager.swipeRight(velocity: .fast) }
+        assertPage(app, "notes", "page-00")
+        let detail = app.scrollViews["record-detail-notes"].firstMatch
+        detail.swipeUp()
+        assertPage(app, "notes", "page-00")
+        pager.swipeLeft()
+        assertPage(app, "notes", "page-01")
     }
 
     @MainActor

@@ -241,6 +241,10 @@ items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
 Article, note, and book details opened from lists support horizontal paging.
+The native scroll-style page controller retains current/adjacent detail views
+through each interactive transition. Selection commits when the transition
+completes; cancelled gestures keep the original item. Sequence changes from
+sync or pagination are applied after the gesture settles.
 Swipe left for the next item and right for the previous item; endpoints do not
 wrap. Lists preserve the domain, status filter, and opening order, loading another
 30 cached records near the end. Non-image search results open a detail pager that

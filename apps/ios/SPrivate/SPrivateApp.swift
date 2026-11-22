@@ -62,7 +62,8 @@ struct SPrivateApp: App {
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-paging-fixtures") {
                 for domain in MobileDomain.allCases {
                     let records = (0..<32).map { index in
-                        let record = Self.fixtureRecord(id: String(format: "page-%02d", index), title: index == 0 ? "Cross-domain \(domain.rawValue)" : "Paging \(domain.rawValue) \(index)", status: .exported, createdAt: Date(timeIntervalSince1970: Double(1000 - index)), imagePath: domain == .books ? "fixture.jpg" : nil)
+                        let record = Self.fixtureRecord(id: String(format: "page-%02d", index), title: index == 0 ? "Cross-domain \(domain.rawValue)" : "Paging \(domain.rawValue) \(index)", status: .exported, createdAt: Date(timeIntervalSince1970: Double(1000 - index)), imagePath: domain == .books ? "fixture.jpg" : nil,
+                                                        markdown: domain == .notes ? (0..<60).map { "Paragraph \($0): Long note content for continuous paging." }.joined(separator: "\n\n") : nil)
                         if domain == .images || domain == .books {
                             let image = UIGraphicsImageRenderer(size: CGSize(width: 60, height: 90)).jpegData(withCompressionQuality: 0.8) { context in
                                 UIColor.systemBlue.setFill()
@@ -173,11 +174,11 @@ struct SPrivateApp: App {
     }
 
     #if DEBUG
-    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported, createdAt: Date = .now, imagePath: String? = nil) -> MobileRecord {
+    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported, createdAt: Date = .now, imagePath: String? = nil, markdown: String? = nil) -> MobileRecord {
         MobileRecord(
             id: id, status: status, createdAt: createdAt, updatedAt: createdAt,
             exportedAt: nil, title: title, url: nil, quote: nil, categoryId: nil,
-            categoryName: nil, markdown: nil, isbn: nil, rating: nil, tags: nil,
+            categoryName: nil, markdown: markdown, isbn: nil, rating: nil, tags: nil,
             path: nil, imagePath: imagePath, contentType: nil, fileSize: nil
         )
     }

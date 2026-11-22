@@ -1,6 +1,8 @@
 import Foundation
 import SwiftData
 import Testing
+import SwiftUI
+import UIKit
 @testable import SPrivate
 
 struct RecordPagingTests {
@@ -80,5 +82,105 @@ struct RecordPagingTests {
         let last = sync.cachedPage(domain: .articles, status: .exported, after: try #require(second.records.last).id)
         #expect(last.records.map(\.id) == ["003", "002", "001", "000"])
         #expect(!last.hasMore)
+    }
+}
+
+@MainActor
+struct RecordPagerTransitionTests {
+    @MainActor
+    private final class Harness {
+        let ids = (0..<5).map { RecordPageID(domain: .notes, id: String($0)) }
+        var pages: [RecordPageID]
+        var selection: RecordPageID
+        let controller = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+        var pager: RecordPager<Text> {
+            RecordPager(pages: pages, selection: Binding(get: { self.selection }, set: { self.selection = $0 }),
+                        pagingEnabled: true) { Text($0.id) }
+        }
+        lazy var coordinator = pager.makeCoordinator()
+
+        init() {
+            pages = ids
+            selection = ids[1]
+            controller.dataSource = coordinator
+            controller.delegate = coordinator
+            coordinator.update(controller)
+        }
+
+        func beginNext() -> UIViewController {
+            let next = coordinator.pageViewController(controller, viewControllerAfter: controller.viewControllers!.first!)!
+            coordinator.pageViewController(controller, willTransitionTo: [next])
+            return next
+        }
+
+        func refresh() {
+            coordinator.parent = pager
+            coordinator.update(controller)
+        }
+
+        func finish(_ next: UIViewController, completed: Bool) {
+            let previous = controller.viewControllers!
+            if completed { controller.setViewControllers([next], direction: .forward, animated: false) }
+            coordinator.pageViewController(controller, didFinishAnimating: true,
+                                           previousViewControllers: previous, transitionCompleted: completed)
+        }
+    }
+
+    @Test("Interactive paging retains visible controllers and commits only after completion")
+    func completionAndReuse() {
+        let h = Harness()
+        let original = h.controller.viewControllers!.first!
+        let next = h.beginNext()
+        h.refresh()
+        #expect(h.selection == h.ids[1])
+        #expect(h.controller.viewControllers!.first === original)
+        #expect(h.coordinator.controllers[h.ids[2]] === next)
+        h.finish(next, completed: true)
+        #expect(h.selection == h.ids[2])
+        #expect(h.controller.viewControllers!.first === next)
+        #expect(Set(h.coordinator.controllers.keys) == Set(h.ids[1...3]))
+        let previous = h.coordinator.pageViewController(h.controller, viewControllerBefore: next)
+        #expect(previous === original)
+    }
+
+    @Test("Cancelled drags preserve selection and defer page additions until settling")
+    func cancelAndAppend() {
+        let h = Harness()
+        let next = h.beginNext()
+        let extra = RecordPageID(domain: .notes, id: "extra")
+        h.pages.append(extra)
+        h.refresh()
+        #expect(!h.coordinator.appliedPages.contains(extra))
+        h.finish(next, completed: false)
+        #expect(h.selection == h.ids[1])
+        #expect(h.coordinator.appliedPages.contains(extra))
+        #expect((h.controller.viewControllers!.first as? RecordPager<Text>.PageController)?.id == h.ids[1])
+    }
+
+    @Test("Sync removal of a pending page applies only after the transition")
+    func pendingRemoval() {
+        let h = Harness()
+        let original = h.controller.viewControllers!.first!
+        let next = h.beginNext()
+        h.pages.removeAll { $0 == h.ids[2] }
+        h.refresh()
+        #expect(h.coordinator.appliedPages.contains(h.ids[2]))
+        #expect(h.controller.viewControllers!.first === original)
+        h.finish(next, completed: true)
+        #expect(h.selection == h.ids[1])
+        #expect(h.controller.viewControllers!.first === original)
+        #expect(!h.coordinator.appliedPages.contains(h.ids[2]))
+    }
+
+    @Test("Sync selection replacement wins over an in-flight gesture")
+    func selectedRemoval() {
+        let h = Harness()
+        let next = h.beginNext()
+        h.pages.removeAll { $0 == h.ids[1] || $0 == h.ids[2] }
+        h.selection = h.ids[3]
+        h.refresh()
+        h.finish(next, completed: true)
+        #expect(h.selection == h.ids[3])
+        #expect((h.controller.viewControllers!.first as? RecordPager<Text>.PageController)?.id == h.ids[3])
     }
 }
