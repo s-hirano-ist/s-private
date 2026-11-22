@@ -17,7 +17,7 @@ enum MobileClientError: LocalizedError {
     }
 }
 
-struct MobileCategory: Decodable, Identifiable {
+struct MobileCategory: Decodable, Identifiable, Sendable {
     let id: String
     let name: String
 }
@@ -25,7 +25,7 @@ struct MobileSnapshotPage<Item: Decodable>: Decodable {
     let data: [Item]
     let nextAfter: String?
 }
-struct MobileSyncChange: Decodable {
+struct MobileSyncChange: Decodable, Sendable {
     let version: String
     let domain: String
     let id: String
@@ -38,7 +38,7 @@ struct MobileSyncChanges: Decodable {
     let nextCursor: String
     let hasMore: Bool
 }
-enum MobileDomain: String, Codable, CaseIterable, Identifiable {
+enum MobileDomain: String, Codable, CaseIterable, Identifiable, Sendable {
     case articles, notes, books, images
     var id: String { rawValue }
     var title: String {
@@ -59,13 +59,13 @@ enum MobileDomain: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct MobileSearchResult: Decodable, Identifiable {
+struct MobileSearchResult: Decodable, Identifiable, Sendable {
     let id: String
     let type: MobileDomain
     let title: String
     let snippet: String
 }
-struct MobileRecord: Codable, Identifiable {
+struct MobileRecord: Codable, Identifiable, Sendable {
     let id: String
     let status: MobileContentStatus
     let createdAt: Date
@@ -87,7 +87,7 @@ struct MobileRecord: Codable, Identifiable {
     var displayTitle: String { title ?? String(localized: "画像") }
 }
 
-struct MobileCreate: Codable {
+struct MobileCreate: Codable, Sendable {
     let operationId: UUID
     let title: String
     let url: String?

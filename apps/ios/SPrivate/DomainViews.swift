@@ -7,14 +7,18 @@ struct DomainListView: View {
     var galleryDeleteRecord: (@MainActor (String) async throws -> Void)?
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
+    @EnvironmentObject private var navigation: AppNavigationModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var records: [MobileRecord] = []
+    @State private var navigationPath: [String] = []
     @State private var hasMore = false
     @State private var status: MobileContentStatus = .exported
     @State private var errorMessage: String?
     @State private var gallery: ImageGallerySelection?
     @State private var showingCreate = false
     @State private var showingSearch = false
+    @State private var initialSearchQuery = ""
+    @State private var searchPresentationID = UUID()
     @State private var isPullRefreshing = false
     @State private var flipAngle = 0.0
     @State private var flipID: UUID?
@@ -25,7 +29,7 @@ struct DomainListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 if isGrid {
                     ScrollView {
@@ -122,7 +126,12 @@ struct DomainListView: View {
                 ImageGalleryView(selection: selection, loadMedia: galleryLoadMedia, deleteRecord: galleryDeleteRecord)
             }
             .sheet(isPresented: $showingSearch) {
-                SearchView(galleryLoadMedia: galleryLoadMedia, galleryDeleteRecord: galleryDeleteRecord)
+                SearchView(
+                    initialQuery: initialSearchQuery,
+                    galleryLoadMedia: galleryLoadMedia,
+                    galleryDeleteRecord: galleryDeleteRecord
+                )
+                .id(searchPresentationID)
             }
             .sheet(isPresented: $showingCreate, onDismiss: { loadLocal() }) {
                 CreateView(domain: domain)
@@ -136,9 +145,33 @@ struct DomainListView: View {
             }
             .onChange(of: sync.dataRevision) { _, _ in loadLocal() }
             .onChange(of: sync.syncError) { _, _ in loadLocal() }
+            .onChange(of: navigation.searchRequest) { _, request in
+                handleSearchRequest(request)
+            }
+            .onChange(of: navigation.recordRequest) { _, request in
+                handleRecordRequest(request)
+            }
         }
-        .onAppear { loadLocal() }
+        .onAppear {
+            loadLocal()
+            handleSearchRequest(navigation.searchRequest)
+            handleRecordRequest(navigation.recordRequest)
+        }
         .onDisappear { cancelFlip() }
+    }
+
+    private func handleSearchRequest(_ request: SearchNavigationRequest?) {
+        guard let request, request.domain == domain else { return }
+        initialSearchQuery = request.query
+        searchPresentationID = request.id
+        showingSearch = true
+        navigation.consumeSearchRequest(id: request.id)
+    }
+
+    private func handleRecordRequest(_ request: RecordNavigationRequest?) {
+        guard let request, request.domain == domain else { return }
+        navigationPath = [request.recordID]
+        navigation.consumeRecordRequest(id: request.id)
     }
 
     private func toggleStatus() {

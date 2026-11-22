@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.12.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.11.0...s-private-v4.12.0) (2026-11-22)
+
+
+### Features
+
+* **ios:** add local Apple Intelligence search ([f345ac1](https://github.com/s-hirano-ist/s-private/commit/f345ac1abbf44c199f67878e345b088c09af587c))
+
+
+### Bug Fixes
+
+* **ios:** ignore locally resolved Swift dependencies ([a780666](https://github.com/s-hirano-ist/s-private/commit/a780666a589a12a38c62e43e5b9f8413580d88cb))
+* **ios:** lockfileを分離して端末間の依存差分を防止 ([d6266b8](https://github.com/s-hirano-ist/s-private/commit/d6266b8ef062b33139f37cbf876e0fd7052e3501))
+* **ios:** separate and enforce Swift dependency lockfiles ([08e24d6](https://github.com/s-hirano-ist/s-private/commit/08e24d61da1b7710021ad38a6e65065f75a2ae5a))
+* **ios:** stabilize interactive detail paging ([5c43f8f](https://github.com/s-hirano-ist/s-private/commit/5c43f8fa90379db0873fe4aa31155ed850879ee8))
+
+
+### Documentation
+
+* **ios:** stabilize record deletion UI test ([b38933d](https://github.com/s-hirano-ist/s-private/commit/b38933daa41f457655d546861d5efc8f6cd0b341))
+
 ## [4.11.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.10.0...s-private-v4.11.0) (2026-11-22)
 
 
