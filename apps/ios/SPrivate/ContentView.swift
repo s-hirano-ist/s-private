@@ -4,16 +4,20 @@ struct ContentView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sharedInbox: SharedInboxModel
     @EnvironmentObject private var sync: SyncCoordinator
+    @EnvironmentObject private var localIntelligence: LocalIntelligenceCoordinator
+    @EnvironmentObject private var navigation: AppNavigationModel
 
     var body: some View {
         Group {
             if authentication.status == .authenticated {
-                TabView {
+                TabView(selection: $navigation.selectedTab) {
                     RssReaderView()
                         .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
+                        .tag(AppTab.rss)
                     ForEach([MobileDomain.articles, .notes, .images, .books]) { domain in
                         DomainListView(domain: domain, reduceMotionOverride: statusReduceMotionOverride)
                             .tabItem { Label(domain.title, systemImage: domain.symbol) }
+                            .tag(AppTab.domain(domain))
                     }
                 }
             } else {
@@ -72,6 +76,7 @@ struct SettingsView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sharedInbox: SharedInboxModel
     @EnvironmentObject private var sync: SyncCoordinator
+    @EnvironmentObject private var localIntelligence: LocalIntelligenceCoordinator
     @State private var confirmingLogout = false
     @State private var confirmingCacheClear = false
 
@@ -83,7 +88,9 @@ struct SettingsView: View {
                     Text(error).foregroundStyle(AppColors.destructive)
                 }
                 Button(role: .destructive) {
-                    if sync.pendingCount == 0 { Task { await authentication.logOut() } }
+                    if sync.pendingCount == 0 {
+                        Task { await localIntelligence.prepareForSignOut(); await authentication.logOut() }
+                    }
                     else { confirmingLogout = true }
                 } label: {
                     BusyLabel(isBusy: authentication.isLoggingOut) { Text(String(localized: "ログアウト")) }
@@ -95,6 +102,26 @@ struct SettingsView: View {
             Section("RSS") {
                 NavigationLink(String(localized: "RSSの購読管理")) { RssSubscriptionsView() }
                     .accessibilityIdentifier("rss-subscriptions-link")
+            }
+            Section(String(localized: "ローカルAI検索")) {
+                Toggle(
+                    String(localized: "Apple IntelligenceとSpotlightを使用"),
+                    isOn: Binding(
+                        get: { localIntelligence.isEnabled },
+                        set: { enabled in Task { await localIntelligence.setEnabled(enabled) } }
+                    )
+                )
+                .disabled(localIntelligence.isIndexing)
+                if localIntelligence.isIndexing {
+                    Label(String(localized: "端末内インデックスを更新中"), systemImage: "sparkles")
+                        .foregroundStyle(AppColors.mutedForeground)
+                }
+                if let error = localIntelligence.indexError {
+                    Text(error).foregroundStyle(AppColors.destructive)
+                }
+                Text(String(localized: "有効にすると、保存内容の全文をこの端末の保護されたSpotlightインデックスへ追加します。データは検索とApple Intelligenceによる回答に使われ、サーバーへは送信されません。"))
+                    .font(.footnote)
+                    .foregroundStyle(AppColors.mutedForeground)
             }
             Section(String(localized: "同期")) {
                 NavigationLink {
@@ -143,11 +170,17 @@ struct SettingsView: View {
             titleVisibility: .visible
         ) {
             Button(String(localized: "同期してログアウト")) {
-                Task { await sync.synchronize(force: true); if sync.pendingCount == 0 { await authentication.logOut() } }
+                Task {
+                    await sync.synchronize(force: true)
+                    if sync.pendingCount == 0 {
+                        await localIntelligence.prepareForSignOut()
+                        await authentication.logOut()
+                    }
+                }
             }
             Button(String(localized: "破棄してログアウト"), role: .destructive) {
                 sync.discardPending()
-                Task { await authentication.logOut() }
+                Task { await localIntelligence.prepareForSignOut(); await authentication.logOut() }
             }
             Button(String(localized: "キャンセル"), role: .cancel) {}
         } message: {

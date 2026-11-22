@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 import SwiftData
 
@@ -7,6 +8,8 @@ struct SPrivateApp: App {
     @StateObject private var authentication: AuthenticationModel
     @StateObject private var sharedInbox = SharedInboxModel()
     @StateObject private var sync: SyncCoordinator
+    @StateObject private var localIntelligence: LocalIntelligenceCoordinator
+    @StateObject private var navigation: AppNavigationModel
     @State private var rss: RssReaderModel
     private let modelContainer: ModelContainer
     private let useListFixtures: Bool
@@ -25,9 +28,20 @@ struct SPrivateApp: App {
             for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self, CachedRssSnapshot.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: useListFixtures)
         )
-        let coordinator = SyncCoordinator(container: container, authentication: authentication)
+        let localIntelligence = LocalIntelligenceCoordinator(container: container, authentication: authentication)
+        let navigation = AppNavigationModel()
+        let coordinator = SyncCoordinator(
+            container: container,
+            authentication: authentication,
+            localIntelligence: localIntelligence
+        )
         _authentication = StateObject(wrappedValue: authentication)
         _sync = StateObject(wrappedValue: coordinator)
+        _localIntelligence = StateObject(wrappedValue: localIntelligence)
+        _navigation = StateObject(wrappedValue: navigation)
+        AppDependencyManager.shared.add(dependency: localIntelligence)
+        AppDependencyManager.shared.add(dependency: navigation)
+        AppDependencyManager.shared.add(dependency: coordinator)
         modelContainer = container
         let client = MobileClient(authentication: authentication)
         #if DEBUG
@@ -95,6 +109,8 @@ struct SPrivateApp: App {
                 .environmentObject(authentication)
                 .environmentObject(sharedInbox)
                 .environmentObject(sync)
+                .environmentObject(localIntelligence)
+                .environmentObject(navigation)
                 .environment(rss)
                 .transformEnvironment(\.openURL) { action in
                     #if DEBUG
@@ -104,6 +120,7 @@ struct SPrivateApp: App {
                     #endif
                 }
                 .modelContainer(modelContainer)
+                .onOpenURL { navigation.open(url: $0) }
                 .task {
                     guard !useListFixtures else { return }
                     if authentication.status != .authenticated {
@@ -111,6 +128,7 @@ struct SPrivateApp: App {
                     }
                     sharedInbox.reload()
                     sync.importSharedInbox()
+                    await localIntelligence.activateCurrentOwner()
                     if authentication.status == .authenticated { await sync.synchronize() }
                 }
                 .onChange(of: scenePhase) { _, phase in
@@ -124,12 +142,14 @@ struct SPrivateApp: App {
                     configureRss()
                     if status == .signedOut || status == .unavailable {
                         try? SharedCategoryStore().clear()
+                        Task { await localIntelligence.prepareForSignOut() }
                     }
                     if status == .authenticated && !useListFixtures { Task { await sync.synchronize(force: true) } }
                 }
                 .onChange(of: authentication.ownerKey) { _, _ in
                     configureRss()
                     try? SharedCategoryStore().clear()
+                    Task { await localIntelligence.activateCurrentOwner() }
                     if authentication.status == .authenticated && !useListFixtures {
                         Task { await sync.synchronize(force: true) }
                     }
