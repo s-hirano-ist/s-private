@@ -99,6 +99,7 @@ jobs:
         run: bash apps/ios/scripts/test-without-building.sh
         env:
           IOS_TEST_GROUP: ${{ matrix.group }}
+          IOS_TEST_ISOLATED_SIMULATOR: "1"
           DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
 
       - name: Save test results and failure screenshots
