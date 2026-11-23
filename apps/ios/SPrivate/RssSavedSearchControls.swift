@@ -1,7 +1,8 @@
 import SwiftUI
+import UIKit
 
 struct RssSearchBar<Filters: View>: View {
-    let prompt: LocalizedStringKey
+    let prompt: String
     @Binding var query: String
     let searchID: String
     let filterID: String
@@ -13,8 +14,6 @@ struct RssSearchBar<Filters: View>: View {
     @ViewBuilder let filters: () -> Filters
 
     @Environment(\.dynamicTypeSize) private var dynamicType
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @FocusState private var isSearchFocused: Bool
 
     var body: some View {
         HStack(spacing: 0) {
@@ -23,21 +22,14 @@ struct RssSearchBar<Filters: View>: View {
                 .foregroundStyle(AppColors.mutedForeground)
                 .padding(.leading, AppLayout.medium)
                 .padding(.trailing, AppLayout.small)
-                .onTapGesture { isSearchFocused = true }
                 .accessibilityHidden(true)
-            TextField(text: $query, prompt: Text(isSearchFocused && !dynamicType.isAccessibilitySize ? prompt : "検索")
-                .foregroundStyle(AppColors.mutedForeground)) {
-                Text(prompt)
-            }
+            RssToolbarSearchField(
+                query: $query,
+                placeholder: dynamicType.isAccessibilitySize ? String(localized: "検索") : prompt,
+                label: prompt,
+                identifier: searchID
+            )
             .frame(minHeight: AppLayout.minimumTarget)
-            .focused($isSearchFocused)
-            .task { isSearchFocused = true }
-            .submitLabel(.search)
-            .autocorrectionDisabled()
-            .textInputAutocapitalization(.never)
-            .onSubmit { isSearchFocused = false }
-            .accessibilityLabel(Text(prompt))
-            .accessibilityIdentifier(searchID)
 
             if let onClear {
                 Button(action: onClear) {
@@ -56,6 +48,7 @@ struct RssSearchBar<Filters: View>: View {
                     .foregroundStyle(hasFilter ? AppColors.primary : AppColors.mutedForeground)
                     .appTapTarget()
             }
+            .menuStyle(.button)
             .buttonStyle(.plain)
             .menuIndicator(.hidden)
             .accessibilityLabel(filterLabel)
@@ -63,12 +56,68 @@ struct RssSearchBar<Filters: View>: View {
             .accessibilityIdentifier(filterID)
         }
         .frame(maxWidth: .infinity)
-        .background {
-            Capsule()
-                .fill(AppColors.foreground.opacity(0.06))
-                .padding(.vertical, isSearchFocused ? 0 : AppLayout.tiny)
+    }
+}
+
+private struct RssToolbarSearchField: UIViewRepresentable {
+    @Binding var query: String
+    let placeholder: String
+    let label: String
+    let identifier: String
+
+    func makeUIView(context: Context) -> UITextField {
+        let field = ToolbarTextField()
+        field.font = .preferredFont(forTextStyle: .body)
+        field.adjustsFontForContentSizeCategory = true
+        field.returnKeyType = .search
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
+        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        field.accessibilityLabel = label
+        field.accessibilityIdentifier = identifier
+        field.delegate = context.coordinator
+        field.addTarget(context.coordinator, action: #selector(Coordinator.queryChanged(_:)), for: .editingChanged)
+        return field
+    }
+
+    func updateUIView(_ field: UITextField, context: Context) {
+        context.coordinator.query = $query
+        if field.markedTextRange == nil, field.text != query { field.text = query }
+        if field.attributedPlaceholder?.string != placeholder {
+            field.attributedPlaceholder = NSAttributedString(
+                string: placeholder, attributes: [.foregroundColor: UIColor(AppColors.mutedForeground)]
+            )
         }
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: isSearchFocused)
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(query: $query) }
+
+    private final class ToolbarTextField: UITextField {
+        private var requestedFocus = false
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            guard window != nil, !requestedFocus else { return }
+            // SwiftUI's toolbar uses a separate host from the reader's focus system.
+            DispatchQueue.main.async { [weak self] in
+                guard let self, window != nil, !requestedFocus else { return }
+                requestedFocus = becomeFirstResponder()
+            }
+        }
+    }
+
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        var query: Binding<String>
+
+        init(query: Binding<String>) { self.query = query }
+
+        @objc func queryChanged(_ field: UITextField) { query.wrappedValue = field.text ?? "" }
+
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return false
+        }
     }
 }
 
@@ -81,7 +130,7 @@ struct RssSavedSearchControls: View {
 
     var body: some View {
         RssSearchBar(
-            prompt: "保存済み記事を検索",
+            prompt: String(localized: "保存済み記事を検索"),
             query: Binding(
                 get: { filter.query },
                 set: {

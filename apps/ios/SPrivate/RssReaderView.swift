@@ -14,6 +14,9 @@ struct RssReaderView: View {
     @EnvironmentObject private var navigation: AppNavigationModel
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Namespace private var headerGlass
+    @State private var toolbarWidth: CGFloat = 0
     @State private var showingSubscribe = false
     @Binding private var showingSettings: Bool
     @State private var list: RssList
@@ -128,13 +131,8 @@ struct RssReaderView: View {
                 .onScrollPhaseChange { _, phase in
                     if phase == .interacting { showingSearch = false }
                 }
-                .safeAreaBar(edge: .top, spacing: 0) {
-                    if showingSearch {
-                        searchControls
-                            .padding(.horizontal, AppLayout.inset)
-                            .padding(.vertical, AppLayout.tiny)
-                            .background(AppColors.background)
-                    }
+                .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { width in
+                    toolbarWidth = max(0, width - 2 * AppLayout.inset)
                 }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     RssStatusView(showsSyncStatus: false)
@@ -146,44 +144,10 @@ struct RssReaderView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .minimizeNavigationWhenScrolling()
                 .toolbar {
-                    ToolbarItemGroup(placement: .topBarLeading) {
-                        ContentStatusToggle(
-                            title: list.title,
-                            nextTitle: list == .unread ? String(localized: "保存済みに切り替え") : String(localized: "未読に切り替え"),
-                            symbol: list == .unread ? "eye.slash" : "eye",
-                            count: list == .saved && savedFilter.isActive ? entries.count : rss.totalCount(for: list)
-                        ) { list = list == .unread ? .saved : .unread }
-                        .accessibilityIdentifier("rss-status-filter")
-                        if list == .unread {
-                            Button { readAll = (entries, presentationIdentity) } label: {
-                                BusyLabel(isBusy: rss.pendingKeys.contains(where: { $0.hasPrefix("read-") })) {
-                                    Label(String(localized: "すべて既読"), systemImage: "checkmark.circle")
-                                }
-                            }
-                                .labelStyle(.iconOnly)
-                                .accessibilityLabel(rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }) ? String(localized: "すべて既読") + ", " + String(localized: "処理中") : String(localized: "すべて既読"))
-                                .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty || rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }))
-                                .accessibilityIdentifier("rss-read-all")
-                        }
-                    }
                     ToolbarItem(placement: .principal) {
-                        searchToggle
+                        readerToolbar
                     }
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        Button { Task { await rss.synchronize(manual: true) } } label: {
-                            BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
-                        }
-                        .labelStyle(.iconOnly)
-                        .accessibilityLabel(rss.isLoading ? String(localized: "更新") + ", " + String(localized: "処理中") : String(localized: "更新"))
-                        .disabled(!rss.isOnline || rss.isLoading)
-                        .accessibilityIdentifier("rss-refresh")
-                        Button {
-                            showingSettings = true
-                        } label: {
-                            Label(String(localized: "設定"), systemImage: "gearshape")
-                        }
-                        .accessibilityIdentifier("settings-link")
-                    }
+                    .sharedBackgroundVisibility(.hidden)
                 }
                 .navigationDestination(isPresented: $showingSettings) { SettingsView() }
                 .sheet(isPresented: $showingSubscribe) { RssSubscribeView() }
@@ -288,10 +252,97 @@ struct RssReaderView: View {
         presentationIsCurrent && entries.isEmpty && !rss.isLoading && rss.errorMessage == nil
     }
 
+    private var readerToolbar: some View {
+        GlassEffectContainer(spacing: 0) {
+            HStack(spacing: 0) {
+                if !showingSearch {
+                    readingControls
+                        .glassEffect(.regular.interactive(), in: .capsule)
+                        .transition(.opacity)
+                    Spacer(minLength: AppLayout.tiny)
+                    readerActions
+                        .glassEffect(.regular.interactive(), in: .capsule)
+                        .glassEffectUnion(id: "rss-toolbar-actions", namespace: headerGlass)
+                        .transition(.opacity)
+                }
+                ZStack(alignment: .trailing) {
+                    if showingSearch {
+                        HStack(spacing: 0) {
+                            searchControls
+                            searchToggle
+                        }
+                        .frame(width: toolbarWidth)
+                        .transition(.opacity)
+                    } else {
+                        searchToggle.transition(.opacity)
+                    }
+                }
+                .frame(width: showingSearch ? toolbarWidth : AppLayout.minimumTarget,
+                       alignment: .trailing)
+                .clipped()
+                .glassEffect(.regular.interactive(), in: .capsule)
+                .glassEffectUnion(id: "rss-toolbar-actions", namespace: headerGlass)
+            }
+            .frame(width: toolbarWidth, alignment: .trailing)
+            .buttonStyle(.plain)
+        }
+        .animation(reduceMotion ? nil : .smooth(duration: 0.32), value: showingSearch)
+    }
+
+    private var readingControls: some View {
+        HStack(spacing: 0) {
+            ContentStatusToggle(
+                title: list.title,
+                nextTitle: list == .unread ? String(localized: "保存済みに切り替え") : String(localized: "未読に切り替え"),
+                symbol: list == .unread ? "eye.slash" : "eye",
+                count: list == .saved && savedFilter.isActive ? entries.count : rss.totalCount(for: list)
+            ) { list = list == .unread ? .saved : .unread }
+            .padding(.horizontal, AppLayout.medium)
+            .frame(minHeight: AppLayout.minimumTarget)
+            .accessibilityIdentifier("rss-status-filter")
+
+            if list == .unread {
+                Button { readAll = (entries, presentationIdentity) } label: {
+                    BusyLabel(isBusy: rss.pendingKeys.contains(where: { $0.hasPrefix("read-") })) {
+                        Label("すべて既読", systemImage: "checkmark.circle")
+                    }
+                    .appTapTarget()
+                }
+                .accessibilityLabel(rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }) ? String(localized: "すべて既読") + ", " + String(localized: "処理中") : String(localized: "すべて既読"))
+                .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty || rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }))
+                .accessibilityIdentifier("rss-read-all")
+            }
+        }
+        .font(.title3)
+        .labelStyle(.iconOnly)
+        .foregroundStyle(AppColors.primary)
+    }
+
+    private var readerActions: some View {
+        HStack(spacing: 0) {
+            Button { Task { await rss.synchronize(manual: true) } } label: {
+                BusyLabel(isBusy: rss.isLoading) { Label("更新", systemImage: "arrow.clockwise") }
+                    .appTapTarget()
+            }
+            .accessibilityLabel(rss.isLoading ? String(localized: "更新") + ", " + String(localized: "処理中") : String(localized: "更新"))
+            .disabled(!rss.isOnline || rss.isLoading)
+            .accessibilityIdentifier("rss-refresh")
+
+            Button { showingSettings = true } label: {
+                Label("設定", systemImage: "gearshape").appTapTarget()
+            }
+            .accessibilityIdentifier("settings-link")
+        }
+        .font(.title3)
+        .labelStyle(.iconOnly)
+        .foregroundStyle(AppColors.primary)
+    }
+
     private var searchToggle: some View {
         Button { showingSearch.toggle() } label: {
             Image(systemName: showingSearch ? "xmark" : (hasSearchConditions ? "magnifyingglass.circle.fill" : "magnifyingglass"))
-                .font(.headline)
+                .font(.title3)
+                .foregroundStyle(AppColors.primary)
                 .appTapTarget()
         }
         .accessibilityLabel(showingSearch ? Text("閉じる") : Text("検索"))
@@ -342,7 +393,7 @@ struct RssReaderView: View {
         )
         let onClear: (() -> Void)? = feedID.isEmpty && unreadQuery.isEmpty ? nil : { clearUnreadFilters() }
         return RssSearchBar(
-            prompt: "未読記事を検索",
+            prompt: String(localized: "未読記事を検索"),
             query: $unreadQuery,
             searchID: "rss-unread-search",
             filterID: "rss-feed-filter",
