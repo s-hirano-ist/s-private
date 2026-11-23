@@ -4,7 +4,7 @@ final class RssUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false, infiniteScroll: Bool = false) -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false, infiniteScroll: Bool = false, savedSearch: Bool = false, searchShortcut: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
@@ -14,6 +14,8 @@ final class RssUITests: XCTestCase {
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
         if controlledPages { app.launchArguments.append("-ui-testing-rss-controlled-pages") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
+        if savedSearch { app.launchArguments.append("-ui-testing-rss-saved-search") }
+        if searchShortcut { app.launchArguments.append("-ui-testing-rss-search-shortcut") }
         app.launch()
         if delayed {
             // The seeded cache has one article; the server's two additions are
@@ -24,6 +26,49 @@ final class RssUITests: XCTestCase {
             XCTAssertTrue(app.buttons["rss-entry-fixture-third"].waitForExistence(timeout: 5))
         }
         return app
+    }
+
+    @MainActor
+    func testSavedSearchAndCategoryUseAllOfflineArticles() {
+        let app = launch(offline: true, language: "en", savedSearch: true)
+        let toggle = app.buttons["rss-status-filter"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        toggle.tap()
+        let search = app.textFields["rss-saved-search"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["rss-entry-fixture-search-swiftui"].isHittable)
+
+        search.tap()
+        search.typeText("does-not-exist\n")
+        XCTAssertTrue(app.staticTexts["No matching articles"].waitForExistence(timeout: 5))
+        app.buttons["rss-saved-clear"].tap()
+
+        let category = app.buttons["rss-saved-topic"]
+        category.tap()
+        app.buttons["Technology"].tap()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-search-swiftui"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["rss-entry-fixture-saved"].exists)
+        XCTAssertEqual(toggle.label, "Saved (1)")
+        app.buttons["rss-saved-clear"].tap()
+        XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].waitForExistence(timeout: 5))
+
+        search.tap()
+        search.typeText("SWIFTUI target\n")
+        XCTAssertTrue(app.buttons["rss-entry-fixture-search-swiftui"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["rss-entry-fixture-saved"].exists)
+        XCTAssertEqual(toggle.label, "Saved (1)")
+    }
+
+    @MainActor
+    func testSavedSearchShortcutFallsBackAndReflectsRemoval() {
+        let app = launch(searchShortcut: true)
+        XCTAssertTrue(app.staticTexts["rss-saved-ai-fallback"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.textFields["rss-saved-search"].value as? String, "Saved article")
+        let saved = app.buttons["rss-entry-fixture-saved"]
+        XCTAssertTrue(saved.waitForExistence(timeout: 5))
+        app.buttons["rss-save-fixture-saved"].tap()
+        XCTAssertTrue(saved.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["保存した記事はありません"].waitForExistence(timeout: 5))
     }
 
     @MainActor

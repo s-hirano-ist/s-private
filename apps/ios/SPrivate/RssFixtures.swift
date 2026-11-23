@@ -36,6 +36,13 @@
                     .init(id: "fixture-large-saved-\($0)", url: "https://example.com/large-saved/\($0)", title: "Saved article \($0)", savedID: "fixture-large-saved-\($0)")
                 }
             }
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-saved-search") {
+                value.saved += (1...55).map {
+                    .init(id: "fixture-search-\($0)", url: "https://example.com/archive/\($0)", title: "Archive article \($0)", savedID: "fixture-search-\($0)")
+                }
+                value.saved.append(.init(id: "fixture-search-swiftui", url: "https://example.com/archive/target",
+                                         title: "SwiftUI guide", savedID: "fixture-search-swiftui"))
+            }
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-empty") {
                 return RssSnapshot(fetchedAt: .now)
             }
@@ -190,8 +197,9 @@
         return model
     }
 
-    #Preview("RSS — Unread") { RssReaderView().environment(rssPreview()) }
-    #Preview("RSS — Refresh error") { RssReaderView().environment(rssPreview(error: true)) }
-    #Preview("RSS — Offline") { RssReaderView().environment(rssPreview(offline: true)) }
+    #Preview("RSS — Unread") { RssReaderView().environment(rssPreview()).environmentObject(AppNavigationModel()) }
+    #Preview("RSS — Refresh error") { RssReaderView().environment(rssPreview(error: true)).environmentObject(AppNavigationModel()) }
+    #Preview("RSS — Offline") { RssReaderView().environment(rssPreview(offline: true)).environmentObject(AppNavigationModel()) }
+    #Preview("RSS — Saved search") { RssReaderView(initialList: .saved).environment(rssPreview()).environmentObject(AppNavigationModel()) }
     #Preview("RSS — Subscriptions") { NavigationStack { RssSubscriptionsView().environment(rssPreview()) } }
 #endif

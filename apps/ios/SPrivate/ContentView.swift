@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    var interpretSavedRssSearch: RssSavedFilter.Interpreter = RssSavedIntelligence.interpret
+
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sharedInbox: SharedInboxModel
     @EnvironmentObject private var sync: SyncCoordinator
@@ -12,7 +14,7 @@ struct ContentView: View {
         Group {
             if authentication.status == .authenticated {
                 TabView(selection: $navigation.selectedTab) {
-                    RssReaderView()
+                    RssReaderView(interpretSavedSearch: interpretSavedRssSearch)
                         .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
                         .tag(AppTab.rss)
                     ForEach([MobileDomain.articles, .notes, .images, .books]) { domain in
