@@ -1,5 +1,24 @@
 import SwiftUI
 
+struct ScrollNavigationMinimization: ViewModifier {
+    var enabled: Bool
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+
+    func body(content: Content) -> some View {
+        #if targetEnvironment(simulator)
+        // The iOS 27.0 simulator exports the renamed SwiftUI API.
+        content.toolbarMinimizationBehavior(enabled && !voiceOverEnabled ? .onScrollDown : .never, for: .navigationBar)
+        #else
+        // Some iOS 27.0 device builds lack the renamed SwiftUI symbol (FB25095054).
+        if #available(iOS 27.1, *) {
+            content.toolbarMinimizationBehavior(enabled && !voiceOverEnabled ? .onScrollDown : .never, for: .navigationBar)
+        } else {
+            content
+        }
+        #endif
+    }
+}
+
 struct ContentStatusToggle: View {
     let title: String
     let nextTitle: String
@@ -52,6 +71,10 @@ struct AppEmptyState: View {
 }
 
 extension View {
+    func minimizeNavigationWhenScrolling(_ enabled: Bool = true) -> some View {
+        modifier(ScrollNavigationMinimization(enabled: enabled))
+    }
+
     /// Content is separated by whitespace; settings and forms keep native grouping.
     func appContentRow() -> some View {
         listRowInsets(

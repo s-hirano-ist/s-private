@@ -232,12 +232,19 @@ The bottom tab bar contains RSS, articles, notes, images, and books in that orde
 matching the Web app. RSS is initially selected after launch or sign-in.
 The domain name appears in the tab bar, so list screens have no duplicate title
 in the top navigation bar.
+While reading a long list or browsing a grid, scrolling toward later items
+minimizes the tab bar and the top navigation bar. Reverse direction to restore
+the top bar. To expand the tab bar, scroll back to the top or tap the compact
+tab. On iOS 27.0 devices, list screens keep the top bar visible and still
+minimize the tab bar. Article category and RSS subscription controls scroll
+with their lists. VoiceOver keeps the navigation controls visible.
 The status button uses an eye for exported records and a crossed-out eye for
 unexported records, with the current status and next action available to VoiceOver.
 Switching flips the list around its vertical axis in 0.4 seconds, replacing the
-content at the midpoint with the first 30 locally cached records. The toolbar and
-tab bar stay fixed. Switching adds no network wait or spinner; uncached thumbnails
-still load independently. Reduce Motion switches immediately without rotation.
+content at the midpoint with the first 30 locally cached records. The status
+switch itself leaves the bars in place. Switching adds no network wait or
+spinner; uncached thumbnails still load independently. Reduce Motion switches
+immediately without rotation.
 Each list opens cross-domain search from its top toolbar. Settings is available
 from the Search toolbar and still shows shared inbox
 items from the feasibility test.
@@ -254,8 +261,10 @@ through each interactive transition. Selection commits when the transition
 completes; cancelled gestures keep the original item. Sequence changes from
 sync or pagination are applied after the gesture settles.
 Swipe left for the next item and right for the previous item; endpoints do not
-wrap. Lists preserve the domain, status filter, and opening order, loading another
-30 cached records near the end. Note and book search results open a detail pager
+wrap. Scrolling the detail vertically minimizes its bars. Reverse direction or
+change pages to restore the bars. Lists preserve the domain, status filter, and
+opening order, loading another 30 cached records near the end. Note and book
+search results open a detail pager
 that follows the submitted order of note, book, and image results. Sync removes missing or
 filtered-out records without inserting new arrivals into the open sequence.
 Delete confirmation captures the selected item; success returns to the originating
@@ -263,7 +272,10 @@ list or search. Paging and back navigation pause while deletion is pending.
 Media loads only for the current and adjacent pages.
 
 Tapping an image opens a full-screen gallery directly, with close and delete
-controls. Swiping follows the current status filter and list order across all
+controls overlaid in Liquid Glass. Tap the image to hide or restore the controls
+without changing zoom or pan. The book-cover preview uses the same controls,
+with only a close button. VoiceOver keeps these controls visible.
+Swiping follows the current status filter and list order across all
 locally cached image metadata, including items beyond the grid's 30-item pages.
 The gallery snapshots its IDs on opening; new arrivals appear on the next opening,
 and synchronized deletions are removed. Search opens a single-image gallery.

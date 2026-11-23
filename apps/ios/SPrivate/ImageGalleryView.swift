@@ -31,43 +31,41 @@ struct ImageGalleryView: View {
     @State private var deleting = false
     @State private var zoomed = false
     @State private var errorMessage: String?
+    @State private var controlsHidden = false
 
     var body: some View {
-        NavigationStack {
+        MediaViewer(
+            controlsHidden: $controlsHidden,
+            position: String(format: String(localized: "%lld / %lld"), selection.position + 1, selection.ids.count),
+            closeDisabled: deleting,
+            close: { dismiss() }
+        ) { toggleControls in
             GalleryPager(ids: selection.ids, selectedID: $selection.selectedID,
                          pagingEnabled: !zoomed && !deleting && !showingDelete) { id in
                 GalleryImagePage(id: id, loadMedia: loadMedia) { isZoomed in
                     guard id == selection.selectedID else { return }
                     zoomed = isZoomed
+                } onMediaTap: {
+                    guard id == selection.selectedID, !showingDelete, !deleting else { return }
+                    toggleControls()
+                } onLoadError: {
+                    if id == selection.selectedID { controlsHidden = false }
                 }
                 .environmentObject(authentication)
                 .environmentObject(sync)
             }
-            .background(AppColors.background)
             .accessibilityIdentifier("image-gallery")
-            .navigationTitle(String(format: String(localized: "%lld / %lld"), selection.position + 1, selection.ids.count))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(String(localized: "閉じる")) { dismiss() }
-                        .disabled(deleting)
+        } trailing: {
+            Button(role: .destructive) { showingDelete = true } label: {
+                BusyLabel(isBusy: deleting, status: String(localized: "削除中")) {
+                    Label(String(localized: "削除"), systemImage: "trash")
+                        .labelStyle(.iconOnly)
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(role: .destructive) { showingDelete = true } label: {
-                        BusyLabel(isBusy: deleting, status: String(localized: "削除中")) {
-                            Label(String(localized: "削除"), systemImage: "trash")
-                        }
-                    }
-                    .disabled(deleting || selection.ids.isEmpty)
-                    .accessibilityIdentifier("gallery-delete")
-                }
+                .mediaControlSurface()
             }
-            .safeAreaInset(edge: .bottom) {
-                if let errorMessage {
-                    Text(errorMessage).foregroundStyle(AppColors.destructive).padding()
-                        .accessibilityIdentifier("gallery-error")
-                }
-            }
+            .buttonStyle(.plain)
+            .disabled(deleting || selection.ids.isEmpty)
+            .accessibilityIdentifier("gallery-delete")
             .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete, titleVisibility: .visible) {
                 Button(String(localized: "削除"), role: .destructive) {
                     let id = selection.selectedID
@@ -75,8 +73,22 @@ struct ImageGalleryView: View {
                 }
             }
         }
+        .overlay(alignment: .bottom) {
+            if let errorMessage {
+                Text(errorMessage)
+                    .foregroundStyle(AppColors.destructive)
+                    .padding()
+                    .background(.regularMaterial, in: .rect(cornerRadius: AppLayout.medium))
+                    .padding(AppLayout.inset)
+                    .accessibilityIdentifier("gallery-error")
+            }
+        }
         .onAppear { reconcile() }
-        .onChange(of: selection.selectedID) { _, _ in zoomed = false; errorMessage = nil }
+        .onChange(of: selection.selectedID) { _, _ in
+            zoomed = false
+            errorMessage = nil
+            controlsHidden = false
+        }
         .onChange(of: sync.dataRevision) { _, _ in reconcile() }
         .onChange(of: authentication.ownerKey) { _, _ in dismiss() }
         .onChange(of: authentication.status) { _, status in
@@ -106,6 +118,7 @@ struct ImageGalleryView: View {
             reconcile()
         } catch {
             errorMessage = MobileOperationError.message(error, taskIsCancelled: Task.isCancelled)
+            controlsHidden = false
         }
     }
 }
@@ -114,6 +127,8 @@ private struct GalleryImagePage: View {
     let id: String
     var loadMedia: (@MainActor (String) async throws -> Data)?
     var onZoomChange: (Bool) -> Void
+    var onMediaTap: () -> Void
+    var onLoadError: () -> Void
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @State private var image: UIImage?
@@ -123,7 +138,7 @@ private struct GalleryImagePage: View {
     var body: some View {
         Group {
             if let image {
-                ZoomableImageView(image: image, onZoomChange: onZoomChange)
+                ZoomableImageView(image: image, onZoomChange: onZoomChange, onMediaTap: onMediaTap)
             } else if let errorMessage {
                 VStack(spacing: 12) {
                     Text(errorMessage).foregroundStyle(AppColors.destructive)
@@ -156,6 +171,7 @@ private struct GalleryImagePage: View {
             } catch {
                 guard !Task.isCancelled else { return }
                 errorMessage = MobileOperationError.message(error, taskIsCancelled: false)
+                onLoadError()
             }
         }
     }

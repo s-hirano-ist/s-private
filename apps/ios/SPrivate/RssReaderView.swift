@@ -43,52 +43,53 @@ struct RssReaderView: View {
     var body: some View {
         NavigationStack {
             ScrollViewReader { proxy in
-                VStack(spacing: 0) {
+                List {
+                    Color.clear.frame(height: 0)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .accessibilityHidden(true)
+                        .id("rss-top")
                     readerHeader
-                    List {
-                        Color.clear.frame(height: 0)
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .accessibilityHidden(true)
-                            .id("rss-top")
-                        if entries.isEmpty && rss.isLoading {
-                            ForEach(0..<6) { _ in
-                                LoadingContent { SkeletonText() }
-                                    .appContentRow()
-                            }
-                        }
-                        ForEach(visible) { entry in
-                            let identity = presentationIdentity
-                            RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry), saving: rss.pendingKeys.contains("save:\(entry.url)")) {
-                                guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
-                                openURL(url)
-                            } onSave: {
-                                guard presentationIsCurrent, rss.identityID == identity else { return }
-                                let sessionID = rss.sessionID
-                                Task { await rss.toggleSaved(entry, sessionID: sessionID) }
-                            }
-                            .appContentRow()
-                        }
-                        if visible.count < entries.count {
-                            let limit = visibleLimit
-                            Color.clear.frame(height: 1)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(AppColors.background)
+                    if entries.isEmpty && rss.isLoading {
+                        ForEach(0..<6) { _ in
+                            LoadingContent { SkeletonText() }
                                 .appContentRow()
-                                .accessibilityHidden(true)
-                                .id(limit)
-                                .task(id: displayedKey) {
-                                    guard !Task.isCancelled, presentationIsCurrent, visibleLimit == limit else { return }
-                                    visibleLimit += Self.displayBatchSize
-                                }
                         }
                     }
-                    .listStyle(.plain)
-                    .environment(\.defaultMinListRowHeight, 0)
-                    .accessibilityIdentifier("rss-reader")
-                    .refreshable { await rss.refresh(list) }
-                    .overlay {
-                        if presentationIsCurrent && entries.isEmpty && !rss.isLoading && rss.errorMessage == nil {
-                            readerEmptyState.accessibilityIdentifier("rss-empty")
+                    ForEach(visible) { entry in
+                        let identity = presentationIdentity
+                        RssEntryRow(entry: entry, source: source(entry), canSave: presentationIsCurrent && rss.canSave(entry), saving: rss.pendingKeys.contains("save:\(entry.url)")) {
+                            guard presentationIsCurrent, rss.identityID == identity, let url = entry.link else { return }
+                            openURL(url)
+                        } onSave: {
+                            guard presentationIsCurrent, rss.identityID == identity else { return }
+                            let sessionID = rss.sessionID
+                            Task { await rss.toggleSaved(entry, sessionID: sessionID) }
                         }
+                        .appContentRow()
+                    }
+                    if visible.count < entries.count {
+                        let limit = visibleLimit
+                        Color.clear.frame(height: 1)
+                            .appContentRow()
+                            .accessibilityHidden(true)
+                            .id(limit)
+                            .task(id: displayedKey) {
+                                guard !Task.isCancelled, presentationIsCurrent, visibleLimit == limit else { return }
+                                visibleLimit += Self.displayBatchSize
+                            }
+                    }
+                }
+                .listStyle(.plain)
+                .environment(\.defaultMinListRowHeight, 0)
+                .accessibilityIdentifier("rss-reader")
+                .refreshable { await rss.refresh(list) }
+                .overlay {
+                    if presentationIsCurrent && entries.isEmpty && !rss.isLoading && rss.errorMessage == nil {
+                        readerEmptyState.accessibilityIdentifier("rss-empty")
                     }
                 }
                 .safeAreaInset(edge: .bottom, spacing: 0) { RssStatusView() }
@@ -97,6 +98,7 @@ struct RssReaderView: View {
                 .foregroundStyle(AppColors.foreground)
                 .navigationTitle("")
                 .navigationBarTitleDisplayMode(.inline)
+                .minimizeNavigationWhenScrolling()
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarLeading) {
                         ContentStatusToggle(
@@ -209,6 +211,7 @@ struct RssReaderView: View {
                         visibleLimit = Self.displayBatchSize
                     }
                     .appTapTarget()
+                    .buttonStyle(.borderless)
                     .disabled(!presentationIsCurrent)
                     .accessibilityIdentifier("rss-show-new")
                 }

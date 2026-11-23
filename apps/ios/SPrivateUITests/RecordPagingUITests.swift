@@ -27,18 +27,18 @@ final class RecordPagingUITests: XCTestCase {
             let prefix = domain == "notes" ? "domain-record-" : "media-cell-"
             app.descendants(matching: .any)[prefix + "page-00"].firstMatch.tap()
             if domain == "images" {
-                XCTAssertTrue(app.navigationBars["1 / 32"].waitForExistence(timeout: 5))
+                XCTAssertTrue(app.galleryPosition("1 / 32").waitForExistence(timeout: 5))
                 let scroll = app.scrollViews["media-preview-scroll"].firstMatch
                 scroll.swipeLeft()
-                XCTAssertTrue(app.navigationBars["2 / 32"].waitForExistence(timeout: 5))
+                XCTAssertTrue(app.galleryPosition("2 / 32").waitForExistence(timeout: 5))
                 scroll.swipeRight()
-                XCTAssertTrue(app.navigationBars["1 / 32"].waitForExistence(timeout: 5))
+                XCTAssertTrue(app.galleryPosition("1 / 32").waitForExistence(timeout: 5))
                 scroll.swipeRight()
-                XCTAssertTrue(app.navigationBars["1 / 32"].exists)
+                XCTAssertTrue(app.galleryPosition("1 / 32").exists)
                 scroll.pinch(withScale: 2, velocity: 1)
                 XCTAssertNotEqual(app.images["media-preview-image"].firstMatch.value as? String, "100%")
                 scroll.swipeLeft()
-                XCTAssertTrue(app.navigationBars["1 / 32"].exists)
+                XCTAssertTrue(app.galleryPosition("1 / 32").exists)
                 app.buttons["閉じる"].tap()
                 XCTAssertTrue(app.descendants(matching: .any)[prefix + "page-00"].firstMatch.isHittable)
                 continue
@@ -84,8 +84,35 @@ final class RecordPagingUITests: XCTestCase {
         let detail = app.scrollViews["record-detail-notes"].firstMatch
         detail.swipeUp()
         assertPage(app, "notes", "page-00")
+        let delete = app.buttons["record-delete-button"]
+        XCTAssertTrue(delete.waitForNonExistence(timeout: 3))
+        detail.swipeDown()
+        XCTAssertTrue(delete.waitForExistence(timeout: 3))
+        detail.swipeUp()
+        XCTAssertTrue(delete.waitForNonExistence(timeout: 3))
         pager.swipeLeft()
         assertPage(app, "notes", "page-01")
+        XCTAssertTrue(delete.waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func testImageGridMinimizesAndRestoresBars() {
+        let app = launch()
+        let tabs = app.tabBars.buttons
+        tabs["画像"].tap()
+        let grid = app.scrollViews["domain-grid-images"]
+        let search = app.buttons["search-button"]
+        XCTAssertTrue(grid.waitForExistence(timeout: 5))
+        XCTAssertTrue(search.isHittable)
+        XCTAssertEqual(tabs.count, 5)
+        grid.swipeUp(velocity: .slow)
+        XCTAssertTrue(search.waitForNonExistence(timeout: 3))
+        XCTAssertEqual(tabs.count, 1)
+        grid.swipeDown()
+        XCTAssertTrue(search.waitForExistence(timeout: 3))
+        if tabs.count == 1 { grid.swipeDown() }
+        XCTAssertTrue(tabs["RSS"].waitForExistence(timeout: 3))
+        XCTAssertEqual(tabs.count, 5)
     }
 
     @MainActor

@@ -55,11 +55,14 @@ struct RecordDetailPagerView: View {
     @EnvironmentObject private var authentication: AuthenticationModel
     @EnvironmentObject private var sync: SyncCoordinator
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var paging: RecordPagingState
     @State private var errorMessage: String?
     @State private var showingDelete = false
     @State private var deleting = false
     @State private var deleteTarget: RecordPageID?
+    @State private var barsMinimized = false
 
     init(pages: [RecordPageID], selection: RecordPageID,
          includesPage: ((RecordPageID) -> Bool)? = nil,
@@ -88,7 +91,12 @@ struct RecordDetailPagerView: View {
                     pagingEnabled: !showingDelete && !deleting,
                     contentRevision: ContentRevision(data: sync.dataRevision, error: errorMessage)) { page in
             RecordDetailContentView(domain: page.domain, id: page.id,
-                                    actionError: page == paging.selection ? errorMessage : nil)
+                                    actionError: page == paging.selection ? errorMessage : nil,
+                                    onScroll: { minimized in
+                                        guard page == paging.selection, !showingDelete, !deleting,
+                                              errorMessage == nil, !voiceOverEnabled else { return }
+                                        setBarsMinimized(minimized)
+                                    })
                 .environmentObject(authentication)
                 .environmentObject(sync)
         }
@@ -98,6 +106,8 @@ struct RecordDetailPagerView: View {
         .accessibilityValue("\(domain.rawValue):\(id)")
         .navigationBarBackButtonHidden(deleting)
         .navigationTitle(domain == .images ? "" : domain.title)
+        .minimizeNavigationWhenScrolling(false)
+        .toolbarVisibility(barsMinimized ? .hidden : .automatic, for: .navigationBar, .tabBar)
         .toolbar {
             if record != nil {
                 if domain == .images {
@@ -133,8 +143,12 @@ struct RecordDetailPagerView: View {
         }
         .task { reconcile(); extendIfNeeded() }
         .onChange(of: paging.selection) { _, _ in
+            setBarsMinimized(false)
             errorMessage = nil
             extendIfNeeded()
+        }
+        .onChange(of: voiceOverEnabled) { _, enabled in
+            if enabled { setBarsMinimized(false) }
         }
         .onChange(of: showingDelete) { _, shown in
             guard !shown && !deleting else { return }
@@ -145,6 +159,13 @@ struct RecordDetailPagerView: View {
             guard !deleting && !showingDelete else { return }
             reconcile()
             extendIfNeeded()
+        }
+    }
+
+    private func setBarsMinimized(_ minimized: Bool) {
+        guard barsMinimized != minimized else { return }
+        withAnimation(reduceMotion ? nil : .smooth(duration: 0.25)) {
+            barsMinimized = minimized
         }
     }
 

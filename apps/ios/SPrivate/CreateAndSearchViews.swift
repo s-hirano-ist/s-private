@@ -178,6 +178,7 @@ struct CreateView: View {
 }
 
 struct SearchView: View {
+    @FocusState private var searchFocused: Bool
     var galleryLoadMedia: (@MainActor (String) async throws -> Data)?
     var galleryDeleteRecord: (@MainActor (String) async throws -> Void)?
     @EnvironmentObject private var sync: SyncCoordinator
@@ -268,6 +269,8 @@ struct SearchView: View {
                 ImageGalleryView(selection: selection, loadMedia: galleryLoadMedia, deleteRecord: galleryDeleteRecord)
             }
             .searchable(text: $query)
+            .searchFocused($searchFocused)
+            .minimizeNavigationWhenScrolling(!searchFocused && !results.isEmpty)
             .onSubmit(of: .search) { Task { await search() } }
             .task(id: query) {
                 do {

@@ -28,6 +28,7 @@ struct DiagnosticsView: View {
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(String(localized: "診断情報"))
+        .minimizeNavigationWhenScrolling()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("diagnostics-view")
     }

@@ -63,6 +63,7 @@ struct RssSubscriptionsView: View {
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
         .navigationTitle(String(localized: "RSSの購読管理"))
+        .minimizeNavigationWhenScrolling()
         .accessibilityIdentifier("rss-subscriptions")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

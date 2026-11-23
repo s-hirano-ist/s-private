@@ -78,7 +78,7 @@ struct DomainListView: View {
                     .overlay { emptyOrLoadingOverlay }
                 } else {
                     VStack(spacing: 0) {
-                        if domain == .articles { articleCategoryFilter }
+                        if domain == .articles && records.isEmpty { articleCategoryFilter }
                         listContent
                             .id(categoryID)
                             .overlay { emptyOrLoadingOverlay }
@@ -93,6 +93,7 @@ struct DomainListView: View {
             .allowsHitTesting(flipID == nil)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
+            .minimizeNavigationWhenScrolling()
             .navigationDestination(for: String.self) { id in
                 RecordDetailPagerView(
                     pages: records.map { RecordPageID(domain: domain, id: $0.id) },
@@ -246,6 +247,12 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
+            if domain == .articles && !records.isEmpty {
+                articleCategoryFilter
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(AppColors.background)
+            }
             if isInitialLoading {
                 ForEach(0..<8) { _ in
                     LoadingContent {
@@ -470,7 +477,9 @@ struct RecordDetailContentView: View {
     let domain: MobileDomain
     let id: String
     var actionError: String?
+    var onScroll: ((Bool) -> Void)?
     @EnvironmentObject private var sync: SyncCoordinator
+    @State private var scrollAnchor: CGFloat?
 
     var body: some View {
         let record = sync.cachedRecord(domain: domain, id: id)
@@ -514,6 +523,30 @@ struct RecordDetailContentView: View {
         .accessibilityIdentifier("record-detail-\(domain.rawValue)")
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
+        .onScrollPhaseChange { _, phase, context in
+            scrollAnchor = phase == .interacting ? context.geometry.readingOffset : nil
+        }
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            geometry.readingOffset
+        } action: { oldOffset, offset in
+            guard let onScroll, let anchor = scrollAnchor else { return }
+            if offset <= 1 {
+                scrollAnchor = offset
+                onScroll(false)
+            } else if abs(anchor - offset) >= 24 {
+                scrollAnchor = offset
+                onScroll(offset > anchor)
+            } else if (offset > anchor && offset < oldOffset) || (offset < anchor && offset > oldOffset) {
+                scrollAnchor = oldOffset
+            }
+        }
+    }
+}
+
+private extension ScrollGeometry {
+    var readingOffset: CGFloat {
+        let range = contentSize.height + contentInsets.top + contentInsets.bottom - containerSize.height
+        return min(max(0, contentOffset.y + contentInsets.top), max(0, range))
     }
 }
 
