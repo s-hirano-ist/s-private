@@ -123,10 +123,12 @@ struct SettingsView: View {
                 .accessibilityValue(authentication.isLoggingOut ? String(localized: "処理中") : "")
                 .disabled(authentication.isLoggingOut || sync.isSynchronizing)
             }
+            .listSectionMargins(.horizontal, AppLayout.inset)
             Section("RSS") {
                 NavigationLink(String(localized: "RSSの購読管理")) { RssSubscriptionsView() }
                     .accessibilityIdentifier("rss-subscriptions-link")
             }
+            .listSectionMargins(.horizontal, AppLayout.inset)
             Section {
                 Toggle(
                     String(localized: "Apple IntelligenceとSpotlightを使用"),
@@ -149,6 +151,7 @@ struct SettingsView: View {
                 Text(String(localized: "有効にすると、保存内容の全文をこの端末の保護されたSpotlightインデックスへ追加します。データは検索とApple Intelligenceによる回答に使われ、サーバーへは送信されません。"))
                     .foregroundStyle(AppColors.mutedForeground)
             }
+            .listSectionMargins(.horizontal, AppLayout.inset)
             Section(String(localized: "同期")) {
                 NavigationLink {
                     SyncManagementView()
@@ -168,6 +171,7 @@ struct SettingsView: View {
                     .foregroundStyle(AppColors.destructive)
                     .disabled(sync.isSynchronizing)
             }
+            .listSectionMargins(.horizontal, AppLayout.inset)
             Section(String(localized: "共有された項目")) {
                 if sharedInbox.items.isEmpty {
                     Text(String(localized: "共有項目はありません"))
@@ -181,10 +185,12 @@ struct SettingsView: View {
                 Button(String(localized: "再読み込み")) { sharedInbox.reload() }
                     .foregroundStyle(AppColors.primary)
             }
+            .listSectionMargins(.horizontal, AppLayout.inset)
             Section {
                 NavigationLink(String(localized: "診断情報")) { DiagnosticsView() }
                     .accessibilityIdentifier("diagnostics-link")
             }
+            .listSectionMargins(.horizontal, AppLayout.inset)
         }
         .listStyle(.insetGrouped)
         .listSectionSpacing(.compact)
