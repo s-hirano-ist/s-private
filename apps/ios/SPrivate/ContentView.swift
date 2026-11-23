@@ -8,13 +8,15 @@ struct ContentView: View {
     @EnvironmentObject private var sync: SyncCoordinator
     @EnvironmentObject private var localIntelligence: LocalIntelligenceCoordinator
     @EnvironmentObject private var navigation: AppNavigationModel
+    @Environment(RssReaderModel.self) private var rss
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @State private var showingRssSettings = false
 
     var body: some View {
         Group {
             if authentication.status == .authenticated {
                 TabView(selection: $navigation.selectedTab) {
-                    RssReaderView(interpretSavedSearch: interpretSavedRssSearch)
+                    RssReaderView(showingSettings: $showingRssSettings, interpretSavedSearch: interpretSavedRssSearch)
                         .tabItem { Label("RSS", systemImage: "dot.radiowaves.left.and.right") }
                         .tag(AppTab.rss)
                     ForEach([MobileDomain.articles, .notes, .images, .books]) { domain in
@@ -24,11 +26,20 @@ struct ContentView: View {
                     }
                 }
                 .tabBarMinimizeBehavior(voiceOverEnabled ? .never : .onScrollDown)
+                .tabViewBottomAccessory(isEnabled: navigation.selectedTab == .rss && !showingRssSettings && rss.isOnline && rss.isLoading) {
+                    RssSyncStatusLabel()
+                        .font(.caption)
+                        .foregroundStyle(AppColors.mutedForeground)
+                        .padding(.horizontal, AppLayout.inset)
+                }
             } else {
                 SignInView(status: authentication.status) {
                     Task { await authentication.logIn() }
                 }
             }
+        }
+        .onChange(of: authentication.status) { _, status in
+            if status != .authenticated { showingRssSettings = false }
         }
     }
 
