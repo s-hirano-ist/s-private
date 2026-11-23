@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.13.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.12.0...s-private-v4.13.0) (2026-11-23)
+
+
+### Features
+
+* **ios:** add immersive browsing controls ([7a6ae31](https://github.com/s-hirano-ist/s-private/commit/7a6ae313c9b31b83c46b4a9a1c9e7b257c96a473))
+* **ios:** show article metadata in the list ([4fc3942](https://github.com/s-hirano-ist/s-private/commit/4fc3942162f316116e726e90f93363585c58a87b))
+* **ios:** streamline content lists and article opening ([82dada7](https://github.com/s-hirano-ist/s-private/commit/82dada7ddc77057dd869264129d2d09fab9a3116))
+
+
+### Bug Fixes
+
+* **ci:** isolate iOS simulator device sets ([b12688f](https://github.com/s-hirano-ist/s-private/commit/b12688f6a864373b84b3d1881812b494b76ad145))
+* **ci:** select a compatible iOS simulator runtime ([6745ff5](https://github.com/s-hirano-ist/s-private/commit/6745ff5b5b1160b8c09bef07872d6e0608d44843))
+* **ios:** present record deletion in an alert ([df53f0a](https://github.com/s-hirano-ist/s-private/commit/df53f0af45b83255a047d907ae2975800688e65f))
+* **ios:** unify reader layouts and interaction styles ([ff5db63](https://github.com/s-hirano-ist/s-private/commit/ff5db630de725c15afe4e1dfda0a61056a19de14))
+* **rss:** bulk insert saved imports to prevent timeouts ([036717f](https://github.com/s-hirano-ist/s-private/commit/036717f7370b55d0c667d26ed37c85a0dddd9d0d))
+* **rss:** keep opened articles unread ([356e336](https://github.com/s-hirano-ist/s-private/commit/356e3364474751686868c5654f40104239fab911))
+* **rss:** 記事を開いても未読のままにする ([fe74ad5](https://github.com/s-hirano-ist/s-private/commit/fe74ad58bce3256ca8e0b1a1dfd0eaf9c0042f2b))
+
+
+### Documentation
+
+* **ios:** reduce RSS scroll fixture load ([debf3fb](https://github.com/s-hirano-ist/s-private/commit/debf3fbb6d259227ee1f9de36746dfd02b6e12be))
+* **ios:** separate zoom geometry from gesture UI checks ([bf08307](https://github.com/s-hirano-ist/s-private/commit/bf0830798a0e2982d14a1c8d03e1678f2ab50a6a))
+* **ios:** stabilize synthetic pinch zoom assertions ([7582891](https://github.com/s-hirano-ist/s-private/commit/7582891e87be9fa82a7033854a1b1203a189cc35))
+* **ios:** verify exported article deletion from its row ([697f0a5](https://github.com/s-hirano-ist/s-private/commit/697f0a5815d004f099747c887e4436e442417c78))
+
+
+### Maintenance
+
+* **ios:** merge main and resolve RSS conflicts ([36b9b72](https://github.com/s-hirano-ist/s-private/commit/36b9b72aeb1384349977c0f37c486fdc765093af))
+* **ios:** merge main into RSS read changes ([e118513](https://github.com/s-hirano-ist/s-private/commit/e11851351b81aa0e8971b6396b285f9faaaf6223))
+* merge main and reconcile iOS UI integration ([f9d9527](https://github.com/s-hirano-ist/s-private/commit/f9d9527c3d536b2f628a770fa3cfa335192f8424))
+
 ## [4.12.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.11.0...s-private-v4.12.0) (2026-11-22)
 
 
