@@ -103,7 +103,10 @@ final class SPrivateUITests: XCTestCase {
 
         let unconfiguredMessage = app.staticTexts["auth0-unconfigured-message"]
         if !unconfiguredMessage.waitForExistence(timeout: 1) {
-            XCTAssertTrue(app.buttons["auth0-login-button"].waitForExistence(timeout: 5))
+            let loginButton = app.buttons["auth0-login-button"]
+            XCTAssertTrue(loginButton.waitForExistence(timeout: 5))
+            XCTAssertTrue(loginButton.isHittable)
+            XCTAssertGreaterThanOrEqual(loginButton.frame.height, 52)
         }
         XCTAssertTrue(app.navigationBars["Memdex"].waitForExistence(timeout: 5))
     }
