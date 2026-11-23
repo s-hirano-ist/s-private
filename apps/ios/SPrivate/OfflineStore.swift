@@ -27,6 +27,8 @@ final class CachedMobileRecord {
     var displayTitle: String?
     var searchText: String?
     var syncGeneration: String?
+    // A nil value on an article identifies rows written before category filtering.
+    var articleCategoryID: String?
 
     init(ownerKey: String, domain: MobileDomain, record: MobileRecord, fetchedAt: Date = Date()) throws {
         cacheKey = "\(ownerKey):\(domain.rawValue):\(record.id)"
@@ -39,6 +41,7 @@ final class CachedMobileRecord {
         createdAt = record.createdAt
         displayTitle = record.displayTitle
         searchText = Self.searchableText(for: record)
+        articleCategoryID = domain == .articles ? (record.categoryId ?? "") : nil
     }
 
     func update(_ record: MobileRecord, generation: String? = nil) throws {
@@ -48,6 +51,9 @@ final class CachedMobileRecord {
         createdAt = record.createdAt
         displayTitle = record.displayTitle
         searchText = Self.searchableText(for: record)
+        if domainValue == MobileDomain.articles.rawValue {
+            articleCategoryID = record.categoryId ?? ""
+        }
         fetchedAt = Date()
         if let generation { syncGeneration = generation }
     }

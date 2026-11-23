@@ -161,6 +161,8 @@ struct RssTests {
         await restored.restoreCache()
         restored.setOnline(false)
         #expect(restored.snapshot == rss.snapshot)
+        #expect(restored.totalCount(for: .unread) == 121)
+        #expect(restored.totalCount(for: .saved) == 65)
         #expect(!restored.canMutate)
         await restored.synchronize(manual: true)
         #expect(client.refreshes == 0)
@@ -182,6 +184,35 @@ struct RssTests {
         await restored.restoreCache()
         #expect(restored.snapshot == old)
         #expect(rss.errorMessage != nil)
+    }
+
+    @Test("Initial RSS pages expose total counts before downloading the remaining entries")
+    func initialCounts() async throws {
+        let client = RssTestClient()
+        client.unread = (0..<51).map { entry($0) }
+        client.saved = (0..<52).map { entry($0, saved: true) }
+        let rss = model(client, container: try container())
+        #expect(rss.totalCount(for: .unread) == nil)
+        var release: CheckedContinuation<Void, Never>?
+        client.beforePage = {
+            guard client.requests.last?.1 == 50 else { return }
+            client.beforePage = nil
+            await withCheckedContinuation { release = $0 }
+        }
+        defer { release?.resume() }
+        let sync = Task { await rss.synchronize() }
+        try await waitFor { release != nil }
+        #expect(!rss.isComplete)
+        #expect(rss.snapshot.unread.count == 50)
+        #expect(rss.totalCount(for: .unread) == 51)
+        #expect(rss.totalCount(for: .saved) == 52)
+        release?.resume()
+        release = nil
+        await sync.value
+        await rss.markRead([entry(0)])
+        await rss.toggleSaved(rss.snapshot.saved[0])
+        #expect(rss.totalCount(for: .unread) == 50)
+        #expect(rss.totalCount(for: .saved) == 51)
     }
 
     @Test("Repeated pages retry once without an infinite loop")

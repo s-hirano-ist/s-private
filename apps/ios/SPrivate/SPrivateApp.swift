@@ -15,6 +15,10 @@ struct SPrivateApp: App {
     private let useListFixtures: Bool
     #if DEBUG
     private let rssFixtureClient: RssFixtureClient?
+    @State private var openedArticleURL: URL?
+    private var usesArticleFixtures: Bool {
+        useListFixtures && ProcessInfo.processInfo.arguments.contains("-ui-testing-article-links")
+    }
     #endif
 
     init() {
@@ -62,9 +66,12 @@ struct SPrivateApp: App {
                 rss.useFixtures(offline: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-offline"), live: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed"))
             }
             try! coordinator.cache(domain: .articles, records: [
-                Self.fixtureRecord(id: "article-short", title: "Short article"),
-                Self.fixtureRecord(id: "article-long", title: "A long article title that wraps neatly across two lines"),
+                Self.fixtureRecord(id: "article-short", title: "Short article", categoryID: "reading"),
+                Self.fixtureRecord(id: "article-long", title: "A long article title that wraps neatly across two lines", categoryID: "archive"),
             ])
+            container.mainContext.insert(CachedMobileCategory(ownerKey: authentication.ownerKey, category: .init(id: "reading", name: "Reading")))
+            container.mainContext.insert(CachedMobileCategory(ownerKey: authentication.ownerKey, category: .init(id: "archive", name: "Archive")))
+            try! container.mainContext.save()
             try! coordinator.cache(domain: .notes, records: [
                 Self.fixtureRecord(id: "note-short", title: "Short note"),
                 Self.fixtureRecord(id: "note-long", title: "長いノートのタイトルでも、文字と遷移アイコンが重ならず二行で表示される"),
@@ -77,7 +84,8 @@ struct SPrivateApp: App {
                 for domain in MobileDomain.allCases {
                     let records = (0..<32).map { index in
                         let record = Self.fixtureRecord(id: String(format: "page-%02d", index), title: index == 0 ? "Cross-domain \(domain.rawValue)" : "Paging \(domain.rawValue) \(index)", status: .exported, createdAt: Date(timeIntervalSince1970: Double(1000 - index)), imagePath: domain == .books ? "fixture.jpg" : nil,
-                                                        markdown: domain == .notes ? (0..<60).map { "Paragraph \($0): Long note content for continuous paging." }.joined(separator: "\n\n") : nil)
+                                                        markdown: domain == .notes ? (0..<60).map { "Paragraph \($0): Long note content for continuous paging." }.joined(separator: "\n\n") : nil,
+                                                        categoryID: domain == .articles ? (index == 0 ? "archive" : "reading") : nil)
                         if domain == .images || domain == .books {
                             let image = UIGraphicsImageRenderer(size: CGSize(width: 60, height: 90)).jpegData(withCompressionQuality: 0.8) { context in
                                 UIColor.systemBlue.setFill()
@@ -116,6 +124,11 @@ struct SPrivateApp: App {
                     #if DEBUG
                     if useListFixtures && ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-fixtures") {
                         action = OpenURLAction { _ in .handled }
+                    } else if usesArticleFixtures {
+                        action = OpenURLAction { url in
+                            openedArticleURL = url
+                            return .handled
+                        }
                     }
                     #endif
                 }
@@ -176,9 +189,18 @@ struct SPrivateApp: App {
             MediaLoadingFixtureView()
         } else {
             ContentView()
+                .environment(\.articleDeleteFailureFixtureID, usesArticleFixtures ? "article-long" : nil)
                 .safeAreaInset(edge: .top) {
                     if let rssFixtureClient, rssFixtureClient.controlledPages || rssFixtureClient.controlledMutations {
                         RssFixtureControls(client: rssFixtureClient)
+                    }
+                }
+                .overlay(alignment: .top) {
+                    if usesArticleFixtures, let openedArticleURL {
+                        Text(openedArticleURL.absoluteString)
+                            .font(.caption)
+                            .accessibilityIdentifier("opened-article-url")
+                            .allowsHitTesting(false)
                     }
                 }
         }
@@ -194,10 +216,10 @@ struct SPrivateApp: App {
     }
 
     #if DEBUG
-    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported, createdAt: Date = .now, imagePath: String? = nil, markdown: String? = nil) -> MobileRecord {
+    private static func fixtureRecord(id: String, title: String, status: MobileContentStatus = .unexported, createdAt: Date = .now, imagePath: String? = nil, markdown: String? = nil, categoryID: String? = nil) -> MobileRecord {
         MobileRecord(
             id: id, status: status, createdAt: createdAt, updatedAt: createdAt,
-            exportedAt: nil, title: title, url: nil, quote: nil, categoryId: nil,
+            exportedAt: nil, title: title, url: categoryID.map { _ in "https://example.com/\(id)" }, quote: nil, categoryId: categoryID,
             categoryName: nil, markdown: markdown, isbn: nil, rating: nil, tags: nil,
             path: nil, imagePath: imagePath, contentType: nil, fileSize: nil
         )

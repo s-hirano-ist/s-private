@@ -12,7 +12,7 @@ navigation=(
   SPrivateUITests/SPrivateUITests/testFourDomainTabsDefaultToExportedAndToggleWithOneTap
   SPrivateUITests/SPrivateUITests/testDomainTabsFollowSystemLanguage
   SPrivateUITests/SPrivateUITests/testArticleAndNoteEmptyStatesDoNotCreateBlankRows
-  SPrivateUITests/SPrivateUITests/testArticleAndNoteRowsShowLongTitlesAndOpenDetails
+  SPrivateUITests/SPrivateUITests/testArticleAndNoteRowsShowLongTitlesAndOpenTheirDestinations
 )
 selection=()
 case "$group" in

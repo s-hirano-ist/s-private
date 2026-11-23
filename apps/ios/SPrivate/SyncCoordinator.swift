@@ -102,12 +102,25 @@ final class SyncCoordinator: ObservableObject {
         ImageGallerySelection(ids: cached(domain: .images).filter { $0.status == status }.map(\.id), selectedID: selectedID, statusFilter: status)
     }
 
-    func cachedPage(domain: MobileDomain, status: MobileContentStatus?, offset: Int, limit: Int = 30) -> (records: [MobileRecord], hasMore: Bool) {
+    func cachedCount(domain: MobileDomain, status: MobileContentStatus) -> Int? {
+        let owner = authentication.ownerKey
+        let domainValue = domain.rawValue
+        let statusValue = status.rawValue
+        return try? context.fetchCount(FetchDescriptor<CachedMobileRecord>(predicate: #Predicate {
+            $0.ownerKey == owner && $0.domainValue == domainValue && $0.statusValue == statusValue
+        }))
+    }
+
+    func cachedPage(domain: MobileDomain, status: MobileContentStatus?, categoryID: String? = nil, offset: Int, limit: Int = 30) -> (records: [MobileRecord], hasMore: Bool) {
         let owner = authentication.ownerKey
         let domainValue = domain.rawValue
         let statusValue = status?.rawValue
         var descriptor = FetchDescriptor<CachedMobileRecord>(
-            predicate: #Predicate { $0.ownerKey == owner && $0.domainValue == domainValue && (statusValue == nil || $0.statusValue == statusValue) },
+            predicate: #Predicate {
+                $0.ownerKey == owner && $0.domainValue == domainValue &&
+                (statusValue == nil || $0.statusValue == statusValue) &&
+                (categoryID == nil || $0.articleCategoryID == categoryID)
+            },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse), SortDescriptor(\.recordID, order: .reverse)]
         )
         descriptor.fetchOffset = offset
@@ -153,18 +166,26 @@ final class SyncCoordinator: ObservableObject {
     }
 
     private func migrateLegacyMetadata() async {
+        let articleDomain = MobileDomain.articles.rawValue
         while !Task.isCancelled {
-            var descriptor = FetchDescriptor<CachedMobileRecord>(predicate: #Predicate { $0.recordID == nil || $0.searchText == nil })
+            var descriptor = FetchDescriptor<CachedMobileRecord>(predicate: #Predicate {
+                $0.recordID == nil || $0.searchText == nil ||
+                ($0.domainValue == articleDomain && $0.articleCategoryID == nil)
+            })
             descriptor.fetchLimit = 100
             guard let rows = try? context.fetch(descriptor), !rows.isEmpty else { return }
             for item in rows {
                 if let record = try? MobileAPICoding.decoder().decode(MobileRecord.self, from: item.recordData) {
-                    try? item.update(record)
+                    if item.recordID == nil || item.searchText == nil {
+                        do { try item.update(record) } catch { return }
+                    } else {
+                        item.articleCategoryID = record.categoryId ?? ""
+                    }
                 } else {
                     context.delete(item)
                 }
             }
-            try? context.save()
+            do { try context.save() } catch { context.rollback(); return }
             dataRevision += 1
             await Task.yield()
         }
