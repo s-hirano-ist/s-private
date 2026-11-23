@@ -26,7 +26,9 @@
 "未公開" = "Unexported";
 "更新済み" = "Updated";
 "公開済み" = "Exported";
-"Safariで開く" = "Open in Safari";
+"記事のリンクを開けません" = "Couldn’t open the article link";
+"カテゴリで絞り込み" = "Filter by category";
+"すべてのカテゴリ" = "All categories";
 "評価" = "Rating";
 "閉じる" = "Close";
 "削除" = "Delete";
@@ -85,7 +87,8 @@
 "サーバーの処理に失敗しました。再試行してください" = "The server could not complete the action. Try again.";
 "未読" = "Unread";
 "保存済み" = "Saved";
-"RSSの表示" = "RSS view";
+"保存済みに切り替え" = "Switch to saved";
+"未読に切り替え" = "Switch to unread";
 "購読で絞り込み" = "Filter subscriptions";
 "すべての購読" = "All subscriptions";
 "新着 %lld件を表示" = "Show %lld new articles";

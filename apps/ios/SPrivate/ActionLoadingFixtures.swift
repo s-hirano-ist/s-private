@@ -9,7 +9,7 @@ struct ActionLoadingFixtureView: View {
     @State private var fail = false
     @State private var calls = 0
     private var domain: MobileDomain {
-        ProcessInfo.processInfo.arguments.contains("-action-image") ? .images : .articles
+        ProcessInfo.processInfo.arguments.contains("-action-image") ? .images : .notes
     }
 
     var body: some View {

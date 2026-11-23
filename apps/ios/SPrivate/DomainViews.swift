@@ -9,10 +9,15 @@ struct DomainListView: View {
     @EnvironmentObject private var sync: SyncCoordinator
     @EnvironmentObject private var navigation: AppNavigationModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openURL) private var openURL
     @State private var records: [MobileRecord] = []
     @State private var navigationPath: [String] = []
     @State private var hasMore = false
     @State private var status: MobileContentStatus = .exported
+    @State private var totalCount: Int?
+    @State private var categories: [MobileCategory] = []
+    @State private var categoryID: String?
+    @State private var openingArticleFailed = false
     @State private var errorMessage: String?
     @State private var gallery: ImageGallerySelection?
     @State private var showingCreate = false
@@ -72,8 +77,12 @@ struct DomainListView: View {
                     .accessibilityIdentifier("domain-grid-\(domain.rawValue)")
                     .overlay { emptyOrLoadingOverlay }
                 } else {
-                    listContent
-                        .overlay { emptyOrLoadingOverlay }
+                    VStack(spacing: 0) {
+                        if domain == .articles { articleCategoryFilter }
+                        listContent
+                            .id(categoryID)
+                            .overlay { emptyOrLoadingOverlay }
+                    }
                 }
             }
             .id(status)
@@ -101,11 +110,12 @@ struct DomainListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(action: toggleStatus) {
-                        Image(systemName: status == .exported ? "eye" : "eye.slash")
-                    }
-                    .accessibilityLabel(status.localizedTitle)
-                    .accessibilityHint(status == .exported ? String(localized: "未公開に切り替え") : String(localized: "公開済みに切り替え"))
+                    ContentStatusToggle(
+                        title: status.localizedTitle,
+                        nextTitle: status == .exported ? String(localized: "未公開に切り替え") : String(localized: "公開済みに切り替え"),
+                        symbol: status == .exported ? "eye" : "eye.slash",
+                        count: totalCount
+                    ) { toggleStatus() }
                     .accessibilityIdentifier("status-filter")
                     .disabled(flipID != nil)
                 }
@@ -151,6 +161,9 @@ struct DomainListView: View {
             .onChange(of: navigation.recordRequest) { _, request in
                 handleRecordRequest(request)
             }
+            .alert(String(localized: "記事のリンクを開けません"), isPresented: $openingArticleFailed) {
+                Button("OK", role: .cancel) {}
+            }
         }
         .onAppear {
             loadLocal()
@@ -169,19 +182,28 @@ struct DomainListView: View {
     }
 
     private func handleRecordRequest(_ request: RecordNavigationRequest?) {
-        guard let request, request.domain == domain else { return }
-        navigationPath = [request.recordID]
+        guard let request, request.domain == domain, navigation.recordRequest?.id == request.id else { return }
         navigation.consumeRecordRequest(id: request.id)
+        if domain == .articles {
+            openURL.openArticle(sync.cachedRecord(domain: domain, id: request.recordID)) {
+                openingArticleFailed = true
+            }
+        } else {
+            navigationPath = [request.recordID]
+        }
     }
 
     private func toggleStatus() {
         guard flipID == nil else { return }
         let nextStatus: MobileContentStatus = status == .exported ? .unexported : .exported
         let revision = sync.dataRevision
-        let preparedPage = sync.cachedPage(domain: domain, status: nextStatus, offset: 0)
+        let preparedPage = sync.cachedPage(domain: domain, status: nextStatus, categoryID: categoryID, offset: 0)
         let applyStatus = {
-            let page = revision == sync.dataRevision ? preparedPage : sync.cachedPage(domain: domain, status: nextStatus, offset: 0)
+            let page = revision == sync.dataRevision ? preparedPage : sync.cachedPage(
+                domain: domain, status: nextStatus, categoryID: categoryID, offset: 0
+            )
             status = nextStatus
+            totalCount = sync.cachedCount(domain: domain, status: nextStatus)
             records = page.records
             hasMore = page.hasMore
             errorMessage = sync.syncError
@@ -241,18 +263,11 @@ struct DomainListView: View {
                     .appContentRow()
             }
             ForEach(records) { record in
-                NavigationLink(value: record.id) {
-                    HStack(spacing: AppLayout.inset) {
-                        Image(systemName: domain.symbol)
-                            .font(.system(size: 22))
-                            .frame(width: 28)
-                            .foregroundStyle(AppColors.primary)
-                            .accessibilityHidden(true)
-                        VStack(alignment: .leading, spacing: AppLayout.small) {
-                            Text(record.displayTitle).font(.headline).lineLimit(2)
-                            Text(record.status.localizedTitle).font(.caption).foregroundStyle(AppColors.mutedForeground)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                Group {
+                    if domain == .articles {
+                        ArticleLinkRow(id: record.id) { recordLabel(record) }
+                    } else {
+                        NavigationLink(value: record.id) { recordLabel(record) }
                     }
                 }
                 .accessibilityIdentifier("domain-record-\(record.id)")
@@ -270,6 +285,39 @@ struct DomainListView: View {
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
         .accessibilityIdentifier("domain-list-\(domain.rawValue)")
+    }
+
+    private func recordLabel(_ record: MobileRecord) -> some View {
+        HStack(spacing: AppLayout.inset) {
+            Image(systemName: domain.symbol)
+                .font(.system(size: 22))
+                .frame(width: 28)
+                .foregroundStyle(AppColors.primary)
+                .accessibilityHidden(true)
+            Text(record.displayTitle).font(.headline).lineLimit(2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var articleCategoryFilter: some View {
+        Picker(String(localized: "カテゴリで絞り込み"), selection: Binding(get: { categoryID }, set: { newID in
+            categoryID = newID
+            loadLocal(limit: 30)
+        })) {
+            Text(String(localized: "すべてのカテゴリ")).tag(nil as String?)
+            ForEach(categories, id: \.id) { category in
+                Text(category.name).tag(Optional(category.id))
+            }
+        }
+        .pickerStyle(.menu)
+        .labelsHidden()
+        .appTapTarget()
+        .accessibilityValue(categories.first(where: { $0.id == categoryID })?.name ?? String(localized: "すべてのカテゴリ"))
+        .accessibilityIdentifier("article-category-filter")
+        .disabled(flipID != nil)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, AppLayout.inset)
+        .padding(.vertical, AppLayout.medium)
     }
 
     private var gridFooter: some View {
@@ -295,16 +343,24 @@ struct DomainListView: View {
         }
     }
 
-    private func loadLocal() {
-        let count = max(records.count, 30)
-        let page = sync.cachedPage(domain: domain, status: status, offset: 0, limit: count)
+    private func loadLocal(limit: Int? = nil) {
+        var pageLimit = limit ?? max(records.count, 30)
+        if domain == .articles {
+            categories = sync.cachedCategories()
+            if let categoryID, !categories.contains(where: { $0.id == categoryID }) {
+                self.categoryID = nil
+                pageLimit = 30
+            }
+        }
+        let page = sync.cachedPage(domain: domain, status: status, categoryID: categoryID, offset: 0, limit: pageLimit)
         records = page.records
         hasMore = page.hasMore
+        totalCount = sync.cachedCount(domain: domain, status: status)
         errorMessage = sync.syncError
     }
 
     private func loadNextPage() {
-        let page = sync.cachedPage(domain: domain, status: status, offset: records.count, limit: 30)
+        let page = sync.cachedPage(domain: domain, status: status, categoryID: categoryID, offset: records.count, limit: 30)
         records.append(contentsOf: page.records)
         hasMore = page.hasMore
     }
@@ -435,20 +491,11 @@ struct RecordDetailContentView: View {
                     if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                     if let record {
                         Text(record.displayTitle).font(.title2.bold())
-                        if domain != .books {
-                            Text(record.status.localizedTitle).foregroundStyle(AppColors.mutedForeground)
-                        }
                         switch domain {
-                        case .articles:
-                            if let categoryName = record.categoryName { Text(categoryName) }
-                            if let quote = record.quote, !quote.isEmpty { Text(quote) }
-                            if let urlString = record.url, let url = URL(string: urlString) {
-                                Link(String(localized: "Safariで開く"), destination: url)
-                            }
+                        case .articles, .images:
+                            EmptyView()
                         case .notes:
                             NativeMarkdownView(source: record.markdown ?? "")
-                        case .images:
-                            EmptyView()
                         case .books:
                             if record.imagePath != nil {
                                 AuthenticatedImageView(domain: .books, id: id)

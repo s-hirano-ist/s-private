@@ -1,5 +1,29 @@
 import SwiftUI
 
+struct ContentStatusToggle: View {
+    let title: String
+    let nextTitle: String
+    let symbol: String
+    let count: Int?
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: AppLayout.small) {
+                Image(systemName: symbol)
+                if let count {
+                    Text(count, format: .number)
+                        .font(.subheadline.monospacedDigit())
+                }
+            }
+        }
+        .accessibilityLabel(count.map {
+            String(format: String(localized: "%@ (%lld)"), locale: .current, title, $0)
+        } ?? title)
+        .accessibilityHint(nextTitle)
+    }
+}
+
 struct AppEmptyState: View {
     let title: String
     let symbol: String

@@ -19,6 +19,7 @@ final class RssReaderModel {
     private(set) var dataRevision = 0
     private(set) var pendingKeys: Set<String> = []
     private(set) var isClearingCache = false
+    private var firstPageCounts: [RssList: Int] = [:]
     @ObservationIgnored private let cache: RssCacheStore
     @ObservationIgnored private let client: any RssClient
     @ObservationIgnored private let authenticated: () -> Bool
@@ -118,6 +119,13 @@ final class RssReaderModel {
 
     func restoreCache() async { await restorationTask?.value }
 
+    func totalCount(for list: RssList) -> Int? {
+        if isComplete {
+            return list == .unread ? snapshot.unread.count : snapshot.saved.count
+        }
+        return firstPageCounts[list]
+    }
+
     func setOnline(_ online: Bool) {
         guard online != isOnline else { return }
         isOnline = online
@@ -216,6 +224,7 @@ final class RssReaderModel {
                 let firstUnread = try await client.rssPage(.unread, offset: 0, snapshotRevision: nil)
                 try checkRead(current, version)
                 try validateFirstPage(firstUnread)
+                firstPageCounts[.unread] = firstUnread.count
                 receivedFirstPage(.unread)
                 if !isComplete {
                     snapshot.feeds = firstUnread.feeds
@@ -225,6 +234,7 @@ final class RssReaderModel {
                 let firstSaved = try await client.rssPage(.saved, offset: 0, snapshotRevision: nil)
                 try checkRead(current, version)
                 try validateFirstPage(firstSaved)
+                firstPageCounts[.saved] = firstSaved.count
                 receivedFirstPage(.saved)
                 if !isComplete { snapshot.saved = firstSaved.entries; changed() }
                 let unread = try await download(.unread, first: firstUnread, session: current, version: version)
@@ -534,6 +544,7 @@ final class RssReaderModel {
         lastAttempt = nil
         isLoading = false
         firstPages = []
+        firstPageCounts = [:]
         finishRefreshWaiters()
         isMutating = false
     }

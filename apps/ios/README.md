@@ -243,15 +243,20 @@ from the Search toolbar and still shows shared inbox
 items from the feasibility test.
 Markdown is rendered with native SwiftUI views and no WebView.
 
-Article, note, and book details opened from lists support horizontal paging.
+Article rows open their URL from the list or search. Use the category menu to
+filter the article list and swipe an article row to delete it after confirmation.
+Each list's status toggle displays the total for the selected status. RSS uses
+the same control to switch between unread and saved items.
+
+Note and book details opened from lists support horizontal paging.
 The native scroll-style page controller retains current/adjacent detail views
 through each interactive transition. Selection commits when the transition
 completes; cancelled gestures keep the original item. Sequence changes from
 sync or pagination are applied after the gesture settles.
 Swipe left for the next item and right for the previous item; endpoints do not
 wrap. Lists preserve the domain, status filter, and opening order, loading another
-30 cached records near the end. Non-image search results open a detail pager that
-follows the submitted result order across domains. Sync removes missing or
+30 cached records near the end. Note and book search results open a detail pager
+that follows the submitted order of note, book, and image results. Sync removes missing or
 filtered-out records without inserting new arrivals into the open sequence.
 Delete confirmation captures the selected item; success returns to the originating
 list or search. Paging and back navigation pause while deletion is pending.
