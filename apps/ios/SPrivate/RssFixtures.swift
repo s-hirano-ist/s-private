@@ -197,9 +197,27 @@
         return model
     }
 
-    #Preview("RSS — Unread") { RssReaderView().environment(rssPreview()).environmentObject(AppNavigationModel()) }
-    #Preview("RSS — Refresh error") { RssReaderView().environment(rssPreview(error: true)).environmentObject(AppNavigationModel()) }
-    #Preview("RSS — Offline") { RssReaderView().environment(rssPreview(offline: true)).environmentObject(AppNavigationModel()) }
-    #Preview("RSS — Saved search") { RssReaderView(initialList: .saved).environment(rssPreview()).environmentObject(AppNavigationModel()) }
+    private struct RssReaderPreview: View {
+        let list: RssList
+        @State private var rss: RssReaderModel
+        @StateObject private var navigation = AppNavigationModel()
+        @State private var showingSettings = false
+
+        init(list: RssList = .unread, offline: Bool = false, error: Bool = false) {
+            self.list = list
+            _rss = State(initialValue: rssPreview(offline: offline, error: error))
+        }
+
+        var body: some View {
+            RssReaderView(initialList: list, showingSettings: $showingSettings)
+                .environment(rss)
+                .environmentObject(navigation)
+        }
+    }
+
+    #Preview("RSS — Unread") { RssReaderPreview() }
+    #Preview("RSS — Refresh error") { RssReaderPreview(error: true) }
+    #Preview("RSS — Offline") { RssReaderPreview(offline: true) }
+    #Preview("RSS — Saved search") { RssReaderPreview(list: .saved) }
     #Preview("RSS — Subscriptions") { NavigationStack { RssSubscriptionsView().environment(rssPreview()) } }
 #endif

@@ -270,6 +270,52 @@ final class RssUITests: XCTestCase {
     }
 
     @MainActor
+    func testSyncStatusFollowsTheTabBarWhileRemainingPagesLoad() {
+        let app = launch(delayed: true, controlledPages: true)
+        holdRemainingPages(app)
+        app.buttons["rss-refresh"].tap()
+        waitForHeldPage(app)
+
+        let status = app.staticTexts["rss-loading"].firstMatch
+        let rssTab = app.tabBars.buttons["RSS"].firstMatch
+        let imagesTab = app.tabBars.buttons["画像"].firstMatch
+        let reader = app.collectionViews["rss-reader"].firstMatch
+        XCTAssertTrue(status.waitForExistence(timeout: 5))
+        XCTAssertTrue(imagesTab.exists)
+        let expandedY = status.frame.midY
+        XCTAssertLessThan(status.frame.maxY, rssTab.frame.minY)
+        attach(app, name: "rss-sync-status-expanded")
+
+        reader.swipeUp(velocity: .slow)
+        XCTAssertTrue(imagesTab.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(status.isHittable)
+        XCTAssertGreaterThan(status.frame.midY, expandedY)
+        XCTAssertTrue((rssTab.frame.minY...rssTab.frame.maxY).contains(status.frame.midY))
+        attach(app, name: "rss-sync-status-compact")
+
+        rssTab.tap()
+        XCTAssertTrue(imagesTab.waitForExistence(timeout: 5))
+        XCTAssertLessThan(status.frame.maxY, rssTab.frame.minY)
+
+        imagesTab.tap()
+        XCTAssertTrue(status.waitForNonExistence(timeout: 5))
+        rssTab.tap()
+        XCTAssertTrue(status.waitForExistence(timeout: 5))
+
+        let settings = app.buttons["settings-link"]
+        if !settings.exists { reader.swipeDown(velocity: .fast) }
+        XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        settings.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["settings-view"].waitForExistence(timeout: 5))
+        XCTAssertTrue(status.waitForNonExistence(timeout: 5))
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(status.waitForExistence(timeout: 5))
+
+        releaseRemainingPages(app)
+        XCTAssertTrue(status.waitForNonExistence(timeout: 5))
+    }
+
+    @MainActor
     func testSavingDifferentArticlesDuringRefreshSurvivesTabNavigation() {
         let app = launch(delayed: true, controlledPages: true)
         holdRemainingPages(app)
