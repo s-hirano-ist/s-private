@@ -82,6 +82,17 @@ test("local execution defaults to all tests and rejects unknown groups", () => {
 	assert.equal(result.status, 2);
 });
 
+function runtime(version, device, { suffix = "", isAvailable = true } = {}) {
+	return {
+		identifier: `com.apple.CoreSimulator.SimRuntime.iOS-${version.replaceAll(".", "-")}${suffix}`,
+		version,
+		isAvailable,
+		supportedDeviceTypes: [
+			{ identifier: `com.apple.CoreSimulator.SimDeviceType.${device}` },
+		],
+	};
+}
+
 function simulatorStartup(environment = {}) {
 	const directory = mkdtempSync(join(tmpdir(), "ios-startup-"));
 	try {
@@ -111,6 +122,19 @@ function simulatorStartup(environment = {}) {
     CI Audit iPhone 17 (custom-device) (Booted)
 `,
 		);
+		const runtimes = join(directory, "runtimes.json");
+		writeFileSync(
+			runtimes,
+			JSON.stringify({
+				runtimes: [
+					runtime("27.1", "iPhone-17"),
+					runtime("27.0", "iPhone-17"),
+					runtime("27.2", "iPhone-18-Pro", { suffix: "-iPhone19-4" }),
+					runtime("27.3", "iPhone-17", { isAvailable: false }),
+					runtime("28.0", "iPhone-17"),
+				],
+			}),
+		);
 		const command = `#!/usr/bin/env node
 const fs = require("node:fs");
 const name = require("node:path").basename(process.argv[1]);
@@ -121,9 +145,8 @@ if (name === "xcrun") {
   if (command === "list" && kind === "devices") {
     process.stdout.write(fs.readFileSync(process.env.IOS_DEVICE_LIST));
   }
-  if (command === "list" && kind === "runtimes") {
-    console.log("iOS 27.0 (27.0) - com.apple.CoreSimulator.SimRuntime.iOS-27-0");
-    console.log("iOS 28.0 (28.0) - com.apple.CoreSimulator.SimRuntime.iOS-28-0");
+  if (command === "list" && kind === "--json") {
+    process.stdout.write(fs.readFileSync(process.env.IOS_RUNTIME_LIST));
   }
   if (command === "create") console.log("isolated-device");
   if (command === "bootstatus" && process.env.IOS_BOOT_FAILURE === "1") process.exit(1);
@@ -141,6 +164,7 @@ if (name === "xcrun") {
 				PATH: `${bin}:${process.env.PATH}`,
 				IOS_STARTUP_LOG: log,
 				IOS_DEVICE_LIST: devices,
+				IOS_RUNTIME_LIST: runtimes,
 				IOS_SIMULATOR_UDID: "",
 				IOS_TEST_GROUP: "all",
 				IOS_TEST_ISOLATED_SIMULATOR: "",
@@ -241,7 +265,7 @@ test("CI isolates the device set throughout Simulator preparation and XCTest", (
 	);
 	assert.equal(
 		simulatorCalls[1].args.at(-1),
-		"com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+		"com.apple.CoreSimulator.SimRuntime.iOS-27-1",
 	);
 	for (const { args } of simulatorCalls.slice(2)) {
 		assert.equal(args[4], "isolated-device");

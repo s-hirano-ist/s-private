@@ -59,15 +59,26 @@ if [[ "${IOS_TEST_ISOLATED_SIMULATOR:-}" == 1 && -z "${IOS_SIMULATOR_UDID:-}" ]]
     rm -rf -- "$device_set"
   }
   trap cleanup_device_set EXIT
-  runtime="$("${simctl[@]}" list runtimes available | awk '
-    $NF ~ /^com\.apple\.CoreSimulator\.SimRuntime\.iOS-27-/ { runtime = $NF }
-    END { print runtime }
-  ')"
+  device_type=com.apple.CoreSimulator.SimDeviceType.iPhone-17
+  # The hosted image can also include runtimes restricted to a specific model.
+  runtime="$(
+    "${simctl[@]}" list --json runtimes available | node -e '
+      const { runtimes } = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
+      const deviceType = process.argv[1];
+      const compatible = runtimes.filter(({ identifier, isAvailable, supportedDeviceTypes }) =>
+        isAvailable && identifier.startsWith("com.apple.CoreSimulator.SimRuntime.iOS-27-") &&
+        supportedDeviceTypes?.some(({ identifier }) => identifier === deviceType)
+      );
+      compatible.sort((a, b) => b.version.localeCompare(a.version, "en", { numeric: true }));
+      if (compatible.length) console.log(compatible[0].identifier);
+    ' "$device_type"
+  )"
   if [[ -z "$runtime" ]]; then
-    echo 'No available iOS 27 Simulator runtime was found.' >&2
+    echo 'No available iOS 27 Simulator runtime supports iPhone 17.' >&2
     exit 1
   fi
-  device_id="$("${simctl[@]}" create 'CI iPhone 17' com.apple.CoreSimulator.SimDeviceType.iPhone-17 "$runtime")"
+  printf 'Creating an isolated iPhone 17 with runtime %s\n' "$runtime"
+  device_id="$("${simctl[@]}" create 'CI iPhone 17' "$device_type" "$runtime")"
   device_state=Shutdown
 else
   device_info="$(
