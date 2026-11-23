@@ -43,6 +43,29 @@ struct ContentStatusToggle: View {
     }
 }
 
+struct NavigationFilterMenu<Options: View>: View {
+    let title: String
+    let selection: String
+    @ViewBuilder let options: () -> Options
+
+    var body: some View {
+        Menu(content: options) {
+            HStack(spacing: AppLayout.tiny) {
+                Text(selection)
+                    .font(.caption.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.semibold))
+                    .accessibilityHidden(true)
+            }
+            .frame(minWidth: AppLayout.minimumTarget, maxWidth: 104, minHeight: AppLayout.minimumTarget)
+        }
+        .accessibilityLabel(title)
+        .accessibilityValue(selection)
+    }
+}
+
 struct AppEmptyState: View {
     let title: String
     let symbol: String

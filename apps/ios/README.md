@@ -235,11 +235,12 @@ matching the Web app. RSS is initially selected after launch or sign-in.
 The domain name appears in the tab bar, so list screens have no duplicate title
 in the top navigation bar.
 While reading a long list or browsing a grid, scrolling toward later items
-minimizes the tab bar and the top navigation bar. Reverse direction to restore
+minimizes the tab bar and the top navigation bar. The list or grid extends
+behind the compact tab bar. Reverse direction to restore
 the top bar. To expand the tab bar, scroll back to the top or tap the compact
 tab. On iOS 27.0 devices, list screens keep the top bar visible and still
-minimize the tab bar. Article category and RSS subscription controls scroll
-with their lists. VoiceOver keeps the navigation controls visible.
+minimize the tab bar. The article category and unread RSS subscription menus
+are in the top navigation bar. VoiceOver keeps the navigation controls visible.
 The status button uses an eye for exported records and a crossed-out eye for
 unexported records, with the current status and next action available to VoiceOver.
 Switching flips the list around its vertical axis in 0.4 seconds, replacing the
@@ -256,6 +257,8 @@ Article rows open their URL from the list or search. Use the category menu to
 filter the article list and swipe an article row to delete it after confirmation.
 Each list's status toggle displays the total for the selected status. RSS uses
 the same control to switch between unread and saved items.
+The article and note lists and the image and book grids automatically load
+the next 30 locally cached records when you reach the end of the current batch.
 
 Note and book details opened from lists support horizontal paging.
 The native scroll-style page controller retains current/adjacent detail views

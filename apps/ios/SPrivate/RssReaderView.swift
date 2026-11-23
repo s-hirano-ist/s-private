@@ -70,10 +70,21 @@ struct RssReaderView: View {
                         .listRowSeparator(.hidden)
                         .accessibilityHidden(true)
                         .id("rss-top")
-                    readerHeader
+                    if list == .saved {
+                        RssSavedSearchControls(
+                            filter: $savedFilter,
+                            isInterpreting: savedAIRequest != nil,
+                            usedManualSearch: usedManualSearch,
+                            onEdit: cancelSavedAI,
+                            onClear: clearSavedFilters,
+                            onAI: { showingSavedAI = true }
+                        )
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                         .listRowBackground(AppColors.background)
+                    } else if newCount > 0 {
+                        showNewButton.appContentRow()
+                    }
                     if entries.isEmpty && rss.isLoading {
                         ForEach(0..<6) { _ in
                             LoadingContent { SkeletonText() }
@@ -118,7 +129,11 @@ struct RssReaderView: View {
                         readerEmptyState.accessibilityIdentifier("rss-empty")
                     }
                 }
-                .safeAreaInset(edge: .bottom, spacing: 0) { RssStatusView() }
+                .safeAreaBar(edge: .bottom, spacing: 0) {
+                    if !rss.isOnline || rss.isLoading || rss.errorMessage != nil {
+                        RssStatusView()
+                    }
+                }
                 .scrollContentBackground(.hidden)
                 .background(AppColors.background)
                 .foregroundStyle(AppColors.foreground)
@@ -144,6 +159,11 @@ struct RssReaderView: View {
                                 .accessibilityLabel(rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }) ? String(localized: "すべて既読") + ", " + String(localized: "処理中") : String(localized: "すべて既読"))
                                 .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty || rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }))
                                 .accessibilityIdentifier("rss-read-all")
+                        }
+                    }
+                    if list == .unread {
+                        ToolbarItem(placement: .principal) {
+                            feedFilter
                         }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
@@ -252,49 +272,33 @@ struct RssReaderView: View {
         presentationIsCurrent && entries.isEmpty && !rss.isLoading && rss.errorMessage == nil
     }
 
-    @ViewBuilder
-    private var readerHeader: some View {
-        if list == .unread {
-            VStack(alignment: .leading, spacing: AppLayout.medium) {
-                Picker(String(localized: "購読で絞り込み"), selection: $feedID) {
-                    Text(subscriptionLabel(String(localized: "すべての購読"), count: presentation.unreadCount)).tag("")
-                    ForEach(rss.snapshot.feeds) { feed in
-                        Text(subscriptionLabel(feed.label, count: presentation.unreadCounts[feed.id, default: 0])).tag(feed.id)
-                    }
-                }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                .appTapTarget()
-                .accessibilityValue(subscriptionLabel(
-                    rss.snapshot.feeds.first(where: { $0.id == feedID })?.label ?? String(localized: "すべての購読"),
-                    count: feedID.isEmpty ? presentation.unreadCount : presentation.unreadCounts[feedID, default: 0]
-                ))
-                .accessibilityIdentifier("rss-feed-filter")
-                if newCount > 0 {
-                    Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
-                        initialized = false
-                        acceptanceVersion += 1
-                        visibleLimit = Self.displayBatchSize
-                    }
-                    .appTapTarget()
-                    .buttonStyle(.borderless)
-                    .disabled(!presentationIsCurrent)
-                    .accessibilityIdentifier("rss-show-new")
+    private var feedFilter: some View {
+        let allFeeds = String(localized: "すべての購読")
+        let selection = subscriptionLabel(
+            rss.snapshot.feeds.first(where: { $0.id == feedID })?.label ?? allFeeds,
+            count: feedID.isEmpty ? presentation.unreadCount : presentation.unreadCounts[feedID, default: 0]
+        )
+        return NavigationFilterMenu(title: String(localized: "購読で絞り込み"), selection: selection) {
+            Picker(allFeeds, selection: $feedID) {
+                Text(subscriptionLabel(allFeeds, count: presentation.unreadCount)).tag("")
+                ForEach(rss.snapshot.feeds) { feed in
+                    Text(subscriptionLabel(feed.label, count: presentation.unreadCounts[feed.id, default: 0])).tag(feed.id)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, AppLayout.inset)
-            .padding(.vertical, AppLayout.medium)
-        } else {
-            RssSavedSearchControls(
-                filter: $savedFilter,
-                isInterpreting: savedAIRequest != nil,
-                usedManualSearch: usedManualSearch,
-                onEdit: cancelSavedAI,
-                onClear: clearSavedFilters,
-                onAI: { showingSavedAI = true }
-            )
         }
+        .accessibilityIdentifier("rss-feed-filter")
+    }
+
+    private var showNewButton: some View {
+        Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
+            initialized = false
+            acceptanceVersion += 1
+            visibleLimit = Self.displayBatchSize
+        }
+        .appTapTarget()
+        .buttonStyle(.borderless)
+        .disabled(!presentationIsCurrent)
+        .accessibilityIdentifier("rss-show-new")
     }
 
     private func subscriptionLabel(_ title: String, count: Int) -> String {

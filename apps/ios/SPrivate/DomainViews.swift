@@ -1,6 +1,13 @@
 import SwiftUI
 
 struct DomainListView: View {
+    private static let pageSize = 30
+
+    private struct PageAnchor: Hashable {
+        let recordID: String
+        let revision: Int
+    }
+
     let domain: MobileDomain
     var reduceMotionOverride: Bool?
     var galleryLoadMedia: (@MainActor (String) async throws -> Data)?
@@ -70,25 +77,26 @@ struct DomainListView: View {
                             }
                         }
                         .padding(.horizontal, domain == .images ? 3 : 12)
-                        gridFooter
+                        if let errorMessage {
+                            Text(errorMessage)
+                                .foregroundStyle(AppColors.destructive)
+                                .accessibilityIdentifier("domain-error")
+                                .frame(maxWidth: .infinity)
+                        }
+                        nextPageTrigger
                     }
                     .background(AppColors.background)
                     .foregroundStyle(AppColors.foreground)
                     .accessibilityIdentifier("domain-grid-\(domain.rawValue)")
                     .overlay { emptyOrLoadingOverlay }
                 } else {
-                    VStack(spacing: 0) {
-                        if domain == .articles && records.isEmpty { articleCategoryFilter }
-                        listContent
-                            .id(categoryID)
-                            .overlay { emptyOrLoadingOverlay }
-                    }
+                    listContent
+                        .id(categoryID)
+                        .overlay { emptyOrLoadingOverlay }
                 }
             }
             .id(status)
-            .compositingGroup()
             .rotation3DEffect(.degrees(flipAngle), axis: (x: 0, y: 1, z: 0), perspective: 0.2)
-            .clipped()
             .background(AppColors.background)
             .allowsHitTesting(flipID == nil)
             .navigationTitle("")
@@ -119,6 +127,11 @@ struct DomainListView: View {
                     ) { toggleStatus() }
                     .accessibilityIdentifier("status-filter")
                     .disabled(flipID != nil)
+                }
+                if domain == .articles {
+                    ToolbarItem(placement: .principal) {
+                        articleCategoryFilter
+                    }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button(String(localized: "登録"), systemImage: "plus") { showingCreate = true }
@@ -247,12 +260,6 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
-            if domain == .articles && !records.isEmpty {
-                articleCategoryFilter
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(AppColors.background)
-            }
             if isInitialLoading {
                 ForEach(0..<8) { _ in
                     LoadingContent {
@@ -287,11 +294,10 @@ struct DomainListView: View {
                 .accessibilityIdentifier("domain-record-\(record.id)")
                 .appContentRow()
             }
-            if hasMore {
-                Button(String(localized: "さらに読み込む")) { loadNextPage() }
-                    .foregroundStyle(AppColors.primary)
-                    .appContentRow()
-            }
+            nextPageTrigger
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(AppColors.background)
         }
         .listStyle(.plain)
         .contentMargins(.horizontal, 0, for: .scrollContent)
@@ -314,37 +320,44 @@ struct DomainListView: View {
     }
 
     private var articleCategoryFilter: some View {
-        Picker(String(localized: "カテゴリで絞り込み"), selection: Binding(get: { categoryID }, set: { newID in
-            categoryID = newID
-            loadLocal(limit: 30)
-        })) {
-            Text(String(localized: "すべてのカテゴリ")).tag(nil as String?)
-            ForEach(categories, id: \.id) { category in
-                Text(category.name).tag(Optional(category.id))
+        let allCategories = String(localized: "すべてのカテゴリ")
+        let selection = categories.first(where: { $0.id == categoryID })?.name ?? allCategories
+        return NavigationFilterMenu(
+            title: String(localized: "カテゴリで絞り込み"),
+            selection: selection
+        ) {
+            Picker(allCategories, selection: Binding(get: { categoryID }, set: { newID in
+                guard categoryID != newID else { return }
+                categoryID = newID
+                loadLocal(limit: Self.pageSize)
+            })) {
+                Text(allCategories).tag(nil as String?)
+                ForEach(categories, id: \.id) { category in
+                    Text(category.name).tag(Optional(category.id))
+                }
             }
         }
-        .pickerStyle(.menu)
-        .labelsHidden()
-        .appTapTarget()
-        .accessibilityValue(categories.first(where: { $0.id == categoryID })?.name ?? String(localized: "すべてのカテゴリ"))
         .accessibilityIdentifier("article-category-filter")
         .disabled(flipID != nil)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, AppLayout.inset)
-        .padding(.vertical, AppLayout.medium)
     }
 
-    private var gridFooter: some View {
-        VStack {
-            if hasMore {
-                Button(String(localized: "さらに読み込む")) { loadNextPage() }
-                    .foregroundStyle(AppColors.primary)
-                    .padding()
-            }
-            if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive).accessibilityIdentifier("domain-error") }
-
+    @ViewBuilder
+    private var nextPageTrigger: some View {
+        if hasMore && flipID == nil, let lastID = records.last?.id {
+            let currentStatus = status
+            let currentCategory = categoryID
+            let anchor = PageAnchor(recordID: lastID, revision: sync.dataRevision)
+            Color.clear
+                .frame(height: 1)
+                .accessibilityHidden(true)
+                .id(anchor)
+                .onScrollVisibilityChange { visible in
+                    guard visible, hasMore, flipID == nil, records.last?.id == anchor.recordID,
+                          status == currentStatus, categoryID == currentCategory,
+                          sync.dataRevision == anchor.revision else { return }
+                    loadNextPage()
+                }
         }
-        .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
@@ -358,12 +371,12 @@ struct DomainListView: View {
     }
 
     private func loadLocal(limit: Int? = nil) {
-        var pageLimit = limit ?? max(records.count, 30)
+        var pageLimit = limit ?? max(records.count, Self.pageSize)
         if domain == .articles {
             categories = sync.cachedCategories()
             if let categoryID, !categories.contains(where: { $0.id == categoryID }) {
                 self.categoryID = nil
-                pageLimit = 30
+                pageLimit = Self.pageSize
             }
         }
         let page = sync.cachedPage(domain: domain, status: status, categoryID: categoryID, offset: 0, limit: pageLimit)
@@ -374,9 +387,13 @@ struct DomainListView: View {
     }
 
     private func loadNextPage() {
-        let page = sync.cachedPage(domain: domain, status: status, categoryID: categoryID, offset: records.count, limit: 30)
-        records.append(contentsOf: page.records)
-        hasMore = page.hasMore
+        let page = sync.cachedPage(
+            domain: domain, status: status, categoryID: categoryID, offset: records.count, limit: Self.pageSize
+        )
+        let loadedIDs = Set(records.map(\.id))
+        let additions = page.records.filter { !loadedIDs.contains($0.id) }
+        records.append(contentsOf: additions)
+        hasMore = page.hasMore && !additions.isEmpty
     }
 
 }

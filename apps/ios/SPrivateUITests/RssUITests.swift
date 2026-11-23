@@ -119,7 +119,7 @@ final class RssUITests: XCTestCase {
     @MainActor
     func testCountsLiveInFilterAndDiagnosticsAreInSettings() {
         let app = launch()
-        let filter = app.buttons["rss-feed-filter"]
+        let filter = app.navigationBars.buttons["rss-feed-filter"]
         XCTAssertTrue(filter.waitForExistence(timeout: 5))
         XCTAssertTrue(filter.label.contains("(1)") || (filter.value as? String)?.contains("(1)") == true)
         XCTAssertFalse(app.staticTexts["rss-count"].exists)
@@ -151,7 +151,9 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["購読はありません"].waitForExistence(timeout: 5))
         app.navigationBars.buttons.firstMatch.tap()
         app.navigationBars.buttons.firstMatch.tap()
-        XCTAssertTrue(app.staticTexts["すべての購読 (0)"].waitForExistence(timeout: 5))
+        let filter = app.navigationBars.buttons["rss-feed-filter"]
+        XCTAssertTrue(filter.waitForExistence(timeout: 5))
+        XCTAssertEqual(filter.value as? String, "すべての購読 (0)")
         XCTAssertTrue(app.buttons["購読を追加"].exists)
         attach(app, name: "rss-unsubscribed-empty")
     }
@@ -168,6 +170,7 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(app.textFields["rss-subscribe-url"].waitForExistence(timeout: 5))
         app.buttons["キャンセル"].tap()
         app.buttons["rss-status-filter"].tap()
+        XCTAssertFalse(app.buttons["rss-feed-filter"].exists)
         XCTAssertTrue(app.staticTexts["記事の星マークをタップすると、あとで読めるように保存できます。"].exists)
         attach(app, name: "rss-empty-saved")
     }
@@ -213,6 +216,7 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(settings.waitForNonExistence(timeout: 3))
         XCTAssertEqual(tabs.count, 1)
         XCTAssertTrue(app.staticTexts["rss-offline"].isHittable)
+        attach(app, name: "rss-compact-tab-bar-offline")
         reader.swipeDown()
         XCTAssertTrue(settings.waitForExistence(timeout: 3))
         if tabs.count == 1 { reader.swipeDown() }

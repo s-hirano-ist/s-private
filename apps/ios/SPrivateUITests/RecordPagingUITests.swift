@@ -108,11 +108,50 @@ final class RecordPagingUITests: XCTestCase {
         grid.swipeUp(velocity: .slow)
         XCTAssertTrue(search.waitForNonExistence(timeout: 3))
         XCTAssertEqual(tabs.count, 1)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Image grid with compact tab bar"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
         grid.swipeDown()
         XCTAssertTrue(search.waitForExistence(timeout: 3))
         if tabs.count == 1 { grid.swipeDown() }
         XCTAssertTrue(tabs["RSS"].waitForExistence(timeout: 3))
         XCTAssertEqual(tabs.count, 5)
+    }
+
+    @MainActor
+    func testArticleListAndImageGridLoadPastThirtyWhenScrolled() {
+        let app = launch()
+        let tabs = app.tabBars.buttons
+        tabs.element(boundBy: 1).tap()
+        let articles = app.collectionViews["domain-list-articles"].firstMatch
+        assertScrollReachesLastRecord(app, in: articles, prefix: "domain-record-")
+
+        for _ in 0..<12 {
+            if tabs["画像"].exists { break }
+            articles.swipeDown()
+        }
+        tabs["画像"].tap()
+        let images = app.scrollViews["domain-grid-images"]
+        assertScrollReachesLastRecord(app, in: images, prefix: "media-cell-")
+    }
+
+    @MainActor
+    private func assertScrollReachesLastRecord(_ app: XCUIApplication, in scrollView: XCUIElement, prefix: String,
+                                               file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertTrue(scrollView.waitForExistence(timeout: 5), file: file, line: line)
+        let last = app.descendants(matching: .any)[prefix + "page-31"].firstMatch
+        XCTAssertFalse(last.isHittable, file: file, line: line)
+        for _ in 0..<12 {
+            if last.isHittable { break }
+            scrollView.swipeUp()
+        }
+        XCTAssertTrue(last.isHittable, file: file, line: line)
+        scrollView.swipeUp()
+        XCTAssertTrue(last.isHittable, file: file, line: line)
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: prefix + "page-31").count, 1,
+                       file: file, line: line)
+        XCTAssertFalse(app.buttons["さらに読み込む"].exists, file: file, line: line)
     }
 
     @MainActor
