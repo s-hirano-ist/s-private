@@ -16,6 +16,7 @@ struct DomainListView: View {
     @EnvironmentObject private var sync: SyncCoordinator
     @EnvironmentObject private var navigation: AppNavigationModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.openURL) private var openURL
     @State private var records: [MobileRecord] = []
     @State private var navigationPath: [String] = []
@@ -36,6 +37,11 @@ struct DomainListView: View {
     @State private var flipID: UUID?
 
     private var isGrid: Bool { domain == .images || domain == .books }
+    private var gridSpacing: CGFloat { domain == .images ? 3 : AppLayout.medium }
+    private var gridColumns: [GridItem] {
+        let count = domain == .images ? 3 : (dynamicTypeSize.isAccessibilitySize ? 1 : 2)
+        return Array(repeating: GridItem(.flexible(), spacing: gridSpacing), count: count)
+    }
     private var isInitialLoading: Bool {
         records.isEmpty && errorMessage == nil && sync.isSynchronizing && !isPullRefreshing
     }
@@ -45,16 +51,21 @@ struct DomainListView: View {
             ZStack {
                 if isGrid {
                     ScrollView {
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: domain == .images ? 3 : 2), spacing: domain == .images ? 3 : 16) {
+                        AppScreenHeading(domain.title)
+                            .padding(.horizontal, AppLayout.inset)
+                            .padding(.vertical, AppLayout.medium)
+                        LazyVGrid(columns: gridColumns, spacing: domain == .images ? gridSpacing : AppLayout.section) {
                             if isInitialLoading {
                                 ForEach(0..<6) { _ in
                                     LoadingContent {
-                                        VStack(alignment: .leading, spacing: 6) {
-                                            SkeletonBlock(cornerRadius: 0).aspectRatio(1, contentMode: .fit)
+                                        MediaGridTile(domain: domain) {
+                                            SkeletonBlock(cornerRadius: 0)
+                                        } caption: {
                                             if domain == .books {
-                                                Text(" ").font(.caption).lineLimit(2, reservesSpace: true)
-                                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                                    .overlay { SkeletonBlock() }
+                                                BookGridTitle(title: " ")
+                                                    .overlay(alignment: .leading) {
+                                                        SkeletonBlock().frame(maxWidth: 96)
+                                                    }
                                             }
                                         }
                                     }
@@ -76,7 +87,7 @@ struct DomainListView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, domain == .images ? 3 : 12)
+                        .padding(.horizontal, domain == .images ? gridSpacing : AppLayout.inset)
                         if let errorMessage {
                             Text(errorMessage)
                                 .foregroundStyle(AppColors.destructive)
@@ -260,6 +271,8 @@ struct DomainListView: View {
 
     private var listContent: some View {
         List {
+            AppScreenHeading(domain.title)
+                .appHeadingRow()
             if isInitialLoading {
                 ForEach(0..<8) { _ in
                     LoadingContent {
@@ -269,10 +282,7 @@ struct DomainListView: View {
                                 SkeletonText()
                             }
                         } else {
-                            HStack(spacing: AppLayout.inset) {
-                                SkeletonBlock().frame(width: 28, height: 28)
-                                SkeletonText()
-                            }
+                            SkeletonText()
                         }
                     }
                     .appContentRow()
@@ -301,22 +311,20 @@ struct DomainListView: View {
         }
         .listStyle(.plain)
         .contentMargins(.horizontal, 0, for: .scrollContent)
-        .scrollContentBackground(.hidden)
-        .background(AppColors.background)
-        .foregroundStyle(AppColors.foreground)
+        .appScreenSurface()
         .accessibilityIdentifier("domain-list-\(domain.rawValue)")
     }
 
     private func recordLabel(_ record: MobileRecord) -> some View {
-        HStack(spacing: AppLayout.inset) {
-            Image(systemName: domain.symbol)
-                .font(.system(size: 22))
-                .frame(width: 28)
-                .foregroundStyle(AppColors.primary)
-                .accessibilityHidden(true)
-            Text(record.displayTitle).font(.headline).lineLimit(2)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: AppLayout.tiny) {
+            Text(record.displayTitle)
+                .font(AppTypography.entryTitle)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+            Text(record.createdAt, style: .date)
+                .font(.caption)
+                .foregroundStyle(AppColors.mutedForeground)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var articleCategoryFilter: some View {
@@ -403,21 +411,51 @@ private struct MediaGridCell: View {
     let record: MobileRecord
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            GeometryReader { geometry in
-                MediaThumbnailView(domain: domain, id: record.id, hasImage: domain == .images || record.imagePath != nil, pixelSize: domain == .images ? 400 : 600)
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-            }
-            .aspectRatio(1, contentMode: .fit)
-            .clipped()
+        MediaGridTile(domain: domain) {
+            MediaThumbnailView(domain: domain, id: record.id, hasImage: domain == .images || record.imagePath != nil, pixelSize: domain == .images ? 400 : 600)
+        } caption: {
             if domain == .books {
-                Text(record.displayTitle).font(.caption).lineLimit(2, reservesSpace: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                BookGridTitle(title: record.displayTitle)
             }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(record.displayTitle)
         .accessibilityIdentifier("media-cell-\(record.id)")
+    }
+}
+
+private struct MediaGridTile<Artwork: View, Caption: View>: View {
+    let domain: MobileDomain
+    @ViewBuilder let artwork: () -> Artwork
+    @ViewBuilder let caption: () -> Caption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppLayout.small) {
+            GeometryReader { geometry in
+                artwork()
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+            .aspectRatio(domain == .images ? 1 : 2.0 / 3.0, contentMode: .fit)
+            .clipped()
+            caption()
+        }
+    }
+}
+
+private struct BookGridTitle: View {
+    let title: String
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        let label = Text(title).font(.system(.subheadline, design: .serif, weight: .semibold))
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                label
+            } else {
+                label.lineLimit(2, reservesSpace: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -434,7 +472,9 @@ struct MediaThumbnailView: View {
     var body: some View {
         Group {
             if let image {
-                Image(uiImage: image).resizable().scaledToFill()
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: domain == .books ? .fit : .fill)
             } else if hasImage && loading {
                 SkeletonBlock(cornerRadius: 0)
             } else {
@@ -519,11 +559,18 @@ struct RecordDetailContentView: View {
                     DetailSkeleton(domain: domain)
                 }
             } else {
-                VStack(alignment: .leading, spacing: AppLayout.inset) {
+                VStack(alignment: .leading, spacing: AppLayout.section) {
                     if record == nil && errorMessage == nil { DetailSkeleton(domain: domain) }
                     if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                     if let record {
-                        Text(record.displayTitle).font(.title2.bold())
+                        VStack(alignment: .leading, spacing: AppLayout.tiny) {
+                            Text(record.displayTitle)
+                                .font(AppTypography.readingTitle)
+                                .accessibilityAddTraits(.isHeader)
+                            Text(record.createdAt, style: .date)
+                                .font(.caption)
+                                .foregroundStyle(AppColors.mutedForeground)
+                        }
                         switch domain {
                         case .articles, .images:
                             EmptyView()
@@ -533,15 +580,19 @@ struct RecordDetailContentView: View {
                             if record.imagePath != nil {
                                 AuthenticatedImageView(domain: .books, id: id)
                             }
-                            if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
-                            if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
-                            if let tags = record.tags { Text(tags.joined(separator: ", ")) }
+                            VStack(alignment: .leading, spacing: AppLayout.small) {
+                                if let isbn = record.isbn { LabeledContent("ISBN", value: isbn) }
+                                if let rating = record.rating { LabeledContent(String(localized: "評価"), value: String(rating)) }
+                                if let tags = record.tags, !tags.isEmpty { Text(tags.joined(separator: ", ")) }
+                            }
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.mutedForeground)
                             NativeMarkdownView(source: record.markdown ?? "")
                         }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
+                .padding(AppLayout.inset)
             }
         }
         .accessibilityIdentifier("record-detail-\(domain.rawValue)")

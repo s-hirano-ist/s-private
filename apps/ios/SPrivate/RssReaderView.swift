@@ -70,6 +70,8 @@ struct RssReaderView: View {
                         .listRowSeparator(.hidden)
                         .accessibilityHidden(true)
                         .id("rss-top")
+                    AppScreenHeading("RSS")
+                        .appHeadingRow()
                     if list == .saved {
                         RssSavedSearchControls(
                             filter: $savedFilter,
@@ -134,9 +136,7 @@ struct RssReaderView: View {
                         RssStatusView()
                     }
                 }
-                .scrollContentBackground(.hidden)
-                .background(AppColors.background)
-                .foregroundStyle(AppColors.foreground)
+                .appScreenSurface()
                 .navigationTitle("")
                 .navigationBarTitleDisplayMode(.inline)
                 .minimizeNavigationWhenScrolling()
@@ -384,12 +384,14 @@ private struct RssEntryRow: View {
                         RssThumbnailView(url: url)
                     }
                     VStack(alignment: .leading, spacing: AppLayout.small) {
-                        Text(entry.title).font(.headline).multilineTextAlignment(.leading)
+                        Text(entry.title)
+                            .font(AppTypography.entryTitle)
+                            .multilineTextAlignment(.leading)
                         ViewThatFits(in: .horizontal) {
                             HStack(spacing: AppLayout.small) { metadata }
                             VStack(alignment: .leading, spacing: AppLayout.tiny) { metadata }
                         }
-                        .font(.caption)
+                        .font(.caption.weight(.medium))
                         .foregroundStyle(AppColors.mutedForeground)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,5 +1,34 @@
 import SwiftUI
 
+enum AppTypography {
+    static let screenTitle = Font.system(.largeTitle, design: .serif, weight: .semibold)
+    static let readingTitle = Font.system(.title, design: .serif, weight: .semibold)
+    static let entryTitle = Font.system(.title3, design: .serif, weight: .semibold)
+}
+
+struct AppScreenHeading: View {
+    let title: String
+
+    init(_ title: String) {
+        self.title = title
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppLayout.small) {
+            Capsule()
+                .fill(AppColors.primary)
+                .frame(width: 28, height: 3)
+                .accessibilityHidden(true)
+            Text(title)
+                .font(AppTypography.screenTitle)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .foregroundStyle(AppColors.foreground)
+    }
+}
+
 struct ScrollNavigationMinimization: ViewModifier {
     var enabled: Bool
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
@@ -107,6 +136,16 @@ extension View {
         )
         .listRowSeparator(.hidden)
         .listRowBackground(AppColors.background)
+    }
+
+    func appHeadingRow() -> some View {
+        appContentRow().listRowBackground(Color.clear)
+    }
+
+    func appScreenSurface() -> some View {
+        scrollContentBackground(.hidden)
+            .background(AppColors.background)
+            .foregroundStyle(AppColors.foreground)
     }
 }
 

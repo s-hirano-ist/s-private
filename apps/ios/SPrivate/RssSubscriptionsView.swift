@@ -11,6 +11,7 @@ struct RssSubscriptionsView: View {
 
     var body: some View {
         List {
+            AppScreenHeading(String(localized: "RSSの購読管理")).appHeadingRow()
             if let summary = rss.importSummary {
                 Text(summary).font(.caption).accessibilityIdentifier("rss-import-summary").appContentRow()
             }
@@ -25,7 +26,7 @@ struct RssSubscriptionsView: View {
                 let identity = rss.identityID
                 HStack(alignment: .top, spacing: AppLayout.medium) {
                     VStack(alignment: .leading, spacing: AppLayout.small) {
-                        Text(feed.label).font(.headline)
+                        Text(feed.label).font(AppTypography.entryTitle)
                         Text(feed.url).font(.caption).textSelection(.enabled).foregroundStyle(AppColors.mutedForeground)
                         if feed.error != nil {
                             Label(String(localized: "フィードを取得できませんでした"), systemImage: "exclamationmark.triangle")
@@ -59,9 +60,7 @@ struct RssSubscriptionsView: View {
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { RssStatusView() }
-        .scrollContentBackground(.hidden)
-        .background(AppColors.background)
-        .foregroundStyle(AppColors.foreground)
+        .appScreenSurface()
         .navigationTitle(String(localized: "RSSの購読管理"))
         .minimizeNavigationWhenScrolling()
         .accessibilityIdentifier("rss-subscriptions")
@@ -152,6 +151,9 @@ struct RssSubscribeView: View {
         NavigationStack {
             Form {
                 Section {
+                    AppScreenHeading(String(localized: "購読を追加")).appHeadingRow()
+                }
+                Section {
                     TextField(String(localized: "フィードURL"), text: $url)
                         .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                         .accessibilityIdentifier("rss-subscribe-url")
@@ -163,10 +165,8 @@ struct RssSubscribeView: View {
                 if let error = rss.errorMessage { Text(error).foregroundStyle(AppColors.destructive) }
             }
             .disabled(submitting)
-            .scrollContentBackground(.hidden)
-            .background(AppColors.background)
-            .foregroundStyle(AppColors.foreground)
-            .navigationTitle(String(localized: "購読を追加"))
+            .appScreenSurface()
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear { identity = rss.identityID }
             .toolbar {

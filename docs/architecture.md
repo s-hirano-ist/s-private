@@ -88,7 +88,9 @@ flowchart LR
 
 `packages/ui/src/styles.css` の `--sui-*` をライト・ダーク両モードの色の定義元とする。`apps/web/src/app/globals.css` と共通 UI の Tailwind CSS ビルドは既定の色パレットを無効にし、用途別の `--color-*` のみを公開する。コンポーネントでは `bg-background`、`text-destructive` などの用途別クラスを使用し、固定用途の色も新しいトークンとして定義する。`pnpm lint:colors` はパレット色と任意の色指定の再混入を検出し、通常の `pnpm lint` に含まれる。
 
-iOS のコンテンツ色は `apps/ios/SPrivate/Assets.xcassets` の動的 Color Set で定義し、通常のライト・ダーク値を Web の `background`、`foreground`、`muted`、`muted-foreground`、`primary`、`destructive`、`success` と一致させる。各 Color Set にはコントラスト強調時の値も設定する。`AppColors` を SwiftUI 側の用途別入口とし、背景・本文・補助文字・エラー表示へ適用する。タブバー、ツールバー、標準ボタン、共有拡張のシステムシートは iOS の描画に任せ、アプリの primary 色を操作要素の tint に使う。通常値の一致は `pnpm lint:colors` で検証する。
+iOS は `apps/ios/SPrivate/Assets.xcassets` の動的 Color Set に、アプリ独自の背景・本文・補助色とコバルトのアクセントを定義する。`AppColors` を SwiftUI 側の用途別入口とし、各色にライト、ダーク、両モードのコントラスト強調を定義する。`pnpm lint:colors` は各外観の色の有無と本文・補助文字・操作色のコントラストを検証する。
+
+iOS の画面見出しと読み物タイトルは `AppTypography` の Dynamic Type に追従するシステムセリフを使い、本文と操作ラベルは標準書体を使う。タブバー、ツールバー、シートは SwiftUI 標準の Liquid Glass を利用する。画像ビューアの操作も Liquid Glass を使い、読み物とグリッドは不透明な背景に表示する。
 
 ### インポートルール
 

@@ -54,6 +54,7 @@ struct SettingsView: View {
 
     var body: some View {
         List {
+            AppScreenHeading(String(localized: "設定")).appHeadingRow()
             Section(String(localized: "認証")) {
                 Label(String(localized: "ログイン済み"), systemImage: "checkmark.circle")
                 if let error = authentication.logoutError {
@@ -136,9 +137,7 @@ struct SettingsView: View {
         }
         .listStyle(.grouped)
         .listSectionSpacing(.compact)
-        .scrollContentBackground(.hidden)
-        .background(AppColors.background)
-        .foregroundStyle(AppColors.foreground)
+        .appScreenSurface()
         .accessibilityIdentifier("settings-view")
         .navigationTitle(String(localized: "設定"))
         .navigationBarTitleDisplayMode(.inline)
@@ -188,6 +187,7 @@ struct SyncManagementView: View {
 
     var body: some View {
         List {
+            AppScreenHeading(String(localized: "同期管理")).appHeadingRow()
             ForEach(sync.pendingOperations()) { operation in
                 Section {
                     VStack(alignment: .leading, spacing: 6) {
@@ -211,9 +211,7 @@ struct SyncManagementView: View {
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(AppColors.background)
-        .foregroundStyle(AppColors.foreground)
+        .appScreenSurface()
         .overlay {
             if sync.pendingCount == 0 {
                 AppEmptyState(title: String(localized: "未送信データはありません"), symbol: "checkmark.circle")
@@ -263,6 +261,9 @@ struct PendingOperationEditor: View {
 
     var body: some View {
         Form {
+            Section {
+                AppScreenHeading(String(localized: "内容を修正")).appHeadingRow()
+            }
             if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
             if operation.domain != .images { TextField(String(localized: "タイトル"), text: $title) }
             if operation.domain == .articles {
@@ -279,9 +280,7 @@ struct PendingOperationEditor: View {
                 TextField(String(localized: "タグ（カンマ区切り）"), text: $tags)
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(AppColors.background)
-        .foregroundStyle(AppColors.foreground)
+        .appScreenSurface()
         .navigationTitle(String(localized: "内容を修正"))
         .toolbar {
             Button(String(localized: "保存")) {

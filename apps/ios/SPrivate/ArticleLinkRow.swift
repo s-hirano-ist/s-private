@@ -11,26 +11,26 @@ struct ArticleListLabel: View {
             }
             VStack(alignment: .leading, spacing: AppLayout.small) {
                 Text(record.displayTitle)
-                    .font(.headline)
+                    .font(AppTypography.entryTitle)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: AppLayout.small) { metadata }
+                    VStack(alignment: .leading, spacing: AppLayout.tiny) { metadata }
+                }
+                .font(.caption.weight(.medium))
+                .foregroundStyle(AppColors.mutedForeground)
+                if let summary {
+                    Text(summary)
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.foreground)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                }
                 if let address = nonblank(record.url) {
                     Text(verbatim: address)
                         .font(.caption)
                         .foregroundStyle(AppColors.mutedForeground)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                         .truncationMode(.middle)
-                }
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: AppLayout.small) { metadata }
-                    VStack(alignment: .leading, spacing: AppLayout.tiny) { metadata }
-                }
-                .font(.caption)
-                .foregroundStyle(AppColors.mutedForeground)
-                if let summary {
-                    Text(summary)
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.mutedForeground)
-                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                 }
             }
             .multilineTextAlignment(.leading)

@@ -29,32 +29,43 @@ test("allows semantic colors and non-color arbitrary values", () => {
 	);
 });
 
-test("iOS content colors match the Web light and dark semantic tokens", async () => {
-	const root = join(import.meta.dirname, "..");
-	const stylesheet = await readFile(
-		join(root, "packages/ui/src/styles.css"),
-		"utf8",
-	);
-	const light = stylesheet.match(/:root\s*\{([^}]+)\}/u)?.[1];
-	const dark = stylesheet.match(
-		/\.dark,\s*\[data-theme="dark"\]\s*\{([^}]+)\}/u,
-	)?.[1];
-	assert.ok(light, "Web light token block must exist");
-	assert.ok(dark, "Web dark token block must exist");
-	const mappings = {
-		AppBackground: "background",
-		AppForeground: "foreground",
-		AppMuted: "muted",
-		AppMutedForeground: "muted-foreground",
-		AppPrimary: "primary",
-		AppDestructive: "destructive",
-		AppSuccess: "success",
-	};
-	for (const [asset, token] of Object.entries(mappings)) {
+const appearances = [
+	[],
+	[{ appearance: "luminosity", value: "dark" }],
+	[{ appearance: "contrast", value: "high" }],
+	[
+		{ appearance: "luminosity", value: "dark" },
+		{ appearance: "contrast", value: "high" },
+	],
+];
+
+function luminance({ red, green, blue }) {
+	const linear = [red, green, blue].map((component) => {
+		const channel = Number(component) / 255;
+		return channel <= 0.04045
+			? channel / 12.92
+			: ((channel + 0.055) / 1.055) ** 2.4;
+	});
+	return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+test("iOS semantic colors cover all appearances and meet text contrast", async () => {
+	const assets = [
+		"AppBackground",
+		"AppForeground",
+		"AppMuted",
+		"AppMutedForeground",
+		"AppPrimary",
+		"AppDestructive",
+		"AppSuccess",
+	];
+	const colors = new Map();
+	for (const asset of assets) {
 		const catalog = JSON.parse(
 			await readFile(
 				join(
-					root,
+					import.meta.dirname,
+					"..",
 					"apps/ios/SPrivate/Assets.xcassets",
 					`${asset}.colorset`,
 					"Contents.json",
@@ -62,29 +73,42 @@ test("iOS content colors match the Web light and dark semantic tokens", async ()
 				"utf8",
 			),
 		);
-		assert.equal(
-			catalog.colors.length,
-			4,
-			`${asset} must include light, dark, and high contrast variants`,
+		assert.deepEqual(
+			catalog.colors.map((variant) => variant.appearances ?? []),
+			appearances,
+			`${asset} must include light, dark, and both high contrast appearances`,
 		);
-		for (const [index, tokens] of [light, dark].entries()) {
-			const values = tokens.match(
-				new RegExp(`--sui-${token}: (\\d+) (\\d+) (\\d+);`, "u"),
-			);
-			assert.ok(values, `Missing Web token ${token}`);
-			const components = catalog.colors[index].color.components;
-			assert.deepEqual(
-				[components.red, components.green, components.blue].map(Number),
-				values.slice(1).map(Number),
-				`${asset} differs from Web ${["light", "dark"][index]} token`,
+		colors.set(
+			asset,
+			catalog.colors.map(({ color }) => {
+				assert.equal(color["color-space"], "srgb");
+				assert.equal(Number(color.components.alpha), 1);
+				return luminance(color.components);
+			}),
+		);
+	}
+
+	const pairs = [
+		["AppForeground", "AppBackground"],
+		["AppForeground", "AppMuted"],
+		["AppMutedForeground", "AppBackground"],
+		["AppMutedForeground", "AppMuted"],
+		["AppPrimary", "AppBackground"],
+		["AppPrimary", "AppMuted"],
+		["AppDestructive", "AppBackground"],
+		["AppSuccess", "AppBackground"],
+	];
+	for (const [foreground, background] of pairs) {
+		for (const index of appearances.keys()) {
+			const values = [
+				colors.get(foreground)[index],
+				colors.get(background)[index],
+			];
+			const ratio = (Math.max(...values) + 0.05) / (Math.min(...values) + 0.05);
+			assert.ok(
+				ratio >= 4.5,
+				`${foreground} against ${background} in variant ${index}: ${ratio.toFixed(2)}:1`,
 			);
 		}
-		assert.deepEqual(catalog.colors[2].appearances, [
-			{ appearance: "contrast", value: "high" },
-		]);
-		assert.deepEqual(catalog.colors[3].appearances, [
-			{ appearance: "luminosity", value: "dark" },
-			{ appearance: "contrast", value: "high" },
-		]);
 	}
 });

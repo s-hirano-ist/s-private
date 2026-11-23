@@ -108,7 +108,7 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertTrue(loginButton.isHittable)
             XCTAssertGreaterThanOrEqual(loginButton.frame.height, 52)
         }
-        XCTAssertTrue(app.navigationBars["Memdex"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Memdex"].waitForExistence(timeout: 5))
     }
 
     @MainActor
@@ -370,7 +370,7 @@ final class SPrivateUITests: XCTestCase {
             let list = app.descendants(matching: .any)["domain-list-\(domain)"]
             let empty = app.staticTexts["domain-empty-\(domain)"]
             XCTAssertTrue(empty.waitForExistence(timeout: 5))
-            XCTAssertEqual(list.cells.count, 0)
+            XCTAssertEqual(list.cells.count, 1, "Only the visible screen heading should occupy a row")
             XCTAssertFalse(app.descendants(matching: .any)["initial-loading"].exists)
             let screenshot = XCTAttachment(screenshot: app.screenshot())
             screenshot.name = "\(domain)-empty"

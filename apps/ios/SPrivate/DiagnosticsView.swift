@@ -6,6 +6,7 @@ struct DiagnosticsView: View {
 
     var body: some View {
         List {
+            AppScreenHeading(String(localized: "診断情報")).appHeadingRow()
             Section(String(localized: "同期")) {
                 LabeledContent(String(localized: "コンテンツ最終同期"), value: formatted(sync.lastSyncAt))
                 LabeledContent(String(localized: "RSS最終同期"), value: formatted(rss.snapshot.fetchedAt))
@@ -24,9 +25,7 @@ struct DiagnosticsView: View {
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(AppColors.background)
-        .foregroundStyle(AppColors.foreground)
+        .appScreenSurface()
         .navigationTitle(String(localized: "診断情報"))
         .minimizeNavigationWhenScrolling()
         .navigationBarTitleDisplayMode(.inline)

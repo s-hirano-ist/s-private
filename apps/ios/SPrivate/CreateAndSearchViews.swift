@@ -36,6 +36,9 @@ struct CreateView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    AppScreenHeading(domain.title).appHeadingRow()
+                }
                 if domain != .images {
                     TextField(String(localized: "タイトル"), text: $title)
                         .accessibilityIdentifier("create-title-field")
@@ -59,10 +62,8 @@ struct CreateView: View {
                 }
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
             }
-            .scrollContentBackground(.hidden)
-            .background(AppColors.background)
-            .foregroundStyle(AppColors.foreground)
-            .navigationTitle(domain.title)
+            .appScreenSurface()
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -179,6 +180,7 @@ struct CreateView: View {
 
 struct SearchView: View {
     @FocusState private var searchFocused: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     var galleryLoadMedia: (@MainActor (String) async throws -> Data)?
     var galleryDeleteRecord: (@MainActor (String) async throws -> Void)?
     @EnvironmentObject private var sync: SyncCoordinator
@@ -205,6 +207,7 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             List {
+                AppScreenHeading(String(localized: "検索")).appHeadingRow()
                 if let errorMessage { Text(errorMessage).foregroundStyle(AppColors.destructive) }
                 if !aiAnswer.isEmpty || isAnswering {
                     Section(String(localized: "Apple Intelligenceの回答")) {
@@ -242,9 +245,7 @@ struct SearchView: View {
                     }
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(AppColors.background)
-            .foregroundStyle(AppColors.foreground)
+            .appScreenSurface()
             .listStyle(.plain)
             .navigationTitle(String(localized: "検索"))
             .navigationBarTitleDisplayMode(.inline)
@@ -295,8 +296,11 @@ struct SearchView: View {
     private func resultLabel(_ result: MobileSearchResult) -> some View {
         Label {
             VStack(alignment: .leading, spacing: AppLayout.small) {
-                Text(result.title).font(.headline)
-                Text(result.snippet).font(.caption).foregroundStyle(AppColors.mutedForeground).lineLimit(2)
+                Text(result.title).font(AppTypography.entryTitle)
+                Text(result.snippet)
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.mutedForeground)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
             }
         } icon: { Image(systemName: result.type.symbol) }
     }
