@@ -102,6 +102,26 @@ struct BackendClientTests {
         #expect(throws: MobileClientError.self) { try MobileRecord(snapshot: snapshot, expected: .articles) }
     }
 
+    @Test("Article metadata survives snapshot and delta mapping and cache encoding")
+    func articleMetadataMapping() throws {
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
+        let article = Components.Schemas.Article(
+            id: "article", status: .EXPORTED, createdAt: date, updatedAt: date,
+            title: "Saved title", url: "https://example.com/article", categoryId: "news", categoryName: "News",
+            ogImageUrl: "https://example.com/cover.jpg", ogTitle: "Page title", ogDescription: "Page overview"
+        )
+        let snapshot = Components.Schemas.SnapshotRecord.articles(.init(domain: .articles, record: article))
+        let upsert = Components.Schemas.SyncChange.upsert(.init(id: article.id, version: "2", action: .upsert, value: snapshot))
+        let deltaRecord = try #require(MobileSyncChange(upsert).record)
+        for record in [try MobileRecord(snapshot: snapshot, expected: .articles), deltaRecord] {
+            let cached = try MobileAPICoding.decoder().decode(MobileRecord.self, from: JSONEncoder.mobile.encode(record))
+            #expect(cached.title == article.title)
+            #expect(cached.ogTitle == article.ogTitle)
+            #expect(cached.ogDescription == article.ogDescription)
+            #expect(cached.ogImageUrl == article.ogImageUrl)
+        }
+    }
+
     @Test("Generated sync changes retain version strings and category/delete discriminators")
     func changesMapping() throws {
         let category = Components.Schemas.SyncChange.upsert(.init(id: "category", version: "9007199254740993", action: .upsert, value: .categories(.init(domain: .categories, record: .init(id: "category", name: "News")))))

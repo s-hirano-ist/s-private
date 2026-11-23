@@ -3,7 +3,7 @@ import ImageIO
 import SwiftUI
 import UIKit
 
-// RSS thumbnails are memory-only. Neither response bodies nor original-sized images enter the disk cache.
+// Feed thumbnails are memory-only. Neither response bodies nor original-sized images enter the disk cache.
 actor RssThumbnailLoader {
     static let shared = RssThumbnailLoader()
     private let session: URLSession
@@ -76,7 +76,7 @@ actor RssThumbnailLoader {
         let limit = 5 * 1_048_576
         let (bytes, response) = try await session.bytes(from: url)
         guard let response = response as? HTTPURLResponse, (200..<300).contains(response.statusCode),
-            response.url?.scheme == "https", response.expectedContentLength <= limit else { return nil }
+            response.url?.scheme?.lowercased() == "https", response.expectedContentLength <= limit else { return nil }
         var data = Data()
         for try await byte in bytes {
             if data.count >= limit { throw URLError(.dataLengthExceedsMaximum) }
@@ -103,6 +103,9 @@ struct RssThumbnailView: View {
     @Environment(\.displayScale) private var scale
     @State private var image: UIImage?
     @State private var finished = false
+    #if DEBUG
+    @Environment(\.feedThumbnailFixture) private var fixture
+    #endif
 
     var body: some View {
         Group {
@@ -114,6 +117,13 @@ struct RssThumbnailView: View {
         .task(id: url) {
             image = nil
             finished = false
+            #if DEBUG
+            if let fixture {
+                image = fixture(url)
+                finished = true
+                return
+            }
+            #endif
             let value = await RssThumbnailLoader.shared.image(url: url, pixelSize: Int(72 * scale))
             guard !Task.isCancelled else { return }
             image = value
@@ -121,6 +131,12 @@ struct RssThumbnailView: View {
         }
     }
 }
+
+#if DEBUG
+extension EnvironmentValues {
+    @Entry var feedThumbnailFixture: ((URL) -> UIImage?)? = nil
+}
+#endif
 
 #Preview("RSS — Thumbnail loading") {
     RssThumbnailView(url: URL(string: "https://example.com/thumbnail.jpg")!)

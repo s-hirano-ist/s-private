@@ -22,9 +22,11 @@ private struct DomainListPreview: View {
             for status in [MobileContentStatus.exported, .unexported] {
                 try! sync.cache(domain: domain, records: [MobileRecord(
                     id: status.rawValue, status: status, createdAt: .now, updatedAt: .now,
-                    exportedAt: nil, title: status.localizedTitle, url: nil, quote: nil,
+                    exportedAt: nil, title: status.localizedTitle,
+                    url: domain == .articles ? "https://example.com/article" : nil, quote: nil,
                     categoryId: nil, categoryName: nil, markdown: nil, isbn: nil, rating: nil,
-                    tags: nil, path: nil, imagePath: nil, contentType: nil, fileSize: nil
+                    tags: nil, path: nil, imagePath: nil, contentType: nil, fileSize: nil,
+                    ogDescription: domain == .articles ? "An overview of the saved article." : nil
                 )])
             }
         }

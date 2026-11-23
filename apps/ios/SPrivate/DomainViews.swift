@@ -249,9 +249,16 @@ struct DomainListView: View {
             if isInitialLoading {
                 ForEach(0..<8) { _ in
                     LoadingContent {
-                        HStack(spacing: AppLayout.inset) {
-                            SkeletonBlock().frame(width: 28, height: 28)
-                            SkeletonText()
+                        if domain == .articles {
+                            HStack(spacing: AppLayout.medium) {
+                                SkeletonBlock().frame(width: 72, height: 72)
+                                SkeletonText()
+                            }
+                        } else {
+                            HStack(spacing: AppLayout.inset) {
+                                SkeletonBlock().frame(width: 28, height: 28)
+                                SkeletonText()
+                            }
                         }
                     }
                     .appContentRow()
@@ -265,7 +272,7 @@ struct DomainListView: View {
             ForEach(records) { record in
                 Group {
                     if domain == .articles {
-                        ArticleLinkRow(id: record.id) { recordLabel(record) }
+                        ArticleLinkRow(id: record.id) { ArticleListLabel(record: record) }
                     } else {
                         NavigationLink(value: record.id) { recordLabel(record) }
                     }

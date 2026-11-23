@@ -85,6 +85,8 @@ final class CachedMobileCategory {
 final class MobileSyncState {
     @Attribute(.unique) var ownerKey: String
     var cursor: String?
+    // Older stores have a cursor but discarded Open Graph metadata when mapping the DTO.
+    var hasArticleMetadataSnapshot: Bool?
 
     init(ownerKey: String) {
         self.ownerKey = ownerKey

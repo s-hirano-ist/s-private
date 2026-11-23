@@ -19,6 +19,10 @@ struct SPrivateApp: App {
     private var usesArticleFixtures: Bool {
         useListFixtures && ProcessInfo.processInfo.arguments.contains("-ui-testing-article-links")
     }
+
+    private static var usesArticleThumbnails: Bool {
+        ProcessInfo.processInfo.arguments.contains("-ui-testing-article-thumbnails")
+    }
     #endif
 
     init() {
@@ -65,10 +69,18 @@ struct SPrivateApp: App {
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-fixtures") {
                 rss.useFixtures(offline: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-offline"), live: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed"))
             }
-            try! coordinator.cache(domain: .articles, records: [
+            var articleFixtures = [
                 Self.fixtureRecord(id: "article-short", title: "Short article", categoryID: "reading"),
                 Self.fixtureRecord(id: "article-long", title: "A long article title that wraps neatly across two lines", categoryID: "archive"),
-            ])
+            ]
+            articleFixtures[1].ogDescription = "An overview of the article from its Open Graph metadata."
+            if Self.usesArticleThumbnails {
+                articleFixtures[1].ogImageUrl = "https://example.com/cover.jpg"
+                var unavailable = Self.fixtureRecord(id: "article-no-cover", title: "Unavailable cover", categoryID: "reading")
+                unavailable.ogImageUrl = "https://example.com/unavailable.jpg"
+                articleFixtures.append(unavailable)
+            }
+            try! coordinator.cache(domain: .articles, records: articleFixtures)
             container.mainContext.insert(CachedMobileCategory(ownerKey: authentication.ownerKey, category: .init(id: "reading", name: "Reading")))
             container.mainContext.insert(CachedMobileCategory(ownerKey: authentication.ownerKey, category: .init(id: "archive", name: "Archive")))
             try! container.mainContext.save()
@@ -190,6 +202,9 @@ struct SPrivateApp: App {
         } else {
             ContentView()
                 .environment(\.articleDeleteFailureFixtureID, usesArticleFixtures ? "article-long" : nil)
+                .environment(\.feedThumbnailFixture, useListFixtures && Self.usesArticleThumbnails ? { url in
+                    url.lastPathComponent == "cover.jpg" ? UIImage(systemName: "mountain.2.fill")?.withTintColor(.systemTeal) : nil
+                } : nil)
                 .safeAreaInset(edge: .top) {
                     if let rssFixtureClient, rssFixtureClient.controlledPages || rssFixtureClient.controlledMutations {
                         RssFixtureControls(client: rssFixtureClient)

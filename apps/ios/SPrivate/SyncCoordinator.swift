@@ -380,7 +380,7 @@ final class SyncCoordinator: ObservableObject {
         isRefreshing = true
         defer { isRefreshing = false }
         let state = try syncState(for: owner)
-        if state.cursor == nil {
+        if state.cursor == nil || state.hasArticleMetadataSnapshot != true {
             let head = try await client.syncHead()
             let generation = UUID().uuidString
             for domain in MobileDomain.allCases {
@@ -403,8 +403,15 @@ final class SyncCoordinator: ObservableObject {
                 after = next
             } while true
             try await pruneSnapshot(owner: owner, generation: generation)
+            guard authentication.ownerKey == owner else { return }
             state.cursor = head
-            try context.save()
+            state.hasArticleMetadataSnapshot = true
+            do {
+                try context.save()
+            } catch {
+                context.rollback()
+                throw error
+            }
             dataRevision += 1
         }
         guard var cursor = state.cursor else { return }

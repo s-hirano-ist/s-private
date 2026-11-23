@@ -84,6 +84,9 @@ struct MobileRecord: Codable, Identifiable, Sendable {
     let imagePath: String?
     let contentType: String?
     let fileSize: Int?
+    var ogImageUrl: String? = nil
+    var ogTitle: String? = nil
+    var ogDescription: String? = nil
     var displayTitle: String { title ?? String(localized: "画像") }
 }
 

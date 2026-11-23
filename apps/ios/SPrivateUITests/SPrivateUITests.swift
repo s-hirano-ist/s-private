@@ -256,7 +256,7 @@ final class SPrivateUITests: XCTestCase {
     @MainActor
     func testArticleAndNoteRowsShowLongTitlesAndOpenTheirDestinations() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-article-links", "-AppleLanguages", "(ja)"]
+        app.launchArguments += ["-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-article-links", "-ui-testing-article-thumbnails", "-AppleLanguages", "(ja)"]
         app.launch()
 
         let tabs = app.tabBars.firstMatch.buttons
@@ -269,6 +269,13 @@ final class SPrivateUITests: XCTestCase {
             XCTAssertTrue(longRow.waitForExistence(timeout: 5))
             XCTAssertGreaterThan(longRow.frame.height, shortRow.frame.height)
             XCTAssertFalse(longRow.staticTexts["未公開"].exists)
+            if domain == "article" {
+                let rowText = ([longRow.label] + longRow.staticTexts.allElementsBoundByIndex.map(\.label)).joined(separator: " ")
+                XCTAssertTrue(rowText.contains("https://example.com/article-long"), rowText)
+                XCTAssertTrue(rowText.contains("Archive"), rowText)
+                XCTAssertTrue(rowText.contains("An overview of the article"), rowText)
+                XCTAssertTrue(app.buttons["domain-record-article-no-cover"].exists)
+            }
             let screenshot = XCTAttachment(screenshot: app.screenshot())
             screenshot.name = "\(domain)-list"
             screenshot.lifetime = .keepAlways

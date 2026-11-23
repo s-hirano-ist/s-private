@@ -85,14 +85,57 @@ struct SyncRequestTests {
         #expect(client.changeRequests == 2)
         #expect(!coordinator.isSynchronizing)
     }
+
+    @Test("Existing caches keep their rows while the article metadata snapshot retries")
+    func refreshesLegacyArticleMetadata() async throws {
+        let container = try ModelContainer(
+            for: CachedMobileRecord.self, CachedMobileCategory.self, PendingMobileOperation.self, MobileSyncState.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        let authentication = AuthenticationModel()
+        let state = MobileSyncState(ownerKey: authentication.ownerKey)
+        state.cursor = "legacy-cursor"
+        container.mainContext.insert(state)
+        try container.mainContext.save()
+        let client = PausedSyncClient(pausesAtHead: false)
+        let coordinator = SyncCoordinator(container: container, authentication: authentication, clientFactory: { client })
+        let legacyJSON = Data(#"{"id":"article","status":"UNEXPORTED","createdAt":"2026-09-21T01:02:03Z","updatedAt":"2026-09-21T01:02:03Z","title":"Saved article","url":"https://example.com/article","categoryId":"news"}"#.utf8)
+        let legacy = try MobileAPICoding.decoder().decode(MobileRecord.self, from: legacyJSON)
+        try coordinator.cache(domain: .articles, records: [legacy])
+        client.articleSnapshot = legacy
+        client.articleSnapshot?.ogDescription = "Newly available overview"
+
+        client.failsArticleSnapshot = true
+        await coordinator.synchronize(force: true)
+        #expect(coordinator.cachedRecord(domain: .articles, id: legacy.id)?.url == legacy.url)
+        #expect(coordinator.cachedRecord(domain: .articles, id: legacy.id)?.ogDescription == nil)
+        #expect(client.changeRequests == 0)
+
+        client.failsArticleSnapshot = false
+        await coordinator.synchronize(force: true)
+        #expect(coordinator.cachedRecord(domain: .articles, id: legacy.id)?.ogDescription == "Newly available overview")
+        #expect(client.headRequests == 2)
+        #expect(client.changeRequests == 1)
+
+        await coordinator.synchronize(force: true)
+        #expect(client.headRequests == 2)
+        #expect(client.changeRequests == 2)
+    }
 }
 
 @MainActor
 private final class PausedSyncClient: MobileSyncClient {
     private var headContinuation: CheckedContinuation<Void, Never>?
+    private let pausesAtHead: Bool
     private(set) var headRequests = 0
     private(set) var changeRequests = 0
+    var failsArticleSnapshot = false
+    var articleSnapshot: MobileRecord?
     var isWaitingForHead: Bool { headContinuation != nil }
+
+    init(pausesAtHead: Bool = true) {
+        self.pausesAtHead = pausesAtHead
+    }
 
     func resumeHead() {
         headContinuation?.resume()
@@ -105,12 +148,16 @@ private final class PausedSyncClient: MobileSyncClient {
 
     func syncHead() async throws -> String {
         headRequests += 1
-        await withCheckedContinuation { headContinuation = $0 }
+        if pausesAtHead {
+            await withCheckedContinuation { headContinuation = $0 }
+        }
         return "cursor-0"
     }
 
     func snapshot(_ domain: String, after: String) async throws -> MobileSnapshotPage<MobileRecord> {
-        MobileSnapshotPage(data: [], nextAfter: nil)
+        guard domain == MobileDomain.articles.rawValue else { return MobileSnapshotPage(data: [], nextAfter: nil) }
+        if failsArticleSnapshot { throw URLError(.notConnectedToInternet) }
+        return MobileSnapshotPage(data: articleSnapshot.map { [$0] } ?? [], nextAfter: nil)
     }
 
     func categorySnapshot(after: String) async throws -> MobileSnapshotPage<MobileCategory> {

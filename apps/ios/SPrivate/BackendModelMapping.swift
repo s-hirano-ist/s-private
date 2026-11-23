@@ -1,7 +1,7 @@
 import Foundation
 import SPrivateAPI
 
-// Generated DTOs stop at this adapter; persisted device models keep their existing shape.
+// Generated DTOs stop at this adapter.
 extension MobileContentStatus {
     init(_ value: Components.Schemas.ContentStatus) {
         switch value {
@@ -29,7 +29,8 @@ extension MobileRecord {
             url: value.url, quote: value.quote, categoryId: value.categoryId,
             categoryName: value.categoryName, markdown: nil, isbn: nil,
             rating: nil, tags: nil, path: nil,
-            imagePath: nil, contentType: nil, fileSize: nil
+            imagePath: nil, contentType: nil, fileSize: nil,
+            ogImageUrl: value.ogImageUrl, ogTitle: value.ogTitle, ogDescription: value.ogDescription
         )
     }
     init(_ value: Components.Schemas.Note) {
