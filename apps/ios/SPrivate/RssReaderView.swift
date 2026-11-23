@@ -15,7 +15,7 @@ struct RssReaderView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingSubscribe = false
-    @State private var showingSettings = false
+    @Binding private var showingSettings: Bool
     @State private var list: RssList
     @State private var feedID = ""
     @State private var unreadQuery = ""
@@ -34,10 +34,12 @@ struct RssReaderView: View {
 
     init(
         initialList: RssList = .unread,
+        showingSettings: Binding<Bool>,
         interpretSavedSearch: @escaping RssSavedFilter.Interpreter = RssSavedIntelligence.interpret
     ) {
         self.interpretSavedSearch = interpretSavedSearch
         _list = State(initialValue: initialList)
+        _showingSettings = showingSettings
     }
 
     private struct PresentationKey: Hashable {
@@ -122,9 +124,7 @@ struct RssReaderView: View {
                 .accessibilityIdentifier("rss-reader")
                 .refreshable { await rss.refresh(list) }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
-                    if !rss.isOnline || rss.isLoading || rss.errorMessage != nil {
-                        RssStatusView()
-                    }
+                    RssStatusView(showsSyncStatus: false)
                 }
                 .scrollContentBackground(.hidden)
                 .background(AppColors.background)
@@ -459,17 +459,24 @@ private struct RssEntryRow: View {
 
 }
 
+struct RssSyncStatusLabel: View {
+    var body: some View {
+        Text(String(localized: "記事情報を同期中"))
+            .accessibilityIdentifier("rss-loading")
+    }
+}
+
 struct RssStatusView: View {
+    var showsSyncStatus = true
     @Environment(RssReaderModel.self) private var rss
     var body: some View {
-        if !rss.isOnline || rss.isLoading || rss.errorMessage != nil {
+        if !rss.isOnline || (showsSyncStatus && rss.isLoading) || rss.errorMessage != nil {
             VStack(alignment: .leading, spacing: AppLayout.small) {
                 if !rss.isOnline {
                     Label(String(localized: "オフラインです。保存した記事情報を表示しています"), systemImage: "wifi.slash")
                         .accessibilityIdentifier("rss-offline")
-                } else if rss.isLoading {
-                    Text(String(localized: "記事情報を同期中"))
-                        .accessibilityIdentifier("rss-loading")
+                } else if showsSyncStatus && rss.isLoading {
+                    RssSyncStatusLabel()
                 }
                 if let error = rss.errorMessage {
                     Text(error).foregroundStyle(AppColors.destructive).accessibilityIdentifier("rss-error")
