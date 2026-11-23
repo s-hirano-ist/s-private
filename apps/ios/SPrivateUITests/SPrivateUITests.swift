@@ -307,7 +307,7 @@ final class SPrivateUITests: XCTestCase {
         let shortRow = app.buttons["domain-record-article-short"]
         let longRow = app.buttons["domain-record-article-long"]
         XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
-        let category = app.buttons["article-category-filter"]
+        let category = app.navigationBars.buttons["article-category-filter"]
 
         category.tap()
         app.buttons["Archive"].tap()
@@ -316,7 +316,13 @@ final class SPrivateUITests: XCTestCase {
         XCTAssertTrue(longRow.exists)
         status.tap()
         XCTAssertTrue(longRow.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(category.isHittable)
+        category.tap()
+        app.buttons["Reading"].tap()
         status.tap()
+        XCTAssertTrue(shortRow.waitForExistence(timeout: 5))
+        category.tap()
+        app.buttons["Archive"].tap()
         XCTAssertTrue(longRow.waitForExistence(timeout: 5))
         XCTAssertFalse(shortRow.exists)
 
