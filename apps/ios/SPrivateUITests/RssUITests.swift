@@ -4,13 +4,13 @@ final class RssUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     @MainActor
-    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false, large: Bool = false) -> XCUIApplication {
+    private func launch(offline: Bool = false, language: String = "ja", delayed: Bool = false, controlledPages: Bool = false, infiniteScroll: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-ui-testing-authenticated", "-ui-testing-list-fixtures", "-ui-testing-rss-fixtures", "-AppleLanguages",
             "(\(language))",
         ]
-        if large { app.launchArguments.append("-ui-testing-rss-large") }
+        if infiniteScroll { app.launchArguments.append("-ui-testing-rss-infinite-scroll") }
         if delayed { app.launchArguments.append("-ui-testing-rss-delayed") }
         if controlledPages { app.launchArguments.append("-ui-testing-rss-controlled-pages") }
         if offline { app.launchArguments.append("-ui-testing-rss-offline") }
@@ -157,15 +157,15 @@ final class RssUITests: XCTestCase {
 
     @MainActor
     func testUnreadInfiniteScrollWorksOfflineThroughTheLastBatch() {
-        let app = launch(offline: true, large: true)
-        XCTAssertEqual(app.buttons["rss-status-filter"].label, "未読 (120)")
+        let app = launch(offline: true, infiniteScroll: true)
+        XCTAssertEqual(app.buttons["rss-status-filter"].label, "未読 (33)")
         assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-unread-")
         attach(app, name: "rss-unread-infinite-offline")
     }
 
     @MainActor
     func testSavedInfiniteScrollWorksOfflineThroughTheLastBatch() {
-        let app = launch(offline: true, large: true)
+        let app = launch(offline: true, infiniteScroll: true)
         app.buttons["rss-status-filter"].tap()
         assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-saved-")
         attach(app, name: "rss-saved-infinite-offline")
@@ -180,7 +180,7 @@ final class RssUITests: XCTestCase {
         // Query the native collection directly while SwiftUI appends batches,
         // avoiding a search through every element type in the application.
         // Check each boundary before scrolling into the newly appended rows.
-        for suffix in ["49", "99", "119"] {
+        for suffix in ["13", "27", "32"] {
             let boundary = reader.buttons["rss-entry-\(entryPrefix)\(suffix)"].firstMatch
             for _ in 0..<20 {
                 if boundary.exists && boundary.isHittable { break }
@@ -190,7 +190,7 @@ final class RssUITests: XCTestCase {
             }
             XCTAssertTrue(boundary.exists && boundary.isHittable, "Did not reach RSS batch ending at \(suffix)")
         }
-        let last = reader.buttons["rss-entry-\(entryPrefix)119"].firstMatch
+        let last = reader.buttons["rss-entry-\(entryPrefix)32"].firstMatch
         XCTAssertTrue(last.exists && last.isHittable)
         reader.swipeUp()
         XCTAssertTrue(last.exists)

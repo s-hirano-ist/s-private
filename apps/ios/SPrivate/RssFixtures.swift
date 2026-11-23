@@ -7,6 +7,8 @@
     @MainActor
     @Observable
     final class RssFixtureClient: RssClient {
+        static let usesCompactScrollFixture = ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-infinite-scroll")
+
         static var snapshot: RssSnapshot {
             var value = RssSnapshot(
                 feeds: [
@@ -24,11 +26,13 @@
                         id: "fixture-saved", url: "https://example.com/saved", title: "Saved article",
                         savedID: "fixture-saved")
                 ], fetchedAt: .now)
-            if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-large") {
-                value.unread += (1..<120).map {
+            if usesCompactScrollFixture {
+                // Cross two full display batches and a partial last one without
+                // making XCTest query a large accessibility tree on every swipe.
+                value.unread += (1..<33).map {
                     .init(id: "fixture-large-unread-\($0)", feedID: "fixture-feed", url: "https://example.com/large/\($0)", title: "Unread article \($0)")
                 }
-                value.saved += (1..<120).map {
+                value.saved += (1..<33).map {
                     .init(id: "fixture-large-saved-\($0)", url: "https://example.com/large-saved/\($0)", title: "Saved article \($0)", savedID: "fixture-large-saved-\($0)")
                 }
             }

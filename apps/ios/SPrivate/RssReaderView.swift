@@ -1,13 +1,20 @@
 import SwiftUI
 
 struct RssReaderView: View {
+    private static let displayBatchSize: Int = {
+        #if DEBUG
+        if RssFixtureClient.usesCompactScrollFixture { return 14 }
+        #endif
+        return 50
+    }()
+
     @Environment(RssReaderModel.self) private var rss
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingSubscribe = false
     @State private var list = RssList.unread
     @State private var feedID = ""
-    @State private var visibleLimit = 50
+    @State private var visibleLimit = RssReaderView.displayBatchSize
     @State private var acceptedIDs: Set<String> = []
     @State private var initialized = false
     @State private var readAll: (entries: [RssEntry], identityID: UUID)?
@@ -70,7 +77,7 @@ struct RssReaderView: View {
                                 .id(limit)
                                 .task(id: displayedKey) {
                                     guard !Task.isCancelled, presentationIsCurrent, visibleLimit == limit else { return }
-                                    visibleLimit += 50
+                                    visibleLimit += Self.displayBatchSize
                                 }
                         }
                     }
@@ -152,16 +159,16 @@ struct RssReaderView: View {
                     initialized = false
                     acceptedIDs = []
                     presentation = RssPresentation()
-                    visibleLimit = 50
+                    visibleLimit = Self.displayBatchSize
                     proxy.scrollTo("rss-top", anchor: .top)
                 }
                 .onChange(of: list) { _, _ in
-                    visibleLimit = 50
+                    visibleLimit = Self.displayBatchSize
                     proxy.scrollTo("rss-top", anchor: .top)
                 }
                 .onChange(of: acceptanceVersion) { _, _ in proxy.scrollTo("rss-top", anchor: .top) }
                 .onChange(of: feedID) { _, _ in
-                    visibleLimit = 50
+                    visibleLimit = Self.displayBatchSize
                     proxy.scrollTo("rss-top", anchor: .top)
                 }
                 .onChange(of: rss.isOnline) { _, online in if online { Task { await rss.synchronize() } } }
@@ -199,7 +206,7 @@ struct RssReaderView: View {
                     Button(String(format: String(localized: "新着 %lld件を表示"), newCount)) {
                         initialized = false
                         acceptanceVersion += 1
-                        visibleLimit = 50
+                        visibleLimit = Self.displayBatchSize
                     }
                     .appTapTarget()
                     .disabled(!presentationIsCurrent)
