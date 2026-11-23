@@ -17,6 +17,7 @@ struct RssReaderView: View {
     @State private var showingSubscribe = false
     @Binding private var showingSettings: Bool
     @State private var list: RssList
+    @State private var showingSearch = false
     @State private var feedID = ""
     @State private var unreadQuery = ""
     @State private var visibleLimit = RssReaderView.displayBatchSize
@@ -59,6 +60,9 @@ struct RssReaderView: View {
 
     private var presentationIsCurrent: Bool { displayedKey == presentationKey }
     private var hasUnreadQuery: Bool { !RssSavedFilter.trim(unreadQuery).isEmpty }
+    private var hasSearchConditions: Bool {
+        list == .unread ? hasUnreadQuery || !feedID.isEmpty : savedFilter.isActive
+    }
 
     private var entries: [RssEntry] {
         guard presentationIdentity == rss.identityID, displayedKey?.list == list else { return [] }
@@ -76,11 +80,9 @@ struct RssReaderView: View {
                         .listRowSeparator(.hidden)
                         .accessibilityHidden(true)
                         .id("rss-top")
-                    searchControls
-                        .listRowInsets(EdgeInsets(top: AppLayout.small, leading: AppLayout.inset,
-                                                  bottom: AppLayout.tiny, trailing: AppLayout.inset))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(AppColors.background)
+                    if list == .saved && (savedAIRequest != nil || !savedFilter.alternatives.isEmpty || usedManualSearch) {
+                        savedSearchFeedback.appContentRow()
+                    }
                     if list == .unread && newCount > 0 {
                         showNewButton.appContentRow()
                     }
@@ -123,6 +125,17 @@ struct RssReaderView: View {
                 .environment(\.defaultMinListRowHeight, 0)
                 .accessibilityIdentifier("rss-reader")
                 .refreshable { await rss.refresh(list) }
+                .onScrollPhaseChange { _, phase in
+                    if phase == .interacting { showingSearch = false }
+                }
+                .safeAreaBar(edge: .top, spacing: 0) {
+                    if showingSearch {
+                        searchControls
+                            .padding(.horizontal, AppLayout.inset)
+                            .padding(.vertical, AppLayout.tiny)
+                            .background(AppColors.background)
+                    }
+                }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     RssStatusView(showsSyncStatus: false)
                 }
@@ -152,6 +165,9 @@ struct RssReaderView: View {
                                 .disabled(!presentationIsCurrent || !rss.canMutate || !rss.isComplete || entries.isEmpty || rss.pendingKeys.contains(where: { $0.hasPrefix("read-") }))
                                 .accessibilityIdentifier("rss-read-all")
                         }
+                    }
+                    ToolbarItem(placement: .principal) {
+                        searchToggle
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         Button { Task { await rss.synchronize(manual: true) } } label: {
@@ -198,6 +214,7 @@ struct RssReaderView: View {
                 .task(id: presentationKey) { await rebuild(presentationKey) }
                 .onChange(of: rss.identityID) { _, _ in
                     readAll = nil
+                    showingSearch = false
                     showingSubscribe = false
                     showingSavedAI = false
                     clearUnreadFilters()
@@ -209,12 +226,16 @@ struct RssReaderView: View {
                     proxy.scrollTo("rss-top", anchor: .top)
                 }
                 .onChange(of: list) { _, next in
+                    showingSearch = false
                     if next != .saved {
                         showingSavedAI = false
                         savedAIRequest = nil
                     }
                     visibleLimit = Self.displayBatchSize
                     proxy.scrollTo("rss-top", anchor: .top)
+                }
+                .onChange(of: showingSettings) { _, presented in
+                    if presented { showingSearch = false }
                 }
                 .onChange(of: savedFilter) { _, _ in
                     visibleLimit = Self.displayBatchSize
@@ -256,6 +277,7 @@ struct RssReaderView: View {
         }
         .onChange(of: navigation.selectedTab) { _, tab in
             if tab != .rss {
+                showingSearch = false
                 savedAIRequest = nil
                 showingSavedAI = false
             }
@@ -266,6 +288,38 @@ struct RssReaderView: View {
         presentationIsCurrent && entries.isEmpty && !rss.isLoading && rss.errorMessage == nil
     }
 
+    private var searchToggle: some View {
+        Button { showingSearch.toggle() } label: {
+            Image(systemName: showingSearch ? "xmark" : (hasSearchConditions ? "magnifyingglass.circle.fill" : "magnifyingglass"))
+                .font(.headline)
+                .appTapTarget()
+        }
+        .accessibilityLabel(showingSearch ? Text("閉じる") : Text("検索"))
+        .accessibilityValue(hasSearchConditions ? Text("絞り込み中") : Text(""))
+        .accessibilityIdentifier("rss-search-toggle")
+    }
+
+    private var savedSearchFeedback: some View {
+        VStack(alignment: .leading, spacing: AppLayout.small) {
+            if savedAIRequest != nil {
+                ProgressView("検索条件を解析中")
+                    .accessibilityIdentifier("rss-saved-ai-progress")
+            }
+            if !savedFilter.alternatives.isEmpty {
+                Text(String(format: String(localized: "AIの検索語: %@"), savedFilter.alternatives.joined(separator: " / ")))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.mutedForeground)
+                    .accessibilityIdentifier("rss-saved-ai-terms")
+            }
+            if usedManualSearch {
+                Text("AIで条件を作成できなかったため、入力文でキーワード検索しました。")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.mutedForeground)
+                    .accessibilityIdentifier("rss-saved-ai-fallback")
+            }
+        }
+    }
+
     @ViewBuilder
     private var searchControls: some View {
         if list == .unread {
@@ -274,7 +328,6 @@ struct RssReaderView: View {
             RssSavedSearchControls(
                 filter: $savedFilter,
                 isInterpreting: savedAIRequest != nil,
-                usedManualSearch: usedManualSearch,
                 onEdit: cancelSavedAI,
                 onClear: clearSavedFilters,
                 onAI: { showingSavedAI = true }

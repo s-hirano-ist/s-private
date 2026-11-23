@@ -31,6 +31,7 @@ struct RssSearchBar<Filters: View>: View {
             }
             .frame(minHeight: AppLayout.minimumTarget)
             .focused($isSearchFocused)
+            .task { isSearchFocused = true }
             .submitLabel(.search)
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
@@ -74,64 +75,44 @@ struct RssSearchBar<Filters: View>: View {
 struct RssSavedSearchControls: View {
     @Binding var filter: RssSavedFilter
     let isInterpreting: Bool
-    let usedManualSearch: Bool
     let onEdit: () -> Void
     let onClear: () -> Void
     let onAI: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppLayout.small) {
-            RssSearchBar(
-                prompt: "保存済み記事を検索",
-                query: Binding(
-                    get: { filter.query },
-                    set: {
-                        onEdit()
-                        filter.query = $0
-                        filter.alternatives = []
-                    }
-                ),
-                searchID: "rss-saved-search",
-                filterID: "rss-saved-topic",
-                filterLabel: String(localized: "カテゴリで絞り込む"),
-                filterValue: filter.topic?.title ?? String(localized: "すべてのカテゴリ"),
-                hasFilter: filter.topic != nil || !filter.alternatives.isEmpty,
-                clearID: "rss-saved-clear",
-                onClear: filter.isActive || isInterpreting ? onClear : nil
-            ) {
-                Section {
-                    Picker("カテゴリで絞り込む", selection: Binding(
-                        get: { filter.topic },
-                        set: { onEdit(); filter.topic = $0 }
-                    )) {
-                        Text("すべてのカテゴリ").tag(nil as RssSavedTopic?)
-                        ForEach(RssSavedTopic.allCases, id: \.self) { topic in
-                            Text(topic.title).tag(Optional(topic))
-                        }
-                    }
-                    .pickerStyle(.inline)
+        RssSearchBar(
+            prompt: "保存済み記事を検索",
+            query: Binding(
+                get: { filter.query },
+                set: {
+                    onEdit()
+                    filter.query = $0
+                    filter.alternatives = []
                 }
-
-                Button("AIで絞り込む", systemImage: "sparkles", action: onAI)
-                    .accessibilityIdentifier("rss-saved-ai")
+            ),
+            searchID: "rss-saved-search",
+            filterID: "rss-saved-topic",
+            filterLabel: String(localized: "カテゴリで絞り込む"),
+            filterValue: filter.topic?.title ?? String(localized: "すべてのカテゴリ"),
+            hasFilter: filter.topic != nil || !filter.alternatives.isEmpty,
+            clearID: "rss-saved-clear",
+            onClear: filter.isActive || isInterpreting ? onClear : nil
+        ) {
+            Section {
+                Picker("カテゴリで絞り込む", selection: Binding(
+                    get: { filter.topic },
+                    set: { onEdit(); filter.topic = $0 }
+                )) {
+                    Text("すべてのカテゴリ").tag(nil as RssSavedTopic?)
+                    ForEach(RssSavedTopic.allCases, id: \.self) { topic in
+                        Text(topic.title).tag(Optional(topic))
+                    }
+                }
+                .pickerStyle(.inline)
             }
 
-            if isInterpreting {
-                ProgressView("検索条件を解析中")
-                    .accessibilityIdentifier("rss-saved-ai-progress")
-            }
-            if !filter.alternatives.isEmpty {
-                Text(String(format: String(localized: "AIの検索語: %@"), filter.alternatives.joined(separator: " / ")))
-                    .font(.caption)
-                    .foregroundStyle(AppColors.mutedForeground)
-                    .accessibilityIdentifier("rss-saved-ai-terms")
-            }
-            if usedManualSearch {
-                Text("AIで条件を作成できなかったため、入力文でキーワード検索しました。")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.mutedForeground)
-                    .accessibilityIdentifier("rss-saved-ai-fallback")
-            }
+            Button("AIで絞り込む", systemImage: "sparkles", action: onAI)
+                .accessibilityIdentifier("rss-saved-ai")
         }
     }
 }

@@ -35,6 +35,8 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(toggle.waitForExistence(timeout: 5))
         toggle.tap()
         let search = app.textFields["rss-saved-search"]
+        XCTAssertFalse(search.exists)
+        app.buttons["rss-search-toggle"].tap()
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["rss-entry-fixture-search-swiftui"].isHittable)
         attach(app, name: "rss-search-saved-en")
@@ -67,7 +69,10 @@ final class RssUITests: XCTestCase {
     func testSavedSearchShortcutFallsBackAndReflectsRemoval() {
         let app = launch(searchShortcut: true)
         XCTAssertTrue(app.staticTexts["rss-saved-ai-fallback"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.textFields["rss-saved-search"].exists)
+        app.buttons["rss-search-toggle"].tap()
         XCTAssertEqual(app.textFields["rss-saved-search"].value as? String, "Saved article")
+        app.buttons["rss-search-toggle"].tap()
         let saved = app.buttons["rss-entry-fixture-saved"]
         XCTAssertTrue(saved.waitForExistence(timeout: 5))
         app.buttons["rss-save-fixture-saved"].tap()
@@ -124,6 +129,11 @@ final class RssUITests: XCTestCase {
     func testCountsLiveInFilterAndDiagnosticsAreInSettings() {
         let app = launch()
         let filter = app.buttons["rss-feed-filter"]
+        let searchToggle = app.navigationBars.buttons["rss-search-toggle"]
+        XCTAssertTrue(searchToggle.waitForExistence(timeout: 5))
+        XCTAssertFalse(filter.exists)
+        attach(app, name: "rss-search-collapsed")
+        searchToggle.tap()
         XCTAssertTrue(filter.waitForExistence(timeout: 5))
         XCTAssertFalse(app.navigationBars.buttons["rss-feed-filter"].exists)
         let search = app.textFields["rss-unread-search"]
@@ -153,6 +163,7 @@ final class RssUITests: XCTestCase {
         let app = launch(language: "en", delayed: true)
         let search = app.textFields["rss-unread-search"]
         let filter = app.buttons["rss-feed-filter"]
+        app.buttons["rss-search-toggle"].tap()
         filter.tap()
         app.buttons["News / Example Feed (3)"].tap()
 
@@ -186,6 +197,7 @@ final class RssUITests: XCTestCase {
     func testRemovingSelectedSubscriptionReturnsToAllSubscriptions() {
         let app = launch()
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
+        app.buttons["rss-search-toggle"].tap()
         app.buttons["rss-feed-filter"].tap()
         app.buttons["News / Example Feed (1)"].tap()
         app.buttons["settings-link"].tap()
@@ -196,11 +208,32 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["購読はありません"].waitForExistence(timeout: 5))
         app.navigationBars.buttons.firstMatch.tap()
         app.navigationBars.buttons.firstMatch.tap()
+        app.buttons["rss-search-toggle"].tap()
         let filter = app.buttons["rss-feed-filter"]
         XCTAssertTrue(filter.waitForExistence(timeout: 5))
         XCTAssertEqual(filter.value as? String, "すべての購読 (0)")
         XCTAssertTrue(app.buttons["購読を追加"].exists)
         attach(app, name: "rss-unsubscribed-empty")
+    }
+
+    @MainActor
+    func testScrollingCollapsesHeaderSearchAndKeepsTheQuery() {
+        let app = launch(offline: true, language: "en", infiniteScroll: true)
+        let search = app.textFields["rss-unread-search"]
+        let toggle = app.buttons["rss-search-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertFalse(search.exists)
+        toggle.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        search.typeText("Unread article\n")
+        let reader = app.collectionViews["rss-reader"].firstMatch
+        reader.swipeUp()
+        XCTAssertTrue(search.waitForNonExistence(timeout: 5))
+        attach(app, name: "rss-search-scrolled")
+        reader.swipeDown()
+        XCTAssertFalse(search.exists)
+        toggle.tap()
+        XCTAssertEqual(search.value as? String, "Unread article")
     }
 
     @MainActor
