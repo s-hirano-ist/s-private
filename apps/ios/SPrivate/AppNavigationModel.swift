@@ -17,11 +17,27 @@ struct RecordNavigationRequest: Equatable, Sendable {
     let recordID: String
 }
 
+struct SavedRssNavigationRequest: Equatable, Sendable {
+    let id = UUID()
+    let query: String
+    let readerIdentity: UUID
+}
+
 @MainActor
 final class AppNavigationModel: ObservableObject, @unchecked Sendable {
     @Published var selectedTab: AppTab = .rss
     @Published private(set) var searchRequest: SearchNavigationRequest?
     @Published private(set) var recordRequest: RecordNavigationRequest?
+    @Published private(set) var savedRssRequest: SavedRssNavigationRequest?
+
+    func showSavedRss(_ query: String, readerIdentity: UUID) {
+        savedRssRequest = SavedRssNavigationRequest(query: query, readerIdentity: readerIdentity)
+        selectedTab = .rss
+    }
+
+    func consumeSavedRssRequest(id: UUID) {
+        if savedRssRequest?.id == id { savedRssRequest = nil }
+    }
 
     func showSearch(_ query: String, domain: MobileDomain = .notes) {
         selectedTab = .domain(domain)

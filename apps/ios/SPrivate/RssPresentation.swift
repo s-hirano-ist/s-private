@@ -9,9 +9,9 @@ struct RssPresentation: Sendable {
     var sources: [String: String] = [:]
 
     init() {}
-    init(snapshot: RssSnapshot, list: RssList, feedID: String, acceptedIDs: Set<String>, initialized: Bool) {
+    init(snapshot: RssSnapshot, list: RssList, feedID: String, acceptedIDs: Set<String>, initialized: Bool, savedFilter: RssSavedFilter = .init()) {
         sources = Dictionary(snapshot.feeds.map { ($0.id, $0.title) }, uniquingKeysWith: { first, _ in first })
-        if list == .saved { entries = snapshot.saved }
+        if list == .saved { entries = savedFilter.apply(to: snapshot.saved) }
         entries.reserveCapacity(max(entries.count, snapshot.unread.count))
         for entry in snapshot.unread {
             let accepted = !initialized || acceptedIDs.contains(entry.id)

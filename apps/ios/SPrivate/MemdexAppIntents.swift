@@ -139,6 +139,37 @@ struct CreateMemdexNoteIntent: AppIntent {
     }
 }
 
+struct SearchSavedRssIntent: AppIntent {
+    static let title: LocalizedStringResource = "保存済みRSSを検索"
+    static let description = IntentDescription("検索内容を指定して、Memdexの保存済みRSSを絞り込みます。")
+    static let supportedModes: IntentModes = .foreground(.immediate)
+    static let allowedExecutionTargets: IntentExecutionTargets = .main
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
+
+    @Parameter(title: "RSSの検索内容", requestValueDialog: "保存済みRSSで何を探しますか？")
+    var query: String
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("保存済みRSSで\(\.$query)を検索")
+    }
+
+    @Dependency private var navigation: AppNavigationModel
+    @Dependency private var rss: RssReaderModel
+
+    @MainActor
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        guard !rss.scope.isEmpty else {
+            return .result(dialog: "Memdexにログインしてから、もう一度実行してください。")
+        }
+        let input = String(RssSavedFilter.trim(query).prefix(300))
+        guard !input.isEmpty else {
+            return .result(dialog: "検索内容を入力してください。")
+        }
+        navigation.showSavedRss(input, readerIdentity: rss.identityID)
+        return .result(dialog: "Memdexで保存済みRSSを検索します。")
+    }
+}
+
 struct MemdexShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
@@ -149,6 +180,12 @@ struct MemdexShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "ノートを作成",
             systemImageName: "note.text.badge.plus"
+        )
+        AppShortcut(
+            intent: SearchSavedRssIntent(),
+            phrases: ["\(.applicationName)で保存済みRSSを検索"],
+            shortTitle: "保存済みRSSを検索",
+            systemImageName: "magnifyingglass"
         )
     }
 

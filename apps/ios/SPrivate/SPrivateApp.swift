@@ -63,11 +63,15 @@ struct SPrivateApp: App {
                                  authenticated: { authentication.status == .authenticated }, monitorNetwork: !useListFixtures)
         rss.configure(owner: authentication.ownerKey, endpoint: client.baseURL?.absoluteString ?? "", signedIn: authentication.status == .authenticated)
         _rss = State(initialValue: rss)
+        AppDependencyManager.shared.add(dependency: rss)
         self.useListFixtures = useListFixtures
         #if DEBUG
         if useListFixtures {
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-fixtures") {
                 rss.useFixtures(offline: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-offline"), live: ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-delayed"))
+                if ProcessInfo.processInfo.arguments.contains("-ui-testing-rss-search-shortcut") {
+                    navigation.showSavedRss("Saved article", readerIdentity: rss.identityID)
+                }
             }
             var articleFixtures = [
                 Self.fixtureRecord(id: "article-short", title: "Short article", categoryID: "reading"),
@@ -200,7 +204,10 @@ struct SPrivateApp: App {
         } else if ProcessInfo.processInfo.arguments.contains("-ui-testing-media-layout") {
             MediaLoadingFixtureView()
         } else {
-            ContentView()
+            ContentView(interpretSavedRssSearch: { [useListFixtures] query in
+                if useListFixtures { return nil }
+                return try await RssSavedIntelligence.interpret(query)
+            })
                 .environment(\.articleDeleteFailureFixtureID, usesArticleFixtures ? "article-long" : nil)
                 .environment(\.feedThumbnailFixture, useListFixtures && Self.usesArticleThumbnails ? { url in
                     url.lastPathComponent == "cover.jpg" ? UIImage(systemName: "mountain.2.fill")?.withTintColor(.systemTeal) : nil
