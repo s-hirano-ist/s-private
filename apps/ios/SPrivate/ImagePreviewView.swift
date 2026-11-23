@@ -4,21 +4,94 @@ import UIKit
 struct ImagePreviewView: View {
     let image: UIImage
     @Environment(\.dismiss) private var dismiss
+    @State private var controlsHidden = false
 
     var body: some View {
-        NavigationStack {
-            ZoomableImageView(image: image)
-                .background(AppColors.background)
-                .toolbar {
-                    Button(String(localized: "閉じる")) { dismiss() }
-                }
+        MediaViewer(controlsHidden: $controlsHidden, close: { dismiss() }) { toggleControls in
+            ZoomableImageView(image: image, onMediaTap: toggleControls)
+        } trailing: {
+            EmptyView()
         }
+    }
+}
+
+struct MediaViewer<Media: View, Trailing: View>: View {
+    @Binding var controlsHidden: Bool
+    var position: String?
+    var closeDisabled = false
+    var close: () -> Void
+    @ViewBuilder var media: (@escaping () -> Void) -> Media
+    @ViewBuilder var trailing: () -> Trailing
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            media(toggleControls)
+                .ignoresSafeArea(.container, edges: .vertical)
+            if !controlsHidden || voiceOverEnabled {
+                GlassEffectContainer(spacing: 12) {
+                    ZStack {
+                        if let position {
+                            Text(position)
+                                .font(.subheadline.monospacedDigit())
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.65)
+                                .padding(.horizontal, 12)
+                                .frame(minHeight: AppLayout.minimumTarget)
+                                .glassEffect(.regular)
+                                .padding(.horizontal, 60)
+                                .allowsHitTesting(false)
+                                .accessibilityAddTraits(.isHeader)
+                                .accessibilityIdentifier("gallery-position")
+                        }
+                        HStack {
+                            Button(action: close) {
+                                Label(String(localized: "閉じる"), systemImage: "xmark")
+                                    .labelStyle(.iconOnly)
+                                    .mediaControlSurface()
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(closeDisabled)
+                            .accessibilityIdentifier("media-viewer-close")
+                            Spacer()
+                            trailing()
+                        }
+                    }
+                }
+                .padding(.horizontal, AppLayout.inset)
+                .padding(.top, AppLayout.small)
+                .transition(.opacity)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background.ignoresSafeArea())
+        .accessibilityAction(.escape) {
+            if !closeDisabled { close() }
+        }
+    }
+
+    private func toggleControls() {
+        guard !voiceOverEnabled, !closeDisabled else { return }
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
+            controlsHidden.toggle()
+        }
+    }
+}
+
+extension View {
+    func mediaControlSurface() -> some View {
+        font(.system(size: 20, weight: .medium))
+            .frame(width: AppLayout.minimumTarget, height: AppLayout.minimumTarget)
+            .contentShape(Circle())
+            .glassEffect(.regular.interactive(), in: .circle)
     }
 }
 
 struct ZoomableImageView: UIViewRepresentable {
     let image: UIImage
     var onZoomChange: ((Bool) -> Void)?
+    var onMediaTap: (() -> Void)?
 
     func makeUIView(context: Context) -> ImagePreviewScrollView {
         ImagePreviewScrollView()
@@ -26,6 +99,7 @@ struct ZoomableImageView: UIViewRepresentable {
 
     func updateUIView(_ uiView: ImagePreviewScrollView, context: Context) {
         uiView.onZoomChange = onZoomChange
+        uiView.onMediaTap = onMediaTap
         uiView.display(image)
     }
 }
@@ -35,6 +109,10 @@ final class ImagePreviewScrollView: UIScrollView, UIScrollViewDelegate {
     let imageView = UIImageView()
     private var viewportSize: CGSize = .zero
     var onZoomChange: ((Bool) -> Void)?
+    var onMediaTap: (() -> Void)? {
+        didSet { mediaTap.isEnabled = onMediaTap != nil }
+    }
+    private lazy var mediaTap = UITapGestureRecognizer(target: self, action: #selector(didTapMedia))
 
     init() {
         super.init(frame: .zero)
@@ -48,9 +126,14 @@ final class ImagePreviewScrollView: UIScrollView, UIScrollViewDelegate {
         imageView.accessibilityLabel = String(localized: "画像")
         imageView.accessibilityIdentifier = "media-preview-image"
         addSubview(imageView)
+        mediaTap.cancelsTouchesInView = false
+        mediaTap.isEnabled = false
+        addGestureRecognizer(mediaTap)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    @objc private func didTapMedia() { onMediaTap?() }
 
     func display(_ image: UIImage) {
         guard imageView.image !== image else { return }

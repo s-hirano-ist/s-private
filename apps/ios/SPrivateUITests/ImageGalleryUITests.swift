@@ -9,17 +9,30 @@ final class ImageGalleryUITests: XCTestCase {
         app.buttons["media-cell-gallery-00"].tap()
         XCTAssertTrue(app.buttons["gallery-delete"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["media-open"].exists)
-        XCTAssertTrue(app.navigationBars["1 / 35"].exists)
+        XCTAssertTrue(app.galleryPosition("1 / 35").exists)
         let scroll = app.scrollViews["media-preview-scroll"].firstMatch
         scroll.swipeLeft()
-        XCTAssertTrue(app.navigationBars["2 / 35"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.galleryPosition("2 / 35").waitForExistence(timeout: 3))
         scroll.pinch(withScale: 2, velocity: 1)
         scroll.swipeLeft()
-        XCTAssertTrue(app.navigationBars["2 / 35"].exists)
+        XCTAssertTrue(app.galleryPosition("2 / 35").exists)
+        let image = app.images["media-preview-image"].firstMatch
+        let zoom = image.value as? String
+        let frame = image.frame
+        XCTAssertNotEqual(zoom, "100%")
+        let close = app.buttons["media-viewer-close"]
+        let center = scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        center.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["gallery-delete"].exists)
+        XCTAssertEqual(image.value as? String, zoom)
+        XCTAssertEqual(image.frame, frame)
+        center.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 3))
         app.buttons["閉じる"].tap()
         XCTAssertTrue(app.buttons["media-cell-gallery-00"].waitForExistence(timeout: 3))
         app.buttons["media-cell-gallery-00"].tap()
-        XCTAssertTrue(app.navigationBars["1 / 35"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.galleryPosition("1 / 35").waitForExistence(timeout: 3))
         XCTAssertEqual(app.images["media-preview-image"].firstMatch.value as? String, "100%")
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "direct-full-screen-gallery"
@@ -33,9 +46,9 @@ final class ImageGalleryUITests: XCTestCase {
         app.buttons["media-cell-gallery-00"].tap()
         confirmDelete(app)
         XCTAssertTrue(app.staticTexts["gallery-error"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.navigationBars["1 / 35"].exists)
+        XCTAssertTrue(app.galleryPosition("1 / 35").exists)
         confirmDelete(app)
-        XCTAssertTrue(app.navigationBars["1 / 34"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.galleryPosition("1 / 34").waitForExistence(timeout: 5))
         XCTAssertTrue(app.images["media-preview-image"].exists)
         app.buttons["閉じる"].tap()
         XCTAssertFalse(app.buttons["media-cell-gallery-00"].exists)
@@ -53,13 +66,13 @@ final class ImageGalleryUITests: XCTestCase {
         app.buttons["gallery-delete"].tap()
         if app.buttons["キャンセル"].exists { app.buttons["キャンセル"].tap() }
         else { app.otherElements["PopoverDismissRegion"].tap() }
-        XCTAssertTrue(app.navigationBars["1 / 1"].exists)
+        XCTAssertTrue(app.galleryPosition("1 / 1").exists)
         confirmDelete(app)
         XCTAssertTrue(app.descendants(matching: .any)["domain-empty-images"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["status-filter"].tap()
         XCTAssertTrue(app.buttons["media-cell-gallery-99"].waitForExistence(timeout: 5))
         app.buttons["media-cell-gallery-99"].tap()
-        XCTAssertTrue(app.navigationBars["1 / 1"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.galleryPosition("1 / 1").waitForExistence(timeout: 5))
     }
 
     @MainActor
@@ -72,13 +85,13 @@ final class ImageGalleryUITests: XCTestCase {
         }
         XCTAssertTrue(cell.isHittable)
         cell.tap()
-        XCTAssertTrue(app.navigationBars["30 / 35"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.galleryPosition("30 / 35").waitForExistence(timeout: 5))
         for position in 31...35 {
             app.scrollViews["media-preview-scroll"].firstMatch.swipeLeft()
-            XCTAssertTrue(app.navigationBars["\(position) / 35"].waitForExistence(timeout: 3))
+            XCTAssertTrue(app.galleryPosition("\(position) / 35").waitForExistence(timeout: 3))
         }
         app.scrollViews["media-preview-scroll"].firstMatch.swipeLeft()
-        XCTAssertTrue(app.navigationBars["35 / 35"].exists)
+        XCTAssertTrue(app.galleryPosition("35 / 35").exists)
         app.buttons["閉じる"].tap()
         XCTAssertTrue(cell.isHittable)
     }
@@ -94,7 +107,7 @@ final class ImageGalleryUITests: XCTestCase {
         let result = app.buttons["search-result-images-gallery-00"]
         XCTAssertTrue(result.waitForExistence(timeout: 5))
         result.tap()
-        XCTAssertTrue(app.navigationBars["1 / 1"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.galleryPosition("1 / 1").waitForExistence(timeout: 5))
         XCTAssertTrue(app.images["media-preview-image"].waitForExistence(timeout: 5))
         confirmDelete(app)
         XCTAssertTrue(app.buttons["gallery-delete"].waitForNonExistence(timeout: 5))
@@ -120,5 +133,13 @@ final class ImageGalleryUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["media-cell-gallery-00"].waitForExistence(timeout: 10))
         return app
+    }
+}
+
+extension XCUIApplication {
+    func galleryPosition(_ label: String) -> XCUIElement {
+        staticTexts.matching(identifier: "gallery-position")
+            .matching(NSPredicate(format: "label == %@", label))
+            .firstMatch
     }
 }

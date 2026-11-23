@@ -21,7 +21,8 @@ struct MediaLoadingFixtureView: View {
                         let attempt = attempts
                         try await request.waitForCompletion()
                         if failsFirst && attempt == 1 { throw URLError(.notConnectedToInternet) }
-                        let size = square ? CGSize(width: 600, height: 600) : landscape ? CGSize(width: 900, height: 300) : CGSize(width: 300, height: 600)
+                        // Keep the portrait image taller than the edge-to-edge preview at fit width.
+                        let size = square ? CGSize(width: 600, height: 600) : landscape ? CGSize(width: 900, height: 300) : CGSize(width: 300, height: 900)
                         return UIGraphicsImageRenderer(size: size).jpegData(withCompressionQuality: 0.8) { context in
                             UIColor.systemIndigo.setFill()
                             context.fill(CGRect(origin: .zero, size: size))

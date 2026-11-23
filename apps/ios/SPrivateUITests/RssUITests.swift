@@ -159,6 +159,20 @@ final class RssUITests: XCTestCase {
     func testUnreadInfiniteScrollWorksOfflineThroughTheLastBatch() {
         let app = launch(offline: true, large: true)
         XCTAssertEqual(app.buttons["rss-status-filter"].label, "未読 (120)")
+        let reader = app.collectionViews["rss-reader"].firstMatch
+        let settings = app.buttons["settings-link"]
+        let tabs = app.tabBars.buttons
+        XCTAssertTrue(reader.waitForExistence(timeout: 5))
+        XCTAssertEqual(tabs.count, 5)
+        reader.swipeUp(velocity: .slow)
+        XCTAssertTrue(settings.waitForNonExistence(timeout: 3))
+        XCTAssertEqual(tabs.count, 1)
+        XCTAssertTrue(app.staticTexts["rss-offline"].isHittable)
+        reader.swipeDown()
+        XCTAssertTrue(settings.waitForExistence(timeout: 3))
+        if tabs.count == 1 { reader.swipeDown() }
+        XCTAssertTrue(tabs["画像"].waitForExistence(timeout: 3))
+        XCTAssertEqual(tabs.count, 5)
         assertScrollsThroughAllBatches(app, entryPrefix: "fixture-large-unread-")
         attach(app, name: "rss-unread-infinite-offline")
     }

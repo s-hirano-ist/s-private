@@ -79,6 +79,14 @@ final class LoadingLayoutUITests: XCTestCase {
             let before = image.frame
             scroll.swipeLeft()
             XCTAssertNotEqual(image.frame.minX, before.minX)
+            let pannedFrame = image.frame
+            let close = app.buttons["media-viewer-close"]
+            let center = scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            center.tap()
+            XCTAssertTrue(close.waitForNonExistence(timeout: 3))
+            XCTAssertEqual(image.frame, pannedFrame)
+            center.tap()
+            XCTAssertTrue(close.waitForExistence(timeout: 3))
             attach(app, name: "image-preview-zoomed-\(arguments.first ?? "portrait")")
             // Reopen from the observed zoomed state to verify the app-owned reset.
             // Exact zoom-out clamping and panned geometry are covered by ImagePreviewTests.

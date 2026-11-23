@@ -6,6 +6,7 @@ struct ContentView: View {
     @EnvironmentObject private var sync: SyncCoordinator
     @EnvironmentObject private var localIntelligence: LocalIntelligenceCoordinator
     @EnvironmentObject private var navigation: AppNavigationModel
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     var body: some View {
         Group {
@@ -20,6 +21,7 @@ struct ContentView: View {
                             .tag(AppTab.domain(domain))
                     }
                 }
+                .tabBarMinimizeBehavior(voiceOverEnabled ? .never : .onScrollDown)
             } else {
                 NavigationStack {
                     List {
@@ -165,6 +167,7 @@ struct SettingsView: View {
         .accessibilityIdentifier("settings-view")
         .navigationTitle(String(localized: "設定"))
         .navigationBarTitleDisplayMode(.inline)
+        .minimizeNavigationWhenScrolling()
         .confirmationDialog(
             String(localized: "未送信データがあります"),
             isPresented: $confirmingLogout,
@@ -243,6 +246,7 @@ struct SyncManagementView: View {
         }
         .navigationTitle(String(localized: "同期管理"))
         .navigationBarTitleDisplayMode(.inline)
+        .minimizeNavigationWhenScrolling()
         .accessibilityIdentifier("sync-management-view")
         .toolbar {
             Button { Task { await sync.synchronize(force: true) } } label: {
