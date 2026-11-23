@@ -1,5 +1,76 @@
 import SwiftUI
 
+struct RssSearchBar<Filters: View>: View {
+    let prompt: LocalizedStringKey
+    @Binding var query: String
+    let searchID: String
+    let filterID: String
+    let filterLabel: String
+    let filterValue: String
+    let hasFilter: Bool
+    let clearID: String
+    var onClear: (() -> Void)?
+    @ViewBuilder let filters: () -> Filters
+
+    @Environment(\.dynamicTypeSize) private var dynamicType
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @FocusState private var isSearchFocused: Bool
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "magnifyingglass")
+                .font(.subheadline)
+                .foregroundStyle(AppColors.mutedForeground)
+                .padding(.leading, AppLayout.medium)
+                .padding(.trailing, AppLayout.small)
+                .onTapGesture { isSearchFocused = true }
+                .accessibilityHidden(true)
+            TextField(text: $query, prompt: Text(isSearchFocused && !dynamicType.isAccessibilitySize ? prompt : "検索")
+                .foregroundStyle(AppColors.mutedForeground)) {
+                Text(prompt)
+            }
+            .frame(minHeight: AppLayout.minimumTarget)
+            .focused($isSearchFocused)
+            .submitLabel(.search)
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
+            .onSubmit { isSearchFocused = false }
+            .accessibilityLabel(Text(prompt))
+            .accessibilityIdentifier(searchID)
+
+            if let onClear {
+                Button(action: onClear) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(AppColors.mutedForeground)
+                        .appTapTarget()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("絞り込みを解除"))
+                .accessibilityIdentifier(clearID)
+            }
+
+            Menu(content: filters) {
+                Image(systemName: hasFilter ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                    .font(.title3)
+                    .foregroundStyle(hasFilter ? AppColors.primary : AppColors.mutedForeground)
+                    .appTapTarget()
+            }
+            .buttonStyle(.plain)
+            .menuIndicator(.hidden)
+            .accessibilityLabel(filterLabel)
+            .accessibilityValue(filterValue)
+            .accessibilityIdentifier(filterID)
+        }
+        .frame(maxWidth: .infinity)
+        .background {
+            Capsule()
+                .fill(AppColors.foreground.opacity(0.06))
+                .padding(.vertical, isSearchFocused ? 0 : AppLayout.tiny)
+        }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: isSearchFocused)
+    }
+}
+
 struct RssSavedSearchControls: View {
     @Binding var filter: RssSavedFilter
     let isInterpreting: Bool
@@ -8,55 +79,41 @@ struct RssSavedSearchControls: View {
     let onClear: () -> Void
     let onAI: () -> Void
 
-    @Environment(\.dynamicTypeSize) private var dynamicType
-    @FocusState private var isSearchFocused: Bool
-
     var body: some View {
         VStack(alignment: .leading, spacing: AppLayout.small) {
-            HStack {
-                Image(systemName: "magnifyingglass").accessibilityHidden(true)
-                TextField("保存済み記事を検索", text: Binding(
+            RssSearchBar(
+                prompt: "保存済み記事を検索",
+                query: Binding(
                     get: { filter.query },
                     set: {
                         onEdit()
                         filter.query = $0
                         filter.alternatives = []
                     }
-                ))
-                .focused($isSearchFocused)
-                .submitLabel(.search)
-                .onSubmit { isSearchFocused = false }
-                .accessibilityIdentifier("rss-saved-search")
-            }
-            .padding(.horizontal, AppLayout.medium)
-            .appTapTarget()
-            .background(AppColors.foreground.opacity(0.06), in: RoundedRectangle(cornerRadius: 10))
-
-            let layout = dynamicType.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading)) : AnyLayout(HStackLayout())
-            layout {
-                Picker("カテゴリで絞り込む", selection: Binding(
-                    get: { filter.topic },
-                    set: { onEdit(); filter.topic = $0 }
-                )) {
-                    Text("すべてのカテゴリ").tag(nil as RssSavedTopic?)
-                    ForEach(RssSavedTopic.allCases, id: \.self) { topic in
-                        Text(topic.title).tag(Optional(topic))
+                ),
+                searchID: "rss-saved-search",
+                filterID: "rss-saved-topic",
+                filterLabel: String(localized: "カテゴリで絞り込む"),
+                filterValue: filter.topic?.title ?? String(localized: "すべてのカテゴリ"),
+                hasFilter: filter.topic != nil || !filter.alternatives.isEmpty,
+                clearID: "rss-saved-clear",
+                onClear: filter.isActive || isInterpreting ? onClear : nil
+            ) {
+                Section {
+                    Picker("カテゴリで絞り込む", selection: Binding(
+                        get: { filter.topic },
+                        set: { onEdit(); filter.topic = $0 }
+                    )) {
+                        Text("すべてのカテゴリ").tag(nil as RssSavedTopic?)
+                        ForEach(RssSavedTopic.allCases, id: \.self) { topic in
+                            Text(topic.title).tag(Optional(topic))
+                        }
                     }
+                    .pickerStyle(.inline)
                 }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                .appTapTarget()
-                .accessibilityIdentifier("rss-saved-topic")
 
-                Button {
-                    isSearchFocused = false
-                    onAI()
-                } label: {
-                    Label("AIで絞り込む", systemImage: "sparkles")
-                }
-                .buttonStyle(.borderless)
-                .appTapTarget()
-                .accessibilityIdentifier("rss-saved-ai")
+                Button("AIで絞り込む", systemImage: "sparkles", action: onAI)
+                    .accessibilityIdentifier("rss-saved-ai")
             }
 
             if isInterpreting {
@@ -75,16 +132,7 @@ struct RssSavedSearchControls: View {
                     .foregroundStyle(AppColors.mutedForeground)
                     .accessibilityIdentifier("rss-saved-ai-fallback")
             }
-            if filter.isActive || isInterpreting {
-                Button("絞り込みを解除", action: onClear)
-                    .buttonStyle(.borderless)
-                    .appTapTarget()
-                    .accessibilityIdentifier("rss-saved-clear")
-            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, AppLayout.inset)
-        .padding(.vertical, AppLayout.medium)
     }
 }
 

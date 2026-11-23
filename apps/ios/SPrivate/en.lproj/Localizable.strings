@@ -94,6 +94,7 @@
 "%lld件" = "Items: %lld";
 "すべて既読" = "Mark all as read";
 "表示中の購読の記事をすべて既読にしますか？" = "Mark all articles in the current subscription filter as read?";
+"検索結果の記事をすべて既読にしますか？" = "Mark all matching articles as read?";
 "未読記事はありません" = "No unread articles";
 "保存した記事はありません" = "No saved articles";
 "あとで読むに保存" = "Save for later";
@@ -159,6 +160,7 @@
 "ノートを作成" = "Create note";
 
 "保存済み記事を検索" = "Search saved articles";
+"未読記事を検索" = "Search unread articles";
 "カテゴリで絞り込む" = "Filter by category";
 "すべてのカテゴリ" = "All categories";
 "テクノロジー" = "Technology";

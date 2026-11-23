@@ -49,6 +49,29 @@ enum RssSavedTopic: String, CaseIterable, Sendable {
     }
 }
 
+struct RssKeywordQuery {
+    private let terms: [Substring]
+
+    init(_ query: String) {
+        terms = Self.fold(query).split(whereSeparator: \.isWhitespace)
+    }
+
+    var isEmpty: Bool { terms.isEmpty }
+
+    func matches(_ entry: RssEntry) -> Bool {
+        guard !isEmpty else { return true }
+        return matches(title: Self.fold(entry.title), url: Self.fold(entry.url))
+    }
+
+    func matches(title: String, url: String) -> Bool {
+        terms.allSatisfy { title.contains($0) || url.contains($0) }
+    }
+
+    static func fold(_ value: String) -> String {
+        value.folding(options: [.caseInsensitive, .widthInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+    }
+}
+
 struct RssSavedFilter: Hashable, Sendable {
     typealias Interpreter = @Sendable (String) async throws -> RssSavedFilter?
 
@@ -60,27 +83,23 @@ struct RssSavedFilter: Hashable, Sendable {
 
     func apply(to entries: [RssEntry]) -> [RssEntry] {
         guard isActive else { return entries }
-        let manualTerms = Self.fold(query).split(whereSeparator: \.isWhitespace)
-        let aiTerms = alternatives.map(Self.fold)
+        let keywords = RssKeywordQuery(query)
+        let aiTerms = alternatives.map(RssKeywordQuery.fold)
         return entries.filter { entry in
             guard !Task.isCancelled else { return false }
-            let title = Self.fold(entry.title)
+            let title = RssKeywordQuery.fold(entry.title)
             if let topic, !topic.matches(title) { return false }
-            if manualTerms.isEmpty && aiTerms.isEmpty { return true }
-            let url = Self.fold(entry.url)
+            if keywords.isEmpty && aiTerms.isEmpty { return true }
+            let url = RssKeywordQuery.fold(entry.url)
             if !aiTerms.isEmpty {
                 return aiTerms.contains { title.contains($0) || url.contains($0) }
             }
-            return manualTerms.allSatisfy { title.contains($0) || url.contains($0) }
+            return keywords.matches(title: title, url: url)
         }
     }
 
     static func trim(_ string: String) -> String {
         string.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private static func fold(_ string: String) -> String {
-        string.folding(options: [.caseInsensitive, .widthInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
     }
 
     static func resolve(

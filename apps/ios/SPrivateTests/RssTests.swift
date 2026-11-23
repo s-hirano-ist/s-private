@@ -1057,4 +1057,22 @@ extension RssTests {
         #expect(empty.unreadCount == 0 && empty.unreadCounts.isEmpty)
     }
 
+    @Test("Unread search combines with the feed filter while keeping subscription counts")
+    func unreadSearchPresentation() {
+        let snapshot = RssSnapshot(unread: [
+            .init(id: "match", feedID: "a", url: "https://example.com/guide", title: "Café SwiftUI"),
+            .init(id: "other-feed", feedID: "b", url: "https://example.com/guide", title: "Cafe"),
+            .init(id: "other-title", feedID: "a", url: "https://example.com/guide", title: "UIKit"),
+            .init(id: "new-match", feedID: "a", url: "https://example.com/guide", title: "Café news"),
+            .init(id: "new-other", feedID: "a", url: "https://example.com/guide", title: "Other news"),
+        ])
+        let filtered = RssPresentation(snapshot: snapshot, list: .unread, feedID: "a",
+                                       acceptedIDs: ["match", "other-feed", "other-title"],
+                                       initialized: true, unreadQuery: "ＣＡＦＥ guide")
+        #expect(filtered.entries.map(\.id) == ["match"])
+        #expect(filtered.newCount == 1)
+        #expect(filtered.unreadCount == 3)
+        #expect(filtered.unreadCounts == ["a": 2, "b": 1])
+    }
+
 }

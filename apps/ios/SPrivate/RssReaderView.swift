@@ -18,6 +18,7 @@ struct RssReaderView: View {
     @State private var showingSettings = false
     @State private var list: RssList
     @State private var feedID = ""
+    @State private var unreadQuery = ""
     @State private var visibleLimit = RssReaderView.displayBatchSize
     @State private var acceptedIDs: Set<String> = []
     @State private var initialized = false
@@ -45,14 +46,17 @@ struct RssReaderView: View {
         let list: RssList
         let feedID: String
         let acceptance: Int
+        let unreadQuery: String
         let savedFilter: RssSavedFilter
     }
     private var presentationKey: PresentationKey {
         .init(identity: rss.identityID, revision: rss.dataRevision, list: list, feedID: feedID,
-              acceptance: acceptanceVersion, savedFilter: list == .saved ? savedFilter : .init())
+              acceptance: acceptanceVersion, unreadQuery: list == .unread ? RssSavedFilter.trim(unreadQuery) : "",
+              savedFilter: list == .saved ? savedFilter : .init())
     }
 
     private var presentationIsCurrent: Bool { displayedKey == presentationKey }
+    private var hasUnreadQuery: Bool { !RssSavedFilter.trim(unreadQuery).isEmpty }
 
     private var entries: [RssEntry] {
         guard presentationIdentity == rss.identityID, displayedKey?.list == list else { return [] }
@@ -70,19 +74,12 @@ struct RssReaderView: View {
                         .listRowSeparator(.hidden)
                         .accessibilityHidden(true)
                         .id("rss-top")
-                    if list == .saved {
-                        RssSavedSearchControls(
-                            filter: $savedFilter,
-                            isInterpreting: savedAIRequest != nil,
-                            usedManualSearch: usedManualSearch,
-                            onEdit: cancelSavedAI,
-                            onClear: clearSavedFilters,
-                            onAI: { showingSavedAI = true }
-                        )
-                        .listRowInsets(EdgeInsets())
+                    searchControls
+                        .listRowInsets(EdgeInsets(top: AppLayout.small, leading: AppLayout.inset,
+                                                  bottom: AppLayout.tiny, trailing: AppLayout.inset))
                         .listRowSeparator(.hidden)
                         .listRowBackground(AppColors.background)
-                    } else if newCount > 0 {
+                    if list == .unread && newCount > 0 {
                         showNewButton.appContentRow()
                     }
                     if entries.isEmpty && rss.isLoading {
@@ -91,7 +88,7 @@ struct RssReaderView: View {
                                 .appContentRow()
                         }
                     }
-                    if list == .saved && showsEmptyState {
+                    if showsEmptyState && (list == .saved || newCount == 0) {
                         readerEmptyState
                             .accessibilityIdentifier("rss-empty")
                             .appContentRow()
@@ -124,11 +121,6 @@ struct RssReaderView: View {
                 .environment(\.defaultMinListRowHeight, 0)
                 .accessibilityIdentifier("rss-reader")
                 .refreshable { await rss.refresh(list) }
-                .overlay {
-                    if list == .unread && showsEmptyState {
-                        readerEmptyState.accessibilityIdentifier("rss-empty")
-                    }
-                }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     if !rss.isOnline || rss.isLoading || rss.errorMessage != nil {
                         RssStatusView()
@@ -161,11 +153,6 @@ struct RssReaderView: View {
                                 .accessibilityIdentifier("rss-read-all")
                         }
                     }
-                    if list == .unread {
-                        ToolbarItem(placement: .principal) {
-                            feedFilter
-                        }
-                    }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         Button { Task { await rss.synchronize(manual: true) } } label: {
                             BusyLabel(isBusy: rss.isLoading) { Label(String(localized: "更新"), systemImage: "arrow.clockwise") }
@@ -190,7 +177,8 @@ struct RssReaderView: View {
                     }
                 }
                 .confirmationDialog(
-                    String(localized: "表示中の購読の記事をすべて既読にしますか？"),
+                    hasUnreadQuery ? String(localized: "検索結果の記事をすべて既読にしますか？")
+                        : String(localized: "表示中の購読の記事をすべて既読にしますか？"),
                     isPresented: Binding(get: { readAll != nil }, set: { if !$0 { readAll = nil } }),
                     titleVisibility: .visible
                 ) {
@@ -203,6 +191,7 @@ struct RssReaderView: View {
                         }
                     }
                     .disabled(!rss.canMutate)
+                    .accessibilityIdentifier("rss-confirm-read-all")
                     Button(String(localized: "キャンセル"), role: .cancel) { readAll = nil }
                 }
                 .task(id: rss.scope) { await rss.synchronize() }
@@ -211,6 +200,7 @@ struct RssReaderView: View {
                     readAll = nil
                     showingSubscribe = false
                     showingSavedAI = false
+                    clearUnreadFilters()
                     clearSavedFilters()
                     initialized = false
                     acceptedIDs = []
@@ -232,6 +222,10 @@ struct RssReaderView: View {
                 }
                 .onChange(of: acceptanceVersion) { _, _ in proxy.scrollTo("rss-top", anchor: .top) }
                 .onChange(of: feedID) { _, _ in
+                    visibleLimit = Self.displayBatchSize
+                    proxy.scrollTo("rss-top", anchor: .top)
+                }
+                .onChange(of: unreadQuery) { _, _ in
                     visibleLimit = Self.displayBatchSize
                     proxy.scrollTo("rss-top", anchor: .top)
                 }
@@ -272,21 +266,52 @@ struct RssReaderView: View {
         presentationIsCurrent && entries.isEmpty && !rss.isLoading && rss.errorMessage == nil
     }
 
-    private var feedFilter: some View {
-        let allFeeds = String(localized: "すべての購読")
+    @ViewBuilder
+    private var searchControls: some View {
+        if list == .unread {
+            unreadSearchControls
+        } else {
+            RssSavedSearchControls(
+                filter: $savedFilter,
+                isInterpreting: savedAIRequest != nil,
+                usedManualSearch: usedManualSearch,
+                onEdit: cancelSavedAI,
+                onClear: clearSavedFilters,
+                onAI: { showingSavedAI = true }
+            )
+        }
+    }
+
+    private var unreadSearchControls: some View {
         let selection = subscriptionLabel(
-            rss.snapshot.feeds.first(where: { $0.id == feedID })?.label ?? allFeeds,
+            rss.snapshot.feeds.first(where: { $0.id == feedID })?.label ?? String(localized: "すべての購読"),
             count: feedID.isEmpty ? presentation.unreadCount : presentation.unreadCounts[feedID, default: 0]
         )
-        return NavigationFilterMenu(title: String(localized: "購読で絞り込み"), selection: selection) {
-            Picker(allFeeds, selection: $feedID) {
-                Text(subscriptionLabel(allFeeds, count: presentation.unreadCount)).tag("")
-                ForEach(rss.snapshot.feeds) { feed in
-                    Text(subscriptionLabel(feed.label, count: presentation.unreadCounts[feed.id, default: 0])).tag(feed.id)
-                }
+        let onClear: (() -> Void)? = feedID.isEmpty && unreadQuery.isEmpty ? nil : { clearUnreadFilters() }
+        return RssSearchBar(
+            prompt: "未読記事を検索",
+            query: $unreadQuery,
+            searchID: "rss-unread-search",
+            filterID: "rss-feed-filter",
+            filterLabel: String(localized: "購読で絞り込み"),
+            filterValue: selection,
+            hasFilter: !feedID.isEmpty,
+            clearID: "rss-unread-clear",
+            onClear: onClear
+        ) {
+            unreadFeedOptions
+        }
+    }
+
+    private var unreadFeedOptions: some View {
+        let allFeeds = String(localized: "すべての購読")
+        return Picker(allFeeds, selection: $feedID) {
+            Text(subscriptionLabel(allFeeds, count: presentation.unreadCount)).tag("")
+            ForEach(rss.snapshot.feeds) { feed in
+                Text(subscriptionLabel(feed.label, count: presentation.unreadCounts[feed.id, default: 0])).tag(feed.id)
             }
         }
-        .accessibilityIdentifier("rss-feed-filter")
+        .pickerStyle(.inline)
     }
 
     private var showNewButton: some View {
@@ -307,7 +332,10 @@ struct RssReaderView: View {
 
     @ViewBuilder
     private var readerEmptyState: some View {
-        if list == .unread && rss.snapshot.feeds.isEmpty {
+        if list == .unread && hasUnreadQuery {
+            AppEmptyState(title: String(localized: "条件に一致する記事はありません"), symbol: "magnifyingglass",
+                          actionTitle: String(localized: "条件を解除"), action: clearUnreadFilters)
+        } else if list == .unread && rss.snapshot.feeds.isEmpty {
             AppEmptyState(title: String(localized: "購読はありません"), symbol: "dot.radiowaves.left.and.right",
                           message: String(localized: "お気に入りのサイトを追加して、記事を読み始めましょう。"),
                           actionTitle: String(localized: "購読を追加"), action: { showingSubscribe = true })
@@ -333,6 +361,11 @@ struct RssReaderView: View {
         savedFilter = RssSavedFilter()
     }
 
+    private func clearUnreadFilters() {
+        feedID = ""
+        unreadQuery = ""
+    }
+
     private func applySavedAISearch(_ request: SavedRssNavigationRequest) async {
         guard let result = try? await RssSavedFilter.resolve(request.query, interpret: interpretSavedSearch),
               !Task.isCancelled, savedAIRequest?.id == request.id, rss.identityID == request.readerIdentity,
@@ -354,7 +387,8 @@ struct RssReaderView: View {
         let work = Task.detached(priority: .userInitiated) {
             let ids = wasInitialized ? accepted : Set(snapshot.unread.map(\.id))
             let value = RssPresentation(snapshot: snapshot, list: key.list, feedID: key.feedID,
-                                        acceptedIDs: ids, initialized: true, savedFilter: key.savedFilter)
+                                        acceptedIDs: ids, initialized: true,
+                                        unreadQuery: key.unreadQuery, savedFilter: key.savedFilter)
             return (value, ids)
         }
         let (value, ids) = await withTaskCancellationHandler { await work.value } onCancel: { work.cancel() }
