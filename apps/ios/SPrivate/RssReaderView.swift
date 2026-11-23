@@ -129,7 +129,7 @@ struct RssReaderView: View {
                         readerEmptyState.accessibilityIdentifier("rss-empty")
                     }
                 }
-                .safeAreaBar(edge: .bottom, spacing: 0) {
+                .safeAreaInset(edge: .bottom, spacing: 0) {
                     if !rss.isOnline || rss.isLoading || rss.errorMessage != nil {
                         RssStatusView()
                     }
