@@ -25,17 +25,8 @@ struct ContentView: View {
                 }
                 .tabBarMinimizeBehavior(voiceOverEnabled ? .never : .onScrollDown)
             } else {
-                NavigationStack {
-                    ScrollView {
-                        authenticationContent
-                            .frame(maxWidth: .infinity)
-                            .padding(AppLayout.inset)
-                    }
-                    .defaultScrollAnchor(.center, for: .alignment)
-                    .background(AppColors.background)
-                    .foregroundStyle(AppColors.foreground)
-                    .navigationTitle("Memdex")
-                    .navigationBarTitleDisplayMode(.inline)
+                SignInView(status: authentication.status) {
+                    Task { await authentication.logIn() }
                 }
             }
         }
@@ -49,49 +40,6 @@ struct ContentView: View {
         }
         #endif
         return nil
-    }
-
-    @ViewBuilder
-    private var authenticationContent: some View {
-        switch authentication.status {
-        case .unavailable:
-            ContentUnavailableView(String(localized: "Auth0が未設定です"), systemImage: "exclamationmark.triangle")
-                .accessibilityIdentifier("auth0-unconfigured-message")
-        case .signedOut, .working:
-            ContentUnavailableView {
-                Label(String(localized: "ログインが必要です"), systemImage: "person.crop.circle")
-            } description: {
-                EmptyView()
-            } actions: {
-                loginButton(String(localized: "Auth0でログイン"), isBusy: authentication.status == .working)
-            }
-        case .authenticated:
-            EmptyView()
-        case let .error(message):
-            ContentUnavailableView {
-                Label(String(localized: "認証に失敗しました"), systemImage: "xmark.circle")
-            } description: {
-                Text(message).foregroundStyle(AppColors.mutedForeground)
-            } actions: {
-                loginButton(String(localized: "再試行"), isBusy: false)
-            }
-        }
-    }
-
-    private func loginButton(_ title: String, isBusy: Bool) -> some View {
-        Button {
-            Task { await authentication.logIn() }
-        } label: {
-            BusyLabel(isBusy: isBusy) { Text(title) }
-                .appTapTarget()
-        }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
-        .tint(AppColors.primary)
-        .foregroundStyle(AppColors.primaryForeground)
-        .accessibilityValue(isBusy ? String(localized: "処理中") : "")
-        .disabled(isBusy)
-        .accessibilityIdentifier("auth0-login-button")
     }
 }
 
