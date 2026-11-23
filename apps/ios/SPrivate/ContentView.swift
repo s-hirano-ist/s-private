@@ -26,13 +26,16 @@ struct ContentView: View {
                 .tabBarMinimizeBehavior(voiceOverEnabled ? .never : .onScrollDown)
             } else {
                 NavigationStack {
-                    List {
+                    ScrollView {
                         authenticationContent
+                            .frame(maxWidth: .infinity)
+                            .padding(AppLayout.inset)
                     }
-                    .scrollContentBackground(.hidden)
+                    .defaultScrollAnchor(.center, for: .alignment)
                     .background(AppColors.background)
                     .foregroundStyle(AppColors.foreground)
                     .navigationTitle("Memdex")
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
         }
@@ -55,23 +58,40 @@ struct ContentView: View {
             ContentUnavailableView(String(localized: "Auth0が未設定です"), systemImage: "exclamationmark.triangle")
                 .accessibilityIdentifier("auth0-unconfigured-message")
         case .signedOut, .working:
-            Button {
-                Task { await authentication.logIn() }
-            } label: {
-                BusyLabel(isBusy: authentication.status == .working) { Text(String(localized: "Auth0でログイン")) }
+            ContentUnavailableView {
+                Label(String(localized: "ログインが必要です"), systemImage: "person.crop.circle")
+            } description: {
+                EmptyView()
+            } actions: {
+                loginButton(String(localized: "Auth0でログイン"), isBusy: authentication.status == .working)
             }
-            .accessibilityValue(authentication.status == .working ? String(localized: "処理中") : "")
-            .disabled(authentication.status == .working)
-            .foregroundStyle(AppColors.primary)
-            .accessibilityIdentifier("auth0-login-button")
         case .authenticated:
             EmptyView()
         case let .error(message):
-            Label(String(localized: "認証に失敗しました"), systemImage: "xmark.circle")
-            Text(message).foregroundStyle(AppColors.mutedForeground)
-            Button(String(localized: "再試行")) { Task { await authentication.logIn() } }
-                .foregroundStyle(AppColors.primary)
+            ContentUnavailableView {
+                Label(String(localized: "認証に失敗しました"), systemImage: "xmark.circle")
+            } description: {
+                Text(message).foregroundStyle(AppColors.mutedForeground)
+            } actions: {
+                loginButton(String(localized: "再試行"), isBusy: false)
+            }
         }
+    }
+
+    private func loginButton(_ title: String, isBusy: Bool) -> some View {
+        Button {
+            Task { await authentication.logIn() }
+        } label: {
+            BusyLabel(isBusy: isBusy) { Text(title) }
+                .appTapTarget()
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .tint(AppColors.primary)
+        .foregroundStyle(AppColors.primaryForeground)
+        .accessibilityValue(isBusy ? String(localized: "処理中") : "")
+        .disabled(isBusy)
+        .accessibilityIdentifier("auth0-login-button")
     }
 }
 
@@ -107,7 +127,7 @@ struct SettingsView: View {
                 NavigationLink(String(localized: "RSSの購読管理")) { RssSubscriptionsView() }
                     .accessibilityIdentifier("rss-subscriptions-link")
             }
-            Section(String(localized: "ローカルAI検索")) {
+            Section {
                 Toggle(
                     String(localized: "Apple IntelligenceとSpotlightを使用"),
                     isOn: Binding(
@@ -123,8 +143,10 @@ struct SettingsView: View {
                 if let error = localIntelligence.indexError {
                     Text(error).foregroundStyle(AppColors.destructive)
                 }
+            } header: {
+                Text(String(localized: "ローカルAI検索"))
+            } footer: {
                 Text(String(localized: "有効にすると、保存内容の全文をこの端末の保護されたSpotlightインデックスへ追加します。データは検索とApple Intelligenceによる回答に使われ、サーバーへは送信されません。"))
-                    .font(.footnote)
                     .foregroundStyle(AppColors.mutedForeground)
             }
             Section(String(localized: "同期")) {
@@ -149,6 +171,7 @@ struct SettingsView: View {
             Section(String(localized: "共有された項目")) {
                 if sharedInbox.items.isEmpty {
                     Text(String(localized: "共有項目はありません"))
+                        .foregroundStyle(AppColors.mutedForeground)
                 } else {
                     ForEach(sharedInbox.items) { item in
                         Label(item.text ?? item.kind.rawValue, systemImage: "square.and.arrow.down")
@@ -163,6 +186,8 @@ struct SettingsView: View {
                     .accessibilityIdentifier("diagnostics-link")
             }
         }
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(.compact)
         .scrollContentBackground(.hidden)
         .background(AppColors.background)
         .foregroundStyle(AppColors.foreground)
