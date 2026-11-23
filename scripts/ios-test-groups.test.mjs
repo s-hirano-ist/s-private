@@ -82,6 +82,17 @@ test("local execution defaults to all tests and rejects unknown groups", () => {
 	assert.equal(result.status, 2);
 });
 
+function runtime(version, device, { suffix = "", isAvailable = true } = {}) {
+	return {
+		identifier: `com.apple.CoreSimulator.SimRuntime.iOS-${version.replaceAll(".", "-")}${suffix}`,
+		version,
+		isAvailable,
+		supportedDeviceTypes: [
+			{ identifier: `com.apple.CoreSimulator.SimDeviceType.${device}` },
+		],
+	};
+}
+
 function simulatorStartup(environment = {}) {
 	const directory = mkdtempSync(join(tmpdir(), "ios-startup-"));
 	try {
@@ -111,16 +122,34 @@ function simulatorStartup(environment = {}) {
     CI Audit iPhone 17 (custom-device) (Booted)
 `,
 		);
+		const runtimes = join(directory, "runtimes.json");
+		writeFileSync(
+			runtimes,
+			JSON.stringify({
+				runtimes: [
+					runtime("27.1", "iPhone-17"),
+					runtime("27.0", "iPhone-17"),
+					runtime("27.2", "iPhone-18-Pro", { suffix: "-iPhone19-4" }),
+					runtime("27.3", "iPhone-17", { isAvailable: false }),
+					runtime("28.0", "iPhone-17"),
+				],
+			}),
+		);
 		const command = `#!/usr/bin/env node
 const fs = require("node:fs");
 const name = require("node:path").basename(process.argv[1]);
 const args = process.argv.slice(2);
 fs.appendFileSync(process.env.IOS_STARTUP_LOG, JSON.stringify({ name, args }) + "\\n");
-if (name === "xcrun" && args[1] === "list") {
-  process.stdout.write(fs.readFileSync(process.env.IOS_DEVICE_LIST));
-}
-if (name === "xcrun" && args[1] === "bootstatus" && process.env.IOS_BOOT_FAILURE === "1") {
-  process.exit(1);
+if (name === "xcrun") {
+  const [command, kind] = args.slice(args[1] === "--set" ? 3 : 1);
+  if (command === "list" && kind === "devices") {
+    process.stdout.write(fs.readFileSync(process.env.IOS_DEVICE_LIST));
+  }
+  if (command === "list" && kind === "--json") {
+    process.stdout.write(fs.readFileSync(process.env.IOS_RUNTIME_LIST));
+  }
+  if (command === "create") console.log("isolated-device");
+  if (command === "bootstatus" && process.env.IOS_BOOT_FAILURE === "1") process.exit(1);
 }
 `;
 		for (const name of ["xcrun", "xcodebuild"]) {
@@ -135,8 +164,11 @@ if (name === "xcrun" && args[1] === "bootstatus" && process.env.IOS_BOOT_FAILURE
 				PATH: `${bin}:${process.env.PATH}`,
 				IOS_STARTUP_LOG: log,
 				IOS_DEVICE_LIST: devices,
+				IOS_RUNTIME_LIST: runtimes,
 				IOS_SIMULATOR_UDID: "",
 				IOS_TEST_GROUP: "all",
+				IOS_TEST_ISOLATED_SIMULATOR: "",
+				RUNNER_TEMP: directory,
 				...environment,
 			},
 		});
@@ -204,5 +236,56 @@ test("a failed Simulator boot stops before app installation and XCTest", () => {
 	assert.deepEqual(
 		calls.map(({ args }) => args[1]),
 		["list", "boot", "bootstatus"],
+	);
+});
+
+test("CI isolates the device set throughout Simulator preparation and XCTest", () => {
+	const { result, calls } = simulatorStartup({
+		IOS_TEST_ISOLATED_SIMULATOR: "1",
+	});
+	assert.equal(result.status, 0, result.stderr);
+	const deviceSet = calls[0].args[2];
+	assert.match(deviceSet, /ios-test-devices\./u);
+	const simulatorCalls = calls.filter(({ name }) => name === "xcrun");
+	for (const { args } of simulatorCalls) {
+		assert.deepEqual(args.slice(0, 3), ["simctl", "--set", deviceSet]);
+	}
+	assert.deepEqual(
+		simulatorCalls.map(({ args }) => args[3]),
+		[
+			"list",
+			"create",
+			"boot",
+			"bootstatus",
+			"install",
+			"launch",
+			"shutdown",
+			"delete",
+		],
+	);
+	assert.equal(
+		simulatorCalls[1].args.at(-1),
+		"com.apple.CoreSimulator.SimRuntime.iOS-27-1",
+	);
+	for (const { args } of simulatorCalls.slice(2)) {
+		assert.equal(args[4], "isolated-device");
+	}
+	const testCall = calls[6];
+	assert.equal(testCall.name, "xcodebuild");
+	assert.ok(testCall.args.includes(`-DVTSimulatorSetLocation=${deviceSet}`));
+	assert.ok(
+		testCall.args.includes("platform=iOS Simulator,id=isolated-device"),
+	);
+});
+
+test("an isolated boot failure cleans up without starting the app or tests", () => {
+	const { result, calls } = simulatorStartup({
+		IOS_BOOT_FAILURE: "1",
+		IOS_TEST_ISOLATED_SIMULATOR: "1",
+	});
+	assert.equal(result.status, 1);
+	assert.deepEqual(
+		calls.map(({ args }) => args[3]),
+		["list", "create", "boot", "bootstatus", "shutdown", "delete"],
 	);
 });

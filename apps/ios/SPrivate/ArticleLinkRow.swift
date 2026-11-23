@@ -1,5 +1,67 @@
 import SwiftUI
 
+struct ArticleListLabel: View {
+    let record: MobileRecord
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        HStack(alignment: .top, spacing: AppLayout.medium) {
+            if let thumbnailURL {
+                RssThumbnailView(url: thumbnailURL)
+            }
+            VStack(alignment: .leading, spacing: AppLayout.small) {
+                Text(record.displayTitle)
+                    .font(.headline)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                if let address = nonblank(record.url) {
+                    Text(verbatim: address)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.mutedForeground)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                        .truncationMode(.middle)
+                }
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: AppLayout.small) { metadata }
+                    VStack(alignment: .leading, spacing: AppLayout.tiny) { metadata }
+                }
+                .font(.caption)
+                .foregroundStyle(AppColors.mutedForeground)
+                if let summary {
+                    Text(summary)
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.mutedForeground)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                }
+            }
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private var metadata: some View {
+        if let category = nonblank(record.categoryName) { Text(category) }
+        Text(record.createdAt, style: .date)
+    }
+
+    private var summary: String? {
+        let ogTitle = nonblank(record.ogTitle)
+        let alternateTitle = ogTitle == nonblank(record.displayTitle) ? nil : ogTitle
+        return nonblank(record.ogDescription) ?? nonblank(record.quote) ?? alternateTitle
+    }
+
+    private var thumbnailURL: URL? {
+        guard let address = nonblank(record.ogImageUrl), let url = URL(string: address),
+              url.scheme?.lowercased() == "https", url.host != nil else { return nil }
+        return url
+    }
+
+    private func nonblank(_ value: String?) -> String? {
+        guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines), !trimmed.isEmpty else { return nil }
+        return trimmed
+    }
+}
+
 struct ArticleLinkRow<Content: View>: View {
     let id: String
     var onDeleted: () -> Void = {}
