@@ -61,9 +61,16 @@ export const Unread: Story = {
 		await expect(
 			canvas.queryByRole("button", { name: "購読管理" }),
 		).not.toBeInTheDocument();
-		await expect(
-			await canvas.findByRole("link", { name: "RSSを軽量に読む" }),
-		).toHaveAttribute("target", "_blank");
+		const article = await canvas.findByRole("link", {
+			name: "RSSを軽量に読む",
+		});
+		await expect(article).toHaveAttribute("target", "_blank");
+		article.addEventListener("click", (event) => event.preventDefault(), {
+			once: true,
+		});
+		await userEvent.click(article);
+		await expect(services.markRssRead).not.toHaveBeenCalled();
+		await expect(article).toBeVisible();
 		await userEvent.click(
 			canvas.getByRole("button", { name: "あとで読むに保存" }),
 		);

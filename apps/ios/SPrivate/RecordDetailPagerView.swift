@@ -125,10 +125,11 @@ struct RecordDetailPagerView: View {
                 }
             }
         }
-        .confirmationDialog(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete, titleVisibility: .visible) {
+        .alert(String(localized: "この項目を削除しますか？"), isPresented: $showingDelete) {
             Button(String(localized: "削除"), role: .destructive) { Task { await delete() } }
                 .disabled(deleting)
                 .accessibilityIdentifier("record-delete-confirm")
+            Button(String(localized: "キャンセル"), role: .cancel) {}
         }
         .task { reconcile(); extendIfNeeded() }
         .onChange(of: paging.selection) { _, _ in

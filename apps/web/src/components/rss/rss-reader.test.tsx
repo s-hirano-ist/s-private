@@ -145,29 +145,32 @@ test("mark-all during refresh uses the displayed snapshot and preserves the pend
 	).toBeEnabled();
 });
 
-test("opening articles rapidly serializes distinct reads, deduplicates clicks and holds busy until all settle", async () => {
-	const first = Promise.withResolvers<undefined>();
-	const second = Promise.withResolvers<undefined>();
-	const markRssRead = vi
-		.fn()
-		.mockReturnValueOnce(first.promise)
-		.mockReturnValueOnce(second.promise);
-	const { services } = setup({ markRssRead });
-	fireEvent.click(screen.getByRole("link", { name: "one" }));
-	fireEvent.click(screen.getByRole("link", { name: "one" }));
-	fireEvent.click(screen.getByRole("link", { name: "two" }));
-	await waitFor(() => expect(markRssRead).toHaveBeenCalledTimes(1));
-	await act(async () => first.resolve(undefined));
-	expect(markRssRead).toHaveBeenNthCalledWith(2, { ids: ["two"] });
-	expect(
-		screen.getByRole("button", { name: "すべて既読にする" }),
-	).toBeDisabled();
+test("opening an article with either mouse button leaves it unread and available to star", async () => {
+	const { services } = setup();
+	const article = screen.getByRole("link", { name: "one" });
+	await act(async () => {
+		fireEvent.click(article);
+		fireEvent(
+			article,
+			new MouseEvent("auxclick", { bubbles: true, button: 1 }),
+		);
+	});
+	expect(services.markRssRead).not.toHaveBeenCalled();
 	expect(services.loadRss).not.toHaveBeenCalled();
-	await act(async () => second.resolve(undefined));
+	expect(article).toBeVisible();
+	expect(screen.getByText("2 / 61件を表示")).toBeVisible();
+	const [star] = screen.getAllByRole("button", { name: "あとで読むに保存" });
+	expect(star).toBeEnabled();
+	fireEvent.click(star);
+	await waitFor(() =>
+		expect(services.saveRss).toHaveBeenCalledWith({
+			url: "https://example.com/one",
+			title: "one",
+			publishedAt: null,
+		}),
+	);
 	await waitFor(() => expect(services.loadRss).toHaveBeenCalledTimes(1));
-	expect(
-		screen.getByRole("button", { name: "すべて既読にする" }),
-	).toBeEnabled();
+	expect(services.markRssRead).not.toHaveBeenCalled();
 });
 
 test("a pre-mutation response cannot resurrect read articles even if it ignores abort", async () => {
@@ -216,20 +219,20 @@ test("changing filter while a mutation is pending waits and reloads the current 
 	);
 });
 
-test("a failed mutation is not retried and does not prevent the next queued read", async () => {
-	const first = Promise.withResolvers<undefined>();
+test("a failed bulk read is reconciled once and can be retried manually", async () => {
 	const markRssRead = vi
 		.fn()
-		.mockReturnValueOnce(first.promise)
+		.mockRejectedValueOnce(new Error("Unavailable"))
 		.mockResolvedValue(undefined);
 	const { services } = setup({ markRssRead });
-	fireEvent.click(screen.getByRole("link", { name: "one" }));
-	fireEvent.click(screen.getByRole("link", { name: "two" }));
-	await act(async () => first.reject(new Error("Unavailable")));
+	click("すべて既読にする");
 	await screen.findByRole("alert");
 	await waitFor(() => expect(services.loadRss).toHaveBeenCalledTimes(1));
-	expect(markRssRead).toHaveBeenCalledTimes(2);
+	expect(markRssRead).toHaveBeenCalledTimes(1);
 	expect(screen.getByRole("link", { name: "one" })).toBeVisible();
+	click("すべて既読にする");
+	await waitFor(() => expect(markRssRead).toHaveBeenCalledTimes(2));
+	await waitFor(() => expect(services.loadRss).toHaveBeenCalledTimes(2));
 });
 
 test("additional loading preserves usable cards and retries a failed read", async () => {
@@ -286,17 +289,16 @@ test("removing the last saved entry adopts the server's corrected page without a
 	expect(loadRss).toHaveBeenCalledTimes(2);
 });
 
-test("unmount discards queued reads and late callbacks", async () => {
-	const first = Promise.withResolvers<undefined>();
+test("bulk read ignores duplicate submissions and does not refresh after unmount", async () => {
+	const read = Promise.withResolvers<undefined>();
 	const { services, unmount } = setup({
-		markRssRead: vi.fn(() => first.promise),
+		markRssRead: vi.fn(() => read.promise),
 	});
-	fireEvent.click(screen.getByRole("link", { name: "one" }));
-	fireEvent.click(screen.getByRole("link", { name: "two" }));
-	await waitFor(() => expect(services.markRssRead).toHaveBeenCalledTimes(1));
-	unmount();
-	await act(async () => first.resolve(undefined));
+	click("すべて既読にする");
+	click("すべて既読にする");
 	expect(services.markRssRead).toHaveBeenCalledTimes(1);
+	unmount();
+	await act(async () => read.resolve(undefined));
 	expect(services.loadRss).not.toHaveBeenCalled();
 });
 
