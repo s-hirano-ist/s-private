@@ -1,9 +1,9 @@
 import SwiftUI
 
 enum AppTypography {
-    static let screenTitle = Font.system(.largeTitle, design: .serif, weight: .semibold)
-    static let readingTitle = Font.system(.title, design: .serif, weight: .semibold)
-    static let entryTitle = Font.system(.title3, design: .serif, weight: .semibold)
+    static let screenTitle = Font.system(.title, design: .serif, weight: .semibold)
+    static let readingTitle = Font.system(.title2, design: .serif, weight: .semibold)
+    static let entryTitle = Font.system(.headline, design: .serif, weight: .semibold)
 }
 
 struct AppScreenHeading: View {
