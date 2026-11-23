@@ -139,7 +139,7 @@ struct SettingsView: View {
         .listSectionSpacing(.compact)
         .appScreenSurface()
         .accessibilityIdentifier("settings-view")
-        .navigationTitle(String(localized: "設定"))
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .minimizeNavigationWhenScrolling()
         .confirmationDialog(
@@ -217,7 +217,7 @@ struct SyncManagementView: View {
                 AppEmptyState(title: String(localized: "未送信データはありません"), symbol: "checkmark.circle")
             }
         }
-        .navigationTitle(String(localized: "同期管理"))
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .minimizeNavigationWhenScrolling()
         .accessibilityIdentifier("sync-management-view")
@@ -281,7 +281,8 @@ struct PendingOperationEditor: View {
             }
         }
         .appScreenSurface()
-        .navigationTitle(String(localized: "内容を修正"))
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Button(String(localized: "保存")) {
                 let revised = MobileCreate(

@@ -428,6 +428,7 @@ private struct MediaGridTile<Artwork: View, Caption: View>: View {
     let domain: MobileDomain
     @ViewBuilder let artwork: () -> Artwork
     @ViewBuilder let caption: () -> Caption
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppLayout.small) {
@@ -437,6 +438,7 @@ private struct MediaGridTile<Artwork: View, Caption: View>: View {
             }
             .aspectRatio(domain == .images ? 1 : 2.0 / 3.0, contentMode: .fit)
             .clipped()
+            .frame(maxWidth: domain == .books && dynamicTypeSize.isAccessibilitySize ? 200 : .infinity)
             caption()
         }
     }

@@ -26,7 +26,7 @@ struct DiagnosticsView: View {
             }
         }
         .appScreenSurface()
-        .navigationTitle(String(localized: "診断情報"))
+        .navigationTitle("")
         .minimizeNavigationWhenScrolling()
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("diagnostics-view")

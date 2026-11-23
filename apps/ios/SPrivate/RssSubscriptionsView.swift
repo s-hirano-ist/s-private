@@ -61,7 +61,7 @@ struct RssSubscriptionsView: View {
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { RssStatusView() }
         .appScreenSurface()
-        .navigationTitle(String(localized: "RSSの購読管理"))
+        .navigationTitle("")
         .minimizeNavigationWhenScrolling()
         .accessibilityIdentifier("rss-subscriptions")
         .navigationBarTitleDisplayMode(.inline)

@@ -247,7 +247,7 @@ struct SearchView: View {
             }
             .appScreenSurface()
             .listStyle(.plain)
-            .navigationTitle(String(localized: "検索"))
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
