@@ -35,8 +35,11 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(toggle.waitForExistence(timeout: 5))
         toggle.tap()
         let search = app.textFields["rss-saved-search"]
+        XCTAssertFalse(search.exists)
+        app.buttons["rss-search-toggle"].tap()
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["rss-entry-fixture-search-swiftui"].isHittable)
+        attach(app, name: "rss-search-saved-en")
 
         search.tap()
         search.typeText("does-not-exist\n")
@@ -45,10 +48,12 @@ final class RssUITests: XCTestCase {
 
         let category = app.buttons["rss-saved-topic"]
         category.tap()
-        app.buttons["Technology"].tap()
+        let technology = app.buttons["Technology"]
+        XCTAssertTrue(technology.waitForExistence(timeout: 5))
+        attach(app, name: "rss-search-category-menu")
+        technology.tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-search-swiftui"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["rss-entry-fixture-saved"].exists)
-        XCTAssertEqual(toggle.label, "Saved (1)")
         app.buttons["rss-saved-clear"].tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-saved"].waitForExistence(timeout: 5))
 
@@ -56,6 +61,7 @@ final class RssUITests: XCTestCase {
         search.typeText("SWIFTUI target\n")
         XCTAssertTrue(app.buttons["rss-entry-fixture-search-swiftui"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["rss-entry-fixture-saved"].exists)
+        app.buttons["rss-search-toggle"].tap()
         XCTAssertEqual(toggle.label, "Saved (1)")
     }
 
@@ -63,7 +69,10 @@ final class RssUITests: XCTestCase {
     func testSavedSearchShortcutFallsBackAndReflectsRemoval() {
         let app = launch(searchShortcut: true)
         XCTAssertTrue(app.staticTexts["rss-saved-ai-fallback"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.textFields["rss-saved-search"].exists)
+        app.buttons["rss-search-toggle"].tap()
         XCTAssertEqual(app.textFields["rss-saved-search"].value as? String, "Saved article")
+        app.buttons["rss-search-toggle"].tap()
         let saved = app.buttons["rss-entry-fixture-saved"]
         XCTAssertTrue(saved.waitForExistence(timeout: 5))
         app.buttons["rss-save-fixture-saved"].tap()
@@ -119,16 +128,36 @@ final class RssUITests: XCTestCase {
     @MainActor
     func testCountsLiveInFilterAndDiagnosticsAreInSettings() {
         let app = launch()
-        let filter = app.navigationBars.buttons["rss-feed-filter"]
+        let filter = app.buttons["rss-feed-filter"]
+        let searchToggle = app.navigationBars.buttons["rss-search-toggle"]
+        XCTAssertTrue(searchToggle.waitForExistence(timeout: 5))
+        let settings = app.buttons["settings-link"]
+        let refresh = app.buttons["rss-refresh"]
+        let closedSearchFrame = searchToggle.frame
+        XCTAssertLessThan(refresh.frame.midX, settings.frame.midX)
+        XCTAssertLessThan(settings.frame.midX, closedSearchFrame.midX)
+        XCTAssertEqual(settings.frame.midY, closedSearchFrame.midY, accuracy: 2)
+        XCTAssertFalse(filter.exists)
+        attach(app, name: "rss-search-collapsed")
+        searchToggle.tap()
         XCTAssertTrue(filter.waitForExistence(timeout: 5))
+        let search = app.textFields["rss-unread-search"]
+        XCTAssertTrue(search.exists)
+        XCTAssertEqual(searchToggle.frame.midX, closedSearchFrame.midX, accuracy: 4)
+        XCTAssertEqual(search.frame.midY, closedSearchFrame.midY, accuracy: 4)
+        XCTAssertEqual(filter.frame.midY, search.frame.midY, accuracy: 4)
+        XCTAssertGreaterThanOrEqual(filter.frame.width, 44)
+        XCTAssertGreaterThanOrEqual(filter.frame.height, 44)
         XCTAssertTrue(filter.label.contains("(1)") || (filter.value as? String)?.contains("(1)") == true)
         XCTAssertFalse(app.staticTexts["rss-count"].exists)
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "最終同期")).firstMatch.exists)
         filter.tap()
         XCTAssertTrue(app.buttons["すべての購読 (1)"].waitForExistence(timeout: 5))
+        attach(app, name: "rss-search-subscription-menu")
         app.buttons["News / Example Feed (1)"].tap()
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].exists)
-        app.buttons["settings-link"].tap()
+        searchToggle.tap()
+        settings.tap()
         app.swipeUp()
         app.buttons["diagnostics-link"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["diagnostics-view"].waitForExistence(timeout: 5))
@@ -138,11 +167,52 @@ final class RssUITests: XCTestCase {
     }
 
     @MainActor
+    func testUnreadSearchCombinesWithSubscriptionAndLimitsBulkRead() {
+        let app = launch(language: "en", delayed: true)
+        let search = app.textFields["rss-unread-search"]
+        let filter = app.buttons["rss-feed-filter"]
+        let searchToggle = app.buttons["rss-search-toggle"]
+        searchToggle.tap()
+        filter.tap()
+        app.buttons["News / Example Feed (3)"].tap()
+
+        let restingWidth = search.frame.width
+        search.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(search.frame.width, restingWidth, accuracy: 2)
+        XCTAssertEqual(search.value as? String, "Search unread articles")
+        attach(app, name: "rss-search-focused")
+        search.typeText("SECOND unread\n")
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(search.frame.width, restingWidth, accuracy: 2)
+        let matching = app.buttons["rss-entry-fixture-second"]
+        let other = app.buttons["rss-entry-fixture-third"]
+        XCTAssertTrue(matching.waitForExistence(timeout: 5))
+        XCTAssertTrue(other.waitForNonExistence(timeout: 5))
+        attach(app, name: "rss-search-filtered")
+
+        searchToggle.tap()
+        app.buttons["rss-read-all"].tap()
+        XCTAssertTrue(app.staticTexts["Mark all matching articles as read?"].waitForExistence(timeout: 5))
+        app.sheets.buttons["rss-confirm-read-all"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["No matching articles"].waitForExistence(timeout: 5))
+        searchToggle.tap()
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        app.buttons["rss-unread-clear"].tap()
+        XCTAssertTrue(other.waitForExistence(timeout: 5))
+        XCTAssertFalse(matching.exists)
+        XCTAssertEqual(filter.value as? String, "All subscriptions (2)")
+    }
+
+    @MainActor
     func testRemovingSelectedSubscriptionReturnsToAllSubscriptions() {
         let app = launch()
         XCTAssertTrue(app.buttons["rss-entry-fixture-unread"].waitForExistence(timeout: 5))
+        let searchToggle = app.buttons["rss-search-toggle"]
+        searchToggle.tap()
         app.buttons["rss-feed-filter"].tap()
         app.buttons["News / Example Feed (1)"].tap()
+        searchToggle.tap()
         app.buttons["settings-link"].tap()
         app.buttons["rss-subscriptions-link"].tap()
         app.buttons["rss-feed-options-fixture-feed"].tap()
@@ -151,11 +221,32 @@ final class RssUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["購読はありません"].waitForExistence(timeout: 5))
         app.navigationBars.buttons.firstMatch.tap()
         app.navigationBars.buttons.firstMatch.tap()
-        let filter = app.navigationBars.buttons["rss-feed-filter"]
+        app.buttons["rss-search-toggle"].tap()
+        let filter = app.buttons["rss-feed-filter"]
         XCTAssertTrue(filter.waitForExistence(timeout: 5))
         XCTAssertEqual(filter.value as? String, "すべての購読 (0)")
         XCTAssertTrue(app.buttons["購読を追加"].exists)
         attach(app, name: "rss-unsubscribed-empty")
+    }
+
+    @MainActor
+    func testScrollingCollapsesHeaderSearchAndKeepsTheQuery() {
+        let app = launch(offline: true, language: "en", infiniteScroll: true)
+        let search = app.textFields["rss-unread-search"]
+        let toggle = app.buttons["rss-search-toggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        XCTAssertFalse(search.exists)
+        toggle.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        search.typeText("Unread article\n")
+        let reader = app.collectionViews["rss-reader"].firstMatch
+        reader.swipeUp()
+        XCTAssertTrue(search.waitForNonExistence(timeout: 5))
+        attach(app, name: "rss-search-scrolled")
+        reader.swipeDown()
+        XCTAssertFalse(search.exists)
+        toggle.tap()
+        XCTAssertEqual(search.value as? String, "Unread article")
     }
 
     @MainActor
