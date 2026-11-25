@@ -17,8 +17,7 @@ workflows:
         - 'davelosert/vitest-coverage-report-action@v2.13.2'
         - 'pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115'
         - 'pnpm/action-setup@v6.1.1'
-        - 'sonarsource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4'
-        - 'sonarsource/sonarqube-scan-action@v8.5.0'
+        - 'sonarsource/sonarqube-scan-action@70bad232163b09d998ea0707ee80c0ec80798c16'
     '.github/workflows/ci.yaml': []
     '.github/workflows/depcruise.yaml':
         - 'actions/checkout@v7.0.1'
@@ -88,7 +87,7 @@ workflows:
     '.github/workflows/renovate-config-validator.yaml': []
     '.github/workflows/renovate.yaml':
         - 'actions/create-github-app-token@v3.4.0'
-        - 'renovatebot/github-action@v46.3.14'
+        - 'renovatebot/github-action@v46.3.15'
     '.github/workflows/update-reports.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/create-github-app-token@v3.4.0'
@@ -187,18 +186,13 @@ dependencies:
         commit: 'sha1-73e46992e05b19abd31f2f3c20e0e7370d762115'
         owner_id: 21320719
         repo_id: 262289747
-    'renovatebot/github-action@v46.3.14':
-        ref: 'v46.3.14'
-        commit: 'sha1-acdd6bda8b035c99ce59d5675816af2aa65a1774'
+    'renovatebot/github-action@v46.3.15':
+        ref: 'v46.3.15'
+        commit: 'sha1-ebcbb513d07ead4d9c0c2139064301db05e84a3e'
         owner_id: 38656520
         repo_id: 252754603
-    'sonarsource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4':
-        ref: 'v8.5.0'
-        commit: 'sha1-59202af334b4ba7b5db01b701b8e79f8b3bef0f4'
-        owner_id: 545988
-        repo_id: 366408409
-    'sonarsource/sonarqube-scan-action@v8.5.0':
-        ref: 'v8.5.0'
-        commit: 'sha1-59202af334b4ba7b5db01b701b8e79f8b3bef0f4'
+    'sonarsource/sonarqube-scan-action@70bad232163b09d998ea0707ee80c0ec80798c16':
+        ref: 'v8.5.1'
+        commit: 'sha1-70bad232163b09d998ea0707ee80c0ec80798c16'
         owner_id: 545988
         repo_id: 366408409
