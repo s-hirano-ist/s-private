@@ -95,59 +95,6 @@ services:
     networks:
       - tunnel-net
 
-  minio:
-    image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z-amd64@sha256:e6238b30c37e1143d80b71a6bea91446587009df5d7839f14659b11087d651fb
-    container_name: minio
-    profiles: [vps]
-    restart: unless-stopped
-    command: server /data --console-address ":9001"
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-}
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio-data:/data
-    networks:
-      - tunnel-net
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-
-  minio-init:
-    image: pgsty/mc:RELEASE.2026-03-13T08-57-32Z-amd64@sha256:27e3c66b01d1e3922e0a9bd3eb9f532cb52f448942b7f5e37bae8d313835eb22
-    container_name: minio-init
-    profiles: [vps]
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
-      mc mb --ignore-existing local/$${S3_BUCKET_NAME} &&
-      echo 'Bucket ready'
-      "
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-}
-    networks:
-      - tunnel-net
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest@sha256:55c7e3e8d89d5e8d20b75a82f3602cbf98e06db406e73e282073cfdc5a9a3af6
-    container_name: cloudflared
-    profiles: [vps]
-    restart: unless-stopped
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
-    networks:
-      - tunnel-net
-
 volumes:
   cockroach-data:
   hf-cache:

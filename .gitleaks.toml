@@ -30,7 +30,6 @@ keywords = [
 [rules.allowlist]
 paths = [
 	'''^apps/web/vitest-setup\.tsx$''',
-	'''^docs/vps-deployment\.md$''',
 	'''^\.github/workflows/ci-check\.yaml$''',
 	'''^\.github/workflows/ci-reporting-check\.yaml$''',
 ]
