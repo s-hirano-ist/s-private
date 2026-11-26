@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.14.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.13.0...s-private-v4.14.0) (2026-11-26)
+
+
+### Features
+
+* **ios:** add saved RSS search and Siri filtering ([7969277](https://github.com/s-hirano-ist/s-private/commit/79692775a50efbe2e30f1be39c7898b28a4b5c1f))
+* **ios:** collapse RSS header search while scrolling ([388c5cd](https://github.com/s-hirano-ist/s-private/commit/388c5cdf19d3046f566feb6d5ec2d1fd50cde51b))
+* **ios:** combine RSS search and filters ([93fb832](https://github.com/s-hirano-ist/s-private/commit/93fb8326df83a7dfafece44649fb92a4e549882e))
+* **ios:** expand RSS search from grouped toolbar ([f832354](https://github.com/s-hirano-ist/s-private/commit/f832354f25eda7bff350a8d258b9f4b85f523362))
+* **ios:** refresh the sign-in screen ([4dda562](https://github.com/s-hirano-ist/s-private/commit/4dda5626d2549bc51236bae1c6f6ab6448caff43))
+* **ios:** 保存済みRSSの検索・カテゴリ絞り込みとSiri連携 ([ff262b6](https://github.com/s-hirano-ist/s-private/commit/ff262b6df77731fcd68e83b536c793a0f1259640))
+
+
+### Bug Fixes
+
+* **ios:** align settings section margins ([1f9ce2f](https://github.com/s-hirano-ist/s-private/commit/1f9ce2f8fda21da3986dff3b2bf88f3e487627d5))
+* **ios:** follow the tab bar with RSS sync status ([b03dd51](https://github.com/s-hirano-ist/s-private/commit/b03dd519421137a16a88b113faa4f5dd00872066))
+* **ios:** improve list layout and automatic pagination ([8820e84](https://github.com/s-hirano-ist/s-private/commit/8820e84d1e4b31726032f028b820dbbf0cc7bd8a))
+* **ios:** refine settings and sign-in layout ([76c732a](https://github.com/s-hirano-ist/s-private/commit/76c732a882016b23812d4986865879e326a33134))
+* **ios:** remove duplicate settings insets ([05a2114](https://github.com/s-hirano-ist/s-private/commit/05a2114a201f97fb52ff9f07f109e3ccd405e73b))
+* **ios:** restore translucent RSS sync status ([682eeca](https://github.com/s-hirano-ist/s-private/commit/682eeca8d9a6868c79dc95a7e90ff44bcfe49c5d))
+* **ios:** RSS 同期トーストをタブバーの縮小に追従させる ([9e50b3a](https://github.com/s-hirano-ist/s-private/commit/9e50b3adbc9047170e044b611307efd3667efb16))
+* **ios:** 設定画面とログインボタンの余白を整える ([2be7a64](https://github.com/s-hirano-ist/s-private/commit/2be7a647a384491904e306af15b44c8952789cad))
+
+
+### Maintenance
+
+* **deps:** update cloudflare/cloudflared:latest docker digest to 55c7e3e ([513c3cd](https://github.com/s-hirano-ist/s-private/commit/513c3cdcafd1764570773aa54e2380859b974310))
+* **deps:** update github actions dependencies ([e05ab95](https://github.com/s-hirano-ist/s-private/commit/e05ab95ae44f49c42c7a9d552327647c1018bccc))
+* **deps:** update tooling dependencies ([4cffe54](https://github.com/s-hirano-ist/s-private/commit/4cffe54b52ef37bae5b0ab67033ab6011e43550e))
+* remove obsolete VPS deployment configuration ([9018245](https://github.com/s-hirano-ist/s-private/commit/9018245c3c76cef126a8d903c6ce48c3c966d093))
+
 ## [4.13.0](https://github.com/s-hirano-ist/s-private/compare/s-private-v4.12.0...s-private-v4.13.0) (2026-11-23)
 
 
