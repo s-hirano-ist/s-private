@@ -122,7 +122,6 @@ Webの接続先は既定で `http://127.0.0.1:3002`。`BACKEND_PORT` でbackend�
 ### 変数一覧
 
 Webの環境変数は `apps/web/src/env.ts`、backendのDB・認証・storage・検索等は `apps/backend/src/env.ts` を参照してください。Doppler MCPも環境変数管理に使用します。[開発用MCP](development-mcp.md)に接続手順をまとめています。
-Docker Compose 用の変数（VPS デプロイ時）は [docs/vps-deployment.md Step 7](vps-deployment.md) を参照してください。
 
 ### Auth0 callback URL
 

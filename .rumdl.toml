@@ -24,7 +24,6 @@ exclude = [
 	"docs/performance-profiling.md",
 	"docs/setup.md",
 	"docs/testing.md",
-	"docs/vps-deployment.md",
 	"issues/feature-004-advanced-image-viewer.md",
 	"issues/feature-008-push-notification.md",
 	"issues/perf-006-performance-observer-rum.md",
