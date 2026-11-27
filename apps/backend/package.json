@@ -23,8 +23,8 @@
 		"@s-hirano-ist/s-database": "workspace:*",
 		"@s-hirano-ist/s-infrastructure": "workspace:*",
 		"@s-hirano-ist/s-storage": "workspace:*",
-		"@sentry/node": "11.16.0",
-		"better-auth": "1.7.27",
+		"@sentry/node": "11.19.0",
+		"better-auth": "1.7.28",
 		"hono": "catalog:",
 		"jose": "6.2.18",
 		"zod": "catalog:"

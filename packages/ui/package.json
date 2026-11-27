@@ -130,11 +130,11 @@
 		"@base-ui/react": "1.9.0",
 		"lucide-react": "catalog:",
 		"tailwind-merge": "3.7.1",
-		"tailwind-variants": "4.0.2"
+		"tailwind-variants": "4.1.0"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "0.18.5",
-		"@storybook/react-vite": "10.6.8",
+		"@storybook/react-vite": "10.6.9",
 		"@tailwindcss/cli": "4.3.5",
 		"@tailwindcss/postcss": "catalog:",
 		"@types/react": "catalog:",
