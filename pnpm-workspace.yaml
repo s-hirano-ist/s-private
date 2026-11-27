@@ -59,42 +59,42 @@ pipelines:
     - build
 
 catalog:
-  '@aws-sdk/client-s3': 3.1175.0
+  '@aws-sdk/client-s3': 3.1178.0
   '@modelcontextprotocol/client': 2.4.0
   '@modelcontextprotocol/hono': 2.0.2
   '@modelcontextprotocol/server': 2.4.0
   '@nodable/entities': 3.1.0
   '@s-hirano-ist/s-api-client': workspace:*
   '@s-hirano-ist/s-database': workspace:*
-  '@sentry/node': 11.16.0
+  '@sentry/node': 11.19.0
   '@tailwindcss/postcss': 4.3.5
   '@tailwindcss/typography': 0.5.20
-  '@types/node': 26.6.6
-  '@types/react': 19.3.0
+  '@types/node': 26.6.11
+  '@types/react': 19.3.3
   '@types/react-dom': 19.3.0
   '@vercel/related-projects': 1.1.1
-  '@vitest/browser': 5.1.0
-  '@vitest/browser-playwright': 5.1.0
-  '@vitest/coverage-v8': 5.1.0
+  '@vitest/browser': 5.1.2
+  '@vitest/browser-playwright': 5.1.2
+  '@vitest/coverage-v8': 5.1.2
   fast-xml-parser: 5.12.1
   fast-xml-validator: 1.4.4
   fflate: 0.8.3
-  hono: 4.13.19
+  hono: 4.13.23
   ipaddr.js: 2.5.0
   js-yaml: 5.5.0
-  lefthook: 2.2.2
-  lucide-react: 1.77.0
+  lefthook: 2.2.4
+  lucide-react: 1.81.0
   next: 16.4.6
-  next-intl: 4.15.3
-  oxfmt: 0.79.0
+  next-intl: 4.16.2
+  oxfmt: 0.80.0
   postcss: 8.5.33
   react: 19.3.1
   react-dom: 19.3.1
   tailwindcss: 4.3.5
   typescript: 6.0.3
-  vite: 8.3.8
-  vite-plus: 1.6.0
-  vitest: 5.1.0
+  vite: 8.4.0
+  vite-plus: 1.8.0
+  vitest: 5.1.2
   zod: 4.6.7
 
 catalogMode: prefer
